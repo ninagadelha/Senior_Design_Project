@@ -8,7 +8,7 @@ const colors = {
     next_button: "#2C2C2C",
     back_button: "#E3E3E3",
     progress_bar: "#4A90E2",
-
+    black_text: "#000000",
 };
 
 export default colors;
