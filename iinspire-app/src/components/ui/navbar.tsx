@@ -9,12 +9,12 @@ function Navbar(){
     return(
         <Box className='navbar'>
             <Image className='logo' 
-            src="/images/IINSPIRE_logo_transparent.png"
+            src="/images/IINSPIRE_logo_transparent_light.png"
             alt='logo'
             h='7vh'
             fit="contain"></Image>
             <Box className='links'>
-                <Link href="/">About</Link>
+                <Link href="/" >About</Link>
             </Box>
         </Box>    
         );

@@ -12,10 +12,14 @@ html {
     justify-content: start;
     align-items: center;
     color: #FFFFFF;
-    background-color: #1D2B53;
+    background-color: #101932;
+    padding-bottom: 1vh;
 }
 
 .links{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding-left: 2vw;
 }
 

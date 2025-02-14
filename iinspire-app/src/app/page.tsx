@@ -1,9 +1,12 @@
 import LoginBox from "@/app/components/login-box";
 import colors from "../../public/colors";
+import Navbar from "@/components/ui/navbar";
 
 export default function Home() {
     return (
-        <div
+      <div>
+        <Navbar />
+        <div suppressHydrationWarning
             className="flex justify-center items-center min-h-screen relative"
             style={{ backgroundColor: colors.login_bg }} // Use the color from your colors.ts file
         >
@@ -11,5 +14,6 @@ export default function Home() {
                 <LoginBox />
             </div>
         </div>
+      </div>
     );
 }
