@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Box, Input, Button, Text, Link } from "@chakra-ui/react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import colors from "../../../public/colors";
+import colors from "../../public/colors";
 
 const LoginBox = () => {
     const [username, setUsername] = useState("");

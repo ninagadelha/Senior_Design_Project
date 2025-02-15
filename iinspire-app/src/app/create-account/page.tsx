@@ -1,6 +1,6 @@
 import Link from "next/link";
 import React from "react";
-import colors from "../../../public/colors";
+//import colors from "../../../public/colors";
 
 const CreateAccount = () => {
     return (

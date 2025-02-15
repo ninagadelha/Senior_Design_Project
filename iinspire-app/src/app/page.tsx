@@ -1,4 +1,4 @@
-import LoginBox from "@/app/components/login-box";
+import LoginBox from "@/components/login-box";
 import colors from "../../public/colors";
 import Navbar from "@/components/ui/navbar";
 
