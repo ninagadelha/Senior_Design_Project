@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from "react";
+import { Box, Input, Button, Text, Link } from "@chakra-ui/react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import colors from '../../../public/colors'
-import Link from 'next/link';
+import colors from "../../../public/colors";
 
 const LoginBox = () => {
     const [username, setUsername] = useState("");
@@ -13,64 +13,86 @@ const LoginBox = () => {
     const isFormValid = username.trim() !== "" && password.trim() !== "";
 
     return (
-        <div className="shadow-lg rounded-lg p-6 w-80 z-10" style={{ backgroundColor: colors.login_box }}>
-            <h2 className="text-xl font-semibold mb-4 text-center" style={{ color: colors.black_text }}>
+        <Box
+            shadow="lg"
+            rounded="lg"
+            p={6}
+            w="80"
+            bg="gray.50"
+            zIndex={10}
+        >
+            <Text fontSize="xl" fontWeight="semibold" mb={4} textAlign="center" color="gray.800">
                 Login
-            </h2>
+            </Text>
 
             {/* Username Input */}
-            <input
-                className="border rounded p-2 w-full mb-3 text-black placeholder-gray-500"
-                type="text"
+            <Input
                 placeholder="Username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                bg="white"
+                color="black"
+                border="1px solid"
+                borderColor="gray.300"
+                _placeholder={{ color: "gray.500" }}
+                mb={3}
+                pl={3}
             />
 
             {/* Password Input with Toggle */}
-            <div className="relative">
-                <input
-                    className="border rounded p-2 w-full pr-10 text-black placeholder-gray-500"
-                    type={showPassword ? "text" : "password"}
+            <Box position="relative">
+                <Input
                     placeholder="Password"
+                    type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    bg="white"
+                    color="black"
+                    border="1px solid"
+                    borderColor="gray.300"
+                    _placeholder={{ color: "gray.500" }}
+                    pr="10"
+                    pl={3}
                 />
-                <button
-                    type="button"
-                    className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+                <Box
+                    as="button"
+                    aria-label="Toggle Password Visibility"
                     onClick={() => setShowPassword(!showPassword)}
+                    position="absolute"
+                    top="50%"
+                    right="3"
+                    transform="translateY(-50%)"
+                    bg="transparent"
+                    color={colors.navbar}
+                    _hover={{ color: "gray.700" }}
                 >
                     {showPassword ? <FaEye /> : <FaEyeSlash />}
-                </button>
-            </div>
+                </Box>
+            </Box>
 
-            {/* Login Button (Disabled if Inputs are Empty) */}
-            <button
-                className={`py-2 rounded mt-4 w-full transition ${
-                    isFormValid
-                        ? "text-white hover:bg-blue-600"
-                        : "bg-gray-400 text-gray-700 cursor-not-allowed"
-                }`}
-                style={{
-                    backgroundColor: isFormValid ? colors.navbar : undefined
-                }}
-                disabled={!isFormValid}
+            {/* Login Button */}
+            <Button
+                mt={4}
+                w="full"
+                colorScheme={isFormValid ? "blue" : "gray"}
+                bg={isFormValid ? colors.navbar : "gray.400"}
+                _hover={isFormValid ? { bg: colors.navbar } : undefined}
+                cursor={isFormValid ? "pointer" : "not-allowed"}
+                color="white"
             >
                 Login
-            </button>
+            </Button>
 
-            {/* Link for Create Account */}
-            <div className="text-sm text-left mt-3">
-                <Link
-                    href="/create-account"
-                    className="text-blue-500 hover:underline"
-                >
+            {/* Create Account Link */}
+            <Text fontSize="sm" mt={3}>
+                <Link href="/create-account" color="blue.500" _hover={{ textDecoration: "underline" }}>
                     Create an account
                 </Link>
-            </div>
-        </div>
+            </Text>
+        </Box>
     );
 };
 
 export default LoginBox;
+
+
