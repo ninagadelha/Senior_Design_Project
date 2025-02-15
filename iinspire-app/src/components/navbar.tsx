@@ -1,5 +1,5 @@
 import React from 'react'
-import "../../..//public/styles/navbar.css"
+import "../..//public/styles/navbar.css"
 import { Box, Image } from '@chakra-ui/react';
 import Link from 'next/link';
 
@@ -9,7 +9,7 @@ function Navbar(){
     return(
         <Box className='navbar'>
             <Image className='logo' 
-            src="/images/IINSPIRE_logo_transparent_light.png"
+            src="/images/custom/IINSPIRE_logo_transparent_light.png"
             alt='logo'
             h='7vh'
             fit="contain"></Image>
