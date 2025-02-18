@@ -12,6 +12,31 @@ const LoginBox = () => {
     // Check if both fields are filled
     const isFormValid = username.trim() !== "" && password.trim() !== "";
 
+    const handleLogin = async () => {
+        try {
+          const url = `https://b7ce3b86-888e-4709-bc5e-aadff548945c.mock.pstmn.io/?username=${encodeURIComponent(
+            username
+          )}&password=${encodeURIComponent(password)}`;
+          
+          const response = await fetch(url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+    
+          const data = await response.json();
+    
+          // Log the returned status (data is either "Passed" or "Failed")
+          console.log("Status:", data.status);
+          if(data.status === "passed") {
+            alert("Login successful!");
+          }
+        } catch (error) {
+          console.error("Error during login:", error);
+        }
+      };
+
     return (
         <Box
             shadow="lg"
@@ -79,6 +104,7 @@ const LoginBox = () => {
                 _hover={isFormValid ? { bg: colors.navbar } : undefined}
                 cursor={isFormValid ? "pointer" : "not-allowed"}
                 color="white"
+                onClick={handleLogin}
             >
                 Login
             </Button>
