@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors')
 const mysql = require('mysql2');
 require('dotenv').config();
 const bodyParser = require('body-parser');
@@ -11,7 +12,7 @@ const userRouter = require('./api/UserNew/User.router')
 // Create an Express application
 const app = express();
 app.use(bodyParser.json());
-
+app.use(cors());
 
 //imports for api routers
 app.use('/api',questionsRouter)
