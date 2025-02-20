@@ -1,5 +1,5 @@
 import React from 'react'
-import "../..//public/styles/navbar.css"
+import "../../..//public/styles/navbar.css"
 import { Box, Image } from '@chakra-ui/react';
 import Link from 'next/link';
 
