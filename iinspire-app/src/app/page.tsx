@@ -1,6 +1,6 @@
 import LoginBox from "@/components/login-box";
 import colors from "../../public/colors";
-import Navbar from "@/components/navbar";
+import Navbar from "@/components/util/navbar";
 import { Box } from "@chakra-ui/react";
 
 export default function Home() {

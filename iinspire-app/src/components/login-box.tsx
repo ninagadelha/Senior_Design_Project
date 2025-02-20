@@ -2,12 +2,14 @@
 import React, { useState } from "react";
 import { Box, Input, Button, Text, Link } from "@chakra-ui/react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { useRouter } from "next/navigation"; // Import useRouter
 import colors from "../../public/colors";
 
 const LoginBox = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const router = useRouter(); // Initialize router
 
     // Check if both fields are filled
     const isFormValid = username.trim() !== "" && password.trim() !== "";
@@ -30,6 +32,7 @@ const LoginBox = () => {
           // Log the returned status (data is either "Passed" or "Failed")
           console.log("Status:", data.status);
           if(data.status === "passed") {
+            router.push("/student-home"); // Navigate to the student home page
             alert("Login successful!");
           }
         } catch (error) {
