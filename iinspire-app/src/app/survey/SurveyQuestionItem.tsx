@@ -7,24 +7,15 @@ import {
 } from "@/components/ui/number-input"
 import { Radio, RadioGroup } from "@/components/ui/radio"
 import { Checkbox } from "@/components/ui/checkbox"
+import SurveyQuestionInterface from './SurveyQuestionInterface';
 
 interface QuestionProps {
-    question: SurveyQuestion;
-}
-
-type InputType = 'text' | 'number' | 'radio' | 'checkbox';
-
-interface SurveyQuestion {
-    id: string;
-    question: string;
-    inputType: InputType;
-    // If the input type supports options (like radio or checkbox), include them
-    options?: string[];
+    question: SurveyQuestionInterface;
 }
 
 const SurveyQuestionItem: React.FC<QuestionProps> = ({ question }) => {
     const renderInput = () => {
-        switch (question.inputType) {
+        switch (question.question_type) {
             case 'text':
                 return (
                     <Input placeholder="Your answer here" />
@@ -60,6 +51,30 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question }) => {
                         </Stack>
                     </CheckboxGroup>
                 );
+            case 'D/A - 0-5':
+                return (
+                    <RadioGroup>
+                        <Stack direction="column">
+                            {question.options?.map(option => (
+                                <Radio key={option} value={option}>
+                                    {option}
+                                </Radio>
+                            ))}
+                        </Stack>
+                    </RadioGroup>
+                );
+                case 'N/A - 0-6':
+                return (
+                    <CheckboxGroup>
+                        <Stack direction="column">
+                            {question.options?.map(option => (
+                                <Checkbox key={option} value={option}>
+                                    {option}
+                                </Checkbox>
+                            ))}
+                        </Stack>
+                    </CheckboxGroup>
+                );
             default:
                 return null;
         }
@@ -67,7 +82,7 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question }) => {
 
     return (
         <Box mb={4}>
-            <Text mb={2}>{question.question}</Text>
+            <Text mb={2}>{question.question_text}</Text>
             {renderInput()}
         </Box>
     );
