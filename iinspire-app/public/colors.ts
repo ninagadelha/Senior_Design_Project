@@ -9,6 +9,8 @@ const colors = {
     back_button: "#E3E3E3",
     progress_bar: "#4A90E2",
     black_text: "#000000",
+    white: "#FFFFFF",
+    dashboard_border: "#D9D9D9",
 };
 
 export default colors;
