@@ -1,8 +1,4 @@
-.dashboard-box {
-    border: #D9D9D9;
-}
-
-.dashboard-box-text-stack {
+.dashboard-box-card {
     text-align: center;
     color: black;
 }

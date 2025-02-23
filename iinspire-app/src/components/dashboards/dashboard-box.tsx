@@ -1,32 +1,53 @@
 import React from 'react'
-import { Box, Button, HStack, Icon, Text, VStack} from '@chakra-ui/react';
+import { Box, Button, CardBody, CardFooter, CardHeader, CardRoot, Icon, Text } from '@chakra-ui/react';
 import { IoBarChartSharp } from "react-icons/io5";
-import colors from '../../../public/colors';
 import '../../../public/styles/dashboard.css';
-
+import colors from '../../../public/colors';
 
 function DashboardBox(){
     return(
-        <Box className='dashboard-box'>
-            <HStack className='dashboard-box-stack'>
-                <Icon color={colors.black_text}>
+        <CardRoot maxW="sm"
+            border="2px solid #D9D9D9"
+            borderRadius="lg"
+            p={6}
+            textAlign="center"
+            alignItems="center"
+            overflow="hidden" 
+            className='dashboard-box-card' 
+            variant="outline"
+            background={colors.white}
+        >
+            <Box>
+                <Icon boxSize={8} color="black" >
                     <IoBarChartSharp />
                 </Icon>
-
-                <VStack className='dashboard-box-text-stack'>
-                    <Text>
-                        Results
-                    </Text>
-                    <Text>
-                        View Survey Results
-                    </Text>
-                </VStack>
-
-                <Button>
-
+            </Box>
+            <CardBody>
+                {/* Title */}
+                <CardHeader p={0}>
+                    <Text fontSize="lg" fontWeight="bold">Results</Text>
+                </CardHeader>
+                {/* Description */}
+                <CardBody p={0} mt={2}>
+                    <Text fontSize="sm" color="gray.600">View Survey Results</Text>
+                </CardBody>
+            </CardBody>
+            {/* Button */}
+            <CardFooter p={0}>
+            <Button 
+                asChild
+                className='dashboard-box-button'
+                bg="black"
+                color="white"
+                _hover={{ bg: "gray.800" }}
+                borderRadius="md"
+                px={4}
+                py={2}
+            >
+                    <a href='/view-results'>View Results</a>
                 </Button>
-            </HStack>
-        </Box>    
+            </CardFooter>
+        </CardRoot>
         );
 }
 
