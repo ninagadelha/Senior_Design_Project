@@ -13,39 +13,39 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question }) => {
             case 'D/A - 0-5':
                 return (
                     <Fieldset.Root>
-                        <CheckboxGroup defaultValue={["0"]} name="checkbox">
+                        <RadioGroup name="Radio" variant="subtle">
                             <Fieldset.Legend fontSize="sm" mb="2">
                                 0 is low, 5 is high
                             </Fieldset.Legend>
                             <Fieldset.Content>
-                                <HStack direction="column">
+                                <HStack>
                                     {question.options?.map(option => (
-                                        <Checkbox key={option} value={option} variant="subtle" colorPalette={"gray"}>
+                                        <Radio key={option} value={option}  colorPalette={"gray"}>
                                             {option}
-                                        </Checkbox>
+                                        </Radio>
                                     ))}
                                 </HStack>
                             </Fieldset.Content>
-                        </CheckboxGroup>
+                        </RadioGroup>
                     </Fieldset.Root>
                 );
             case 'N/A - 0-6':
                 return (
                     <Fieldset.Root>
-                        <CheckboxGroup defaultValue={["0"]} name="checkbox">
+                        <RadioGroup name="Radio" variant="subtle">
                             <Fieldset.Legend fontSize="sm" mb="2">
                                 0 is low, 6 is high
                             </Fieldset.Legend>
                             <Fieldset.Content>
-                                <HStack direction="column">
+                                <HStack>
                                     {question.options?.map(option => (
-                                        <Checkbox key={option} value={option} variant="subtle" colorPalette={"gray"}>
+                                        <Radio key={option} value={option}  colorPalette={"gray"}>
                                             {option}
-                                        </Checkbox>
+                                        </Radio>
                                     ))}
                                 </HStack>
                             </Fieldset.Content>
-                        </CheckboxGroup>
+                        </RadioGroup>
                     </Fieldset.Root>
                 );
             default:
