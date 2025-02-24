@@ -42,7 +42,7 @@ const DashboardCard: React.FC<DashboardBoxProps> = ({
         </Icon>
       </Box>
 
-      <Box mt={3}>
+      <Box m={2}>
         <Text fontSize="lg" fontWeight="bold">{dashboardCardHeader}</Text>
         <Text fontSize="sm" color="gray.600" mt={2}>{dashboardCardText}</Text>
       </Box>

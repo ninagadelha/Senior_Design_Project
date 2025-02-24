@@ -24,11 +24,12 @@ const DashboardInfoCard: React.FC<DashboardInfoCardProps> = ({
       size="sm" 
       border="1px solid #D9D9D9" 
       borderRadius="lg" 
-      p={3} 
+      p={2} 
       background={colors.white}
       width="800px" // Set fixed width
       display="flex"
-      flexDirection="column"
+      overflow="hidden"
+      flexDirection="row"
     >
       <HStack alignItems="center">
         {/* Image for info card */}

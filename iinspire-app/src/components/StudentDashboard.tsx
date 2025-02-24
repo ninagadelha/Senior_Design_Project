@@ -15,6 +15,7 @@ function StudentDashboard(){
             <HStack 
                 gap="5rem"
                 padding="3rem"
+                justifyContent="center"
             >
 
                 {/* Column 1: VStack of Dashboard Cards containing links to other routs like /take-survey */}
@@ -40,6 +41,7 @@ function StudentDashboard(){
                 <VStack
                     textAlign='left'
                     color={colors.black_text}
+                    gap="1rem"
                 >
                     <Box>
                         <Text
@@ -66,10 +68,28 @@ function StudentDashboard(){
                     <DashboardInfoCard 
                         imageSrc={'/images/custom/clubs_stock_photo.jpg'} 
                         dashboardInfoCardHeader={'Clubs/Organizations'} 
-                        dashboardInfoCardText={'Explore the hundreds of STEM-related clubs/organizations at Iowa State University'} 
+                        dashboardInfoCardText={'Explore the hundreds of STEM-related clubs/organizations at Iowa State University.'} 
                         dashboardInfoCardButton={{
                             text: 'View',
                             link: 'https://studentengagement.iastate.edu/student-organizations'}}
+                    />
+
+                    <DashboardInfoCard 
+                        imageSrc={'/images/custom/ISU_events_stock_photo.jpg'} 
+                        dashboardInfoCardHeader={'Events'} 
+                        dashboardInfoCardText={'Connect with STEM professionals from across the world at various events around campus.'} 
+                        dashboardInfoCardButton={{
+                            text: 'View',
+                            link: 'https://www.career.iastate.edu/career-fairs/'}}
+                    />
+
+                    <DashboardInfoCard 
+                        imageSrc={'/images/custom/mental_health_stock_photo.jpg'} 
+                        dashboardInfoCardHeader={'Mental Health'} 
+                        dashboardInfoCardText={'Utilize Iowa State\'s extensive mental health resources like counseling, wellness coaches, and Crisis Care.'} 
+                        dashboardInfoCardButton={{
+                            text: 'View',
+                            link: 'https://cyclonehealth.iastate.edu/mental-health'}}
                     />
                 </VStack>
             </HStack>
