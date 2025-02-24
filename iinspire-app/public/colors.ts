@@ -1,16 +1,17 @@
 const colors = {
 
-    login_box: "#D9D9D9",
-    login_bg: "#1D2B53",
-    navbar: "#101932",
-    bubble_purple: "#8E44AD",
-    bubble_green: "#007B0C",
-    next_button: "#2C2C2C",
-    back_button: "#E3E3E3",
-    progress_bar: "#4A90E2",
-    black_text: "#000000",
-    white: "#FFFFFF",
-    dashboard_border: "#D9D9D9",
+    off_white: "#D9D9D9", 
+    primary_blue: "#1D2B53", 
+    secondary_blue_dark: "#101932", 
+    purple_circle: "#8E44AD",
+    green_circle: "#007B0C", 
+    grey_circle: "#B0A8B9",
+    dark_grey: "#2C2C2C",
+    light_grey: "#E3E3E3",
+    secondary_blue_light: "#4A90E2",
+    black: "#000000",
+    white: "#FFFFFF", 
+
 };
 
 export default colors;
