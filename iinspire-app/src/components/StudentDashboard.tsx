@@ -7,7 +7,6 @@ import { RiSurveyFill } from "react-icons/ri";
 import DashboardInfoCard from './dashboards/dashboard-info-card';
 import fonts from '../../public/fonts';
 
-
 function StudentDashboard(){
     return(
         <Box className="dashboard-background" background={colors.white}>
@@ -40,17 +39,17 @@ function StudentDashboard(){
                 {/* Column 2: stack of Dashboard Info Cards that link to various resources on campus */}
                 <VStack
                     textAlign='left'
-                    color={colors.black_text}
+                    color={colors.black}
                     gap="1rem"
                 >
                     <Box>
                         <Text
-                            fontWeight={fonts.bold}
+                            fontWeight={fonts.bold_weight}
                         >
                             Resources
                         </Text>
                         <Text
-                            fontWeight={fonts.default}
+                            fontWeight={fonts.default_weight}
                         >
                             Resources to help improve your STEM journey.
                         </Text>

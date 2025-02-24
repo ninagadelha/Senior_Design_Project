@@ -47,8 +47,8 @@ const DashboardInfoCard: React.FC<DashboardInfoCardProps> = ({
         <Box flex="1">
           <CardHeader 
             textAlign="left" 
-            color={colors.black_text} 
-            fontWeight={fonts.bold}
+            color={colors.black} 
+            fontWeight={fonts.bold_weight}
           >
             <Heading size="md">{dashboardInfoCardHeader}</Heading>
           </CardHeader>

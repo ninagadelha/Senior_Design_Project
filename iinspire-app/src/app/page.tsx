@@ -10,7 +10,7 @@ export default function Home() {
         <div 
           suppressHydrationWarning
           className="flex justify-center items-center min-h-screen relative"
-          style={{ backgroundColor: colors.login_bg }}
+          style={{ backgroundColor: colors.primary_blue }}
         >
           <Box position="relative" display="flex" justifyContent="center" alignItems="center">
             {/* Circles Positioned Behind LoginBox */}
