@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Provider } from "@/components/ui/provider"; // Use your custom provider
 import "./globals.css";
-import { ChakraProvider } from "@chakra-ui/react";
+//import { ChakraProvider } from "@chakra-ui/react";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
