@@ -21,7 +21,7 @@ const DashboardCard: React.FC<DashboardBoxProps> = ({
 }) => {
   return (
     <CardRoot 
-    w="250px" // Fixed width for consistency
+    w="300px" // Fixed width for consistency
     minH="200px" // Minimum height to prevent shrinking
     border="2px solid #D9D9D9"
     borderRadius="lg"

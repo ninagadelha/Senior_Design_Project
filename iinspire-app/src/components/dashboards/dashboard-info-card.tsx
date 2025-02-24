@@ -20,7 +20,16 @@ const DashboardInfoCard: React.FC<DashboardInfoCardProps> = ({
   dashboardInfoCardButton
 }) => {
   return (
-    <CardRoot size="sm" border="1px solid #D9D9D9" borderRadius="lg" p={4} background={colors.white}>
+    <CardRoot 
+      size="sm" 
+      border="1px solid #D9D9D9" 
+      borderRadius="lg" 
+      p={3} 
+      background={colors.white}
+      width="800px" // Set fixed width
+      display="flex"
+      flexDirection="column"
+    >
       <HStack alignItems="center">
         {/* Image for info card */}
         <Box>
@@ -35,15 +44,24 @@ const DashboardInfoCard: React.FC<DashboardInfoCardProps> = ({
 
         {/* Text for info card */}
         <Box flex="1">
-          <CardHeader textAlign="left" color={colors.black_text} fontWeight={fonts.bold}>
+          <CardHeader 
+            textAlign="left" 
+            color={colors.black_text} 
+            fontWeight={fonts.bold}
+          >
             <Heading size="md">{dashboardInfoCardHeader}</Heading>
           </CardHeader>
         
-          <CardBody color="gray.600" textAlign="left">
+          <CardBody 
+            color="gray.600"
+            fontSize="13px"
+            py="0.5rem"
+          >
             {dashboardInfoCardText}
           </CardBody>
           
-          <CardFooter textAlign="left">
+          <CardFooter>
+            {/* Info Card Button (link to ISU resource) */}
             <Button 
                 asChild
                 bg="black"
