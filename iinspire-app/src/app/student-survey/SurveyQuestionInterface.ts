@@ -1,4 +1,5 @@
-type InputType = 'text' | 'number' | 'radio' | 'checkbox' | 'D/A - 0-5' | 'N/A - 0-6';
+type InputType = 'D/A - 0-5' | 'N/A - 0-6' | 'SD/SL - 0-4' | 
+                  'NC/CC - 0-9' | 'SD/SA - 0-4' | '% / 0-100';
 
 
 interface SurveyQuestionInterface {
