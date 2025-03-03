@@ -91,7 +91,7 @@ const LoginBox = () => {
                     right="3"
                     transform="translateY(-50%)"
                     bg="transparent"
-                    color={colors.navbar}
+                    color={colors.secondary_blue_dark}
                     _hover={{ color: "gray.700" }}
                 >
                     {showPassword ? <FaEye /> : <FaEyeSlash />}
@@ -103,8 +103,8 @@ const LoginBox = () => {
                 mt={4}
                 w="full"
                 colorScheme={isFormValid ? "blue" : "gray"}
-                bg={isFormValid ? colors.navbar : "gray.400"}
-                _hover={isFormValid ? { bg: colors.navbar } : undefined}
+                bg={isFormValid ? colors.secondary_blue_dark : "gray.400"}
+                _hover={isFormValid ? { bg: colors.secondary_blue_dark } : undefined}
                 cursor={isFormValid ? "pointer" : "not-allowed"}
                 color="white"
                 onClick={handleLogin}
