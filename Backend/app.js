@@ -10,6 +10,7 @@ const bodyParser = require('body-parser');
 const questionsRouter = require('./api/questions/questions.router')
 const userRouter = require('./api/UserNew/User.router')
 const programRouter = require('./api/program/program.router')
+const surveyResultsRouter = require('./api/surveyResults/surveyResults.router');
 // Create an Express application
 const app = express();
 app.use(bodyParser.json());
@@ -19,6 +20,7 @@ app.use(cors());
 app.use('/api',questionsRouter)
 app.use('/api', userRouter)
 app.use('/api', programRouter)
+app.use('/api', surveyResultsRouter);
 
 // Set a port for the server to listen on
 const PORT = 3000;
