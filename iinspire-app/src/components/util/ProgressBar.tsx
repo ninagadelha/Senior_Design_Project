@@ -1,7 +1,9 @@
-import { Progress, HStack, Text } from '@chakra-ui/react';
+import { HStack, Progress, Text } from "@chakra-ui/react"
 
 const ProgressBar = ({ current, total }: { current: number; total: number }) => {
-    const progress = (current / total) * 100
+  // Safely calculate progress percentage
+  const safeTotal = total || 1 // Prevent division by zero
+  const progress = Math.min(100, (current / safeTotal) * 100)
 
   return (
     <Progress.Root value={progress} width="full" mb={6}>
@@ -18,6 +20,6 @@ const ProgressBar = ({ current, total }: { current: number; total: number }) => 
       </HStack>
     </Progress.Root>
   )
-};
+}
 
-export default ProgressBar;
+export default ProgressBar

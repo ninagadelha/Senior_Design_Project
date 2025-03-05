@@ -73,7 +73,7 @@ const TheSurvey = () => {
     return (
         <>
             <Box maxW="100vw" mx="auto" mt={8} padding={'1vw'}>
-                <ProgressBar current={currentGroupIndex} total={groupNames.length} />
+                <ProgressBar current={currentGroupIndex + 1} total={groupNames.length} />
                 <Heading size="3xl">Survey Form</Heading>
 
                 {/* Display only the current group */}
