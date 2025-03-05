@@ -7,6 +7,7 @@ import SurveyQuestionInterface from '../app/student-survey/SurveyQuestionInterfa
 import { useEffect, useState } from 'react';
 import ProgressBar from "@/components/util/ProgressBar";
 
+
 const TheSurvey = () => {
     const [questions, setQuestions] = useState<SurveyQuestionInterface[]>([]);
     let headers = new Headers();
@@ -71,8 +72,8 @@ const TheSurvey = () => {
 
     return (
         <>
-            <Box maxW="100vw" mx="auto" mt={8} paddingLeft={'1vw'}>
-                {/* <ProgressBar current={currentGroupIndex + 1} total={groupNames.length} /> */}
+            <Box maxW="100vw" mx="auto" mt={8} padding={'1vw'}>
+                <ProgressBar current={currentGroupIndex} total={groupNames.length} />
                 <Heading size="3xl">Survey Form</Heading>
 
                 {/* Display only the current group */}

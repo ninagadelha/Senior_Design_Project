@@ -1,18 +1,23 @@
-import { Progress } from "@chakra-ui/react"
-import { HStack } from "@chakra-ui/react"
+import { Progress, HStack, Text } from '@chakra-ui/react';
 
-const ProgressBar = () => {
-    return (
-        <Progress.Root defaultValue={40} maxW="xl">
-            <HStack gap="5">
-                <Progress.Label>Percent Complete</Progress.Label>
-                <Progress.Track flex="1">
-                    <Progress.Range />
-                </Progress.Track>
-                <Progress.ValueText>40%</Progress.ValueText>
-            </HStack>
-        </Progress.Root>
-    );
-}
+const ProgressBar = ({ current, total }: { current: number; total: number }) => {
+    const progress = (current / total) * 100
 
-export default ProgressBar
+  return (
+    <Progress.Root value={progress} width="full" mb={6}>
+      <HStack gap="5" width="full">
+        <Progress.Label flexShrink={0}>
+          Step {current} of {total}
+        </Progress.Label>
+        <Progress.Track flex="1">
+          <Progress.Range />
+        </Progress.Track>
+        <Progress.ValueText flexShrink={0}>
+          {Math.round(progress)}%
+        </Progress.ValueText>
+      </HStack>
+    </Progress.Root>
+  )
+};
+
+export default ProgressBar;
