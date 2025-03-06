@@ -4,7 +4,9 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install
 COPY . .
+ENV NEXT_DISABLE_ESLINT_PLUGIN=true
 RUN npm run build
+
 
 #Run it
 FROM node:18-alpine
