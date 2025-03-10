@@ -1,5 +1,5 @@
 import React from 'react'
-import { Box, HStack, VStack, Text } from '@chakra-ui/react';
+import { HStack, VStack, Text, Flex } from '@chakra-ui/react';
 import colors from '../../public/colors';
 import DashboardCard from './dashboards/dashboard-route-card';
 import { IoBarChartSharp } from 'react-icons/io5';
@@ -9,7 +9,7 @@ import fonts from '../../public/fonts';
 
 function StudentDashboard(){
     return(
-        <Box className="dashboard-background" background={colors.white}>
+        <Flex className="dashboard-background" background={colors.white}>
             {/* creates 2 columns on dashboard */}
             <HStack 
                 gap="5rem"
@@ -20,12 +20,13 @@ function StudentDashboard(){
                 {/* Column 1: VStack of Dashboard Cards containing links to other routs like /take-survey */}
                 <VStack
                     gap="2rem"
+                    display={'flex'}
                 >
                 <DashboardCard
                     icon={IoBarChartSharp}
                     dashboardCardHeader="Results"
                     dashboardCardText="View Survey Results"
-                    dashboardButton={{ text: "Go To Results", link: "/view-results" }}
+                    dashboardButton={{ text: "View Results", link: "/view-results" }}
                 />
 
                 <DashboardCard
@@ -42,19 +43,24 @@ function StudentDashboard(){
                     color={colors.black}
                     gap="1rem"
                 >
-                    <Box>
-                        <Text
-                            fontWeight={fonts.bold_weight}
-                        >
-                            Resources
-                        </Text>
-                        <Text
-                            fontWeight={fonts.default_weight}
-                        >
-                            Resources to help improve your STEM journey.
-                        </Text>
+                    <Flex>
+                        <VStack>
+                            <Text
+                                fontWeight={fonts.bold_weight}
+                                fontSize={fonts.large_font_size}
+                            >
+                                Resources
+                            </Text>
+                            <Text
+                                fontWeight={fonts.default_weight}
+                                fontSize={fonts.default_font_size}
+                            >
+                                Resources to help improve your STEM journey.
+                            </Text>
+                        </VStack>
+                        
 
-                    </Box>
+                    </Flex>
                     <DashboardInfoCard 
                         imageSrc={'/images/custom/tutoring_stock_photo.jpg'} 
                         dashboardInfoCardHeader={'Tutoring/SI'} 
@@ -92,7 +98,7 @@ function StudentDashboard(){
                     />
                 </VStack>
             </HStack>
-        </Box>
+        </Flex>
         );
 }
 
