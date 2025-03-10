@@ -57,7 +57,7 @@ export default function Home() {
             />
           </Box>
 
-          <Box position="relative" zIndex={1}>
+          <Box position="relative" zIndex={1} mt="-5rem">
             <LoginBox />
           </Box>
         </Box>
