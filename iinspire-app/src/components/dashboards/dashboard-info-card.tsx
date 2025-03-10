@@ -31,7 +31,7 @@ const DashboardInfoCard: React.FC<DashboardInfoCardProps> = ({
       overflow="hidden"
       flexDirection="row"
     >
-      <HStack alignItems="center">
+      <HStack alignItems="center" display={'flex'}>
         {/* Image for info card */}
         <Box>
           <Image 
