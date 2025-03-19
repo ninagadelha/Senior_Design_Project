@@ -26,7 +26,11 @@ exports.loginUser = async (email) => {
   return await queryDatabase('SELECT * FROM Users WHERE email = ?', [email]);
 };
 
-  
+exports.PostNewUser = async (email, role, netid, age, gender, ethnicity, credits, stem_interests, institution) => {
+
+   return await queryDatabase( 'INSERT INTO Users (role, email, netid, age, gender, ethnicity, credits, stem_interests, institution, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())', 
+    [email, role, netid, age, gender, ethnicity, credits, stem_interests, institution]);
+};
     
   
   

@@ -6,6 +6,6 @@ const router = express.Router();
 router.get("/timestamp", userController.getTimestamp);
 router.get("/users" , userController.getUsers);
 router.post("/login", userController.loginUser);
-
+router.post("/newuser",userController.newUser);
 
 module.exports = router;

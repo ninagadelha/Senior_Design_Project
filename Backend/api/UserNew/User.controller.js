@@ -55,6 +55,29 @@ exports.loginUser = async (req, res) => {
   }
 }
 
+exports.newUser = async (req, res) => {
+  const { email, role, netid, age, gender, ethnicity, credits, stem_interests, institution } = req.body;
+  
+  if (!email) {
+    return res.status(400).send('Email is required');
+  } if (!role) {
+    return res.status(400).send('Role is required');
+  }
 
+  try {
+    // Query the Users table to find a user by the provided email
+    const results = await userService.PostNewUser( email, role, netid, age, gender, ethnicity, credits, stem_interests, institution);
+
+   
+      // User found with the provided email
+      res.json({
+        message: 'User Created successful'
+      });
+  }
+  catch (error) {
+    console.error('Error Creating New User:', error);
+    res.status(500).send('Error Creating New User');
+  }
+}
 
 
