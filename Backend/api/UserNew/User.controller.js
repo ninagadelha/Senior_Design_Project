@@ -81,3 +81,50 @@ exports.newUser = async (req, res) => {
 }
 
 
+
+
+exports.updateProgramDirector = async (req, res) => {
+  const { email } = req.body;
+  
+  if (!email) {
+    return res.status(400).send('Email is required');
+  }
+  try {
+    // Query the Users table to find a user by the provided email
+    const results = await userService.UpdateProgramDirector( email);
+      // User found with the provided email
+      res.json({
+        message: 'User Role Updated',
+        User: results
+      });
+  }
+  catch (error) {
+    console.error('Error Updating User Role:', error);
+    res.status(500).send('Error Creating New User');
+  }
+}
+
+exports.UpdateResearcher = async (req, res) => {
+  const { email } = req.body;
+  
+  if (!email) {
+    return res.status(400).send('Email is required');
+  }
+  try {
+    // Query the Users table to find a user by the provided email
+    const results = await userService.UpdateResearcher( email);
+      // User found with the provided email
+      res.json({
+        message: 'User Role Updated',
+        User: results
+      });
+  }
+  catch (error) {
+    console.error('Error Updating User Role:', error);
+    res.status(500).send('Error Creating New User');
+  }
+}
+
+
+
+
