@@ -1,13 +1,13 @@
 import Navbar from "@/components/util/navbar";
 import React from "react";
 import Footer from "@/components/util/footer";
-import StudentDashboard from "@/components/StudentDashboard";
+import StudentDashboardNew from "@/components/StudentDashboardNew";
 
 const StudentHome = () => {
     return (
                 <div>
                     <Navbar />
-                    <StudentDashboard />
+                    <StudentDashboardNew />
                     <Footer />
                 </div>
     );
