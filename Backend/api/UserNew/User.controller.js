@@ -56,17 +56,20 @@ exports.loginUser = async (req, res) => {
 }
 
 exports.newUser = async (req, res) => {
-  const { email, role, netid, age, gender, ethnicity, credits, stem_interests, institution } = req.body;
+  const { email, role, netid, age, gender, ethnicity, credits, stem_interests, institution, programid } = req.body;
   
   if (!email) {
     return res.status(400).send('Email is required');
   } if (!role) {
     return res.status(400).send('Role is required');
   }
+  if (!programid) {
+    return res.status(400).send('Program is required');
+  }
 
   try {
     // Query the Users table to find a user by the provided email
-    const results = await userService.PostNewUser( email, role, netid, age, gender, ethnicity, credits, stem_interests, institution);
+    const results = await userService.PostNewUser( email, role, netid, age, gender, ethnicity, credits, stem_interests, institution, programid);
 
    
       // User found with the provided email
@@ -126,5 +129,53 @@ exports.UpdateResearcher = async (req, res) => {
 }
 
 
+exports.UpdateStudent = async (req, res) => {
+  const { email } = req.body;
+  
+  if (!email) {
+    return res.status(400).send('Email is required');
+  }
+  try {
+    // Query the Users table to find a user by the provided email
+    const results = await userService.UpdateStudent( email);
+      // User found with the provided email
+      res.json({
+        message: 'User Role Updated',
+        User: results
+      });
+  }
+  catch (error) {
+    console.error('Error Updating User Role:', error);
+    res.status(500).send('Error Creating New User');
+  }
+}
 
 
+exports.getExistingUser = async (req, res) => {
+  const { email, programid } = req.body;
+  
+  if (!email) {
+    return res.status(400).send('Email is required');
+  }
+  if (!programid) {
+    return res.status(400).send('Program is required');
+  }
+  try {
+    // Query the Users table to find a user by the provided email
+    const results = await userService.checkUser( email, programid);
+      // User found with the provided email
+      if(results.length>0){
+        res.json({
+          message: 'User Exists',
+          User: results
+        });
+      }
+      else{
+        res.json({message:'No User'});
+      }
+  }
+  catch (error) {
+    console.error('Error Checking if User exists:', error);
+    res.status(500).send('Error checking if user exists');
+  }
+}

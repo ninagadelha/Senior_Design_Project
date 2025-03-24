@@ -26,10 +26,10 @@ exports.loginUser = async (email) => {
   return await queryDatabase('SELECT * FROM Users WHERE email = ?', [email]);
 };
 
-exports.PostNewUser = async (email, role, netid, age, gender, ethnicity, credits, stem_interests, institution) => {
+exports.PostNewUser = async (email, role, netid, age, gender, ethnicity, credits, stem_interests, institution, programid) => {
 
-   return await queryDatabase( 'INSERT INTO Users (role, email, netid, age, gender, ethnicity, credits, stem_interests, institution, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())', 
-    [email, role, netid, age, gender, ethnicity, credits, stem_interests, institution]);
+   return await queryDatabase( 'INSERT INTO Users (role, email, netid, age, gender, ethnicity, credits, stem_interests, institution, programid, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?, NOW())', 
+    [email, role, netid, age, gender, ethnicity, credits, stem_interests, institution, programid]);
 };
 
 
@@ -42,6 +42,15 @@ exports.UpdateProgramDirector = async (email) => {
   const sql = `UPDATE Users SET role = 'Program Director' WHERE email = ?`;
   return await queryDatabase(sql, [email]);
 }
+
+exports.UpdateStudent= async (email) => {
+  const sql = `UPDATE Users SET role = 'Student' WHERE email = ?`;
+  return await queryDatabase(sql, [email]);
+}
   
   
+exports.checkUser= async ( email, programid) => {
+  const sql = `SELECT * from Users WHERE email = ? AND programid = ?`;
+  return await queryDatabase(sql, [email, programid]);
+}
   
