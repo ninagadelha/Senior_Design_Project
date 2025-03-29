@@ -7,9 +7,11 @@ import { Slider } from "@/components/ui/slider"
 
 interface QuestionProps {
     question: SurveyQuestionInterface;
+    onAnswerChange: (questionId: number, value: string | string[]) => void;
+    value?: string | string[];
 }
 
-const SurveyQuestionItem: React.FC<QuestionProps> = ({ question }) => {
+const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange, value }) => {
     const [sliderValue, setSliderValue] = useState([40])
     const [groupZeroValue, setGroupZeroValue] = useState("0");
     const [groupOneValue, setGroupOneValue] = useState("0");
@@ -17,6 +19,17 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question }) => {
     const [groupThreeValue, setGroupThreeValue] = useState("0");
     const [groupFourValue, setGroupFourValue] = useState("0");
 
+    const handleRadioChange = (details: { value: string }) => {
+        onAnswerChange(question.question_id, details.value);
+    };
+
+    const handleSliderChange = (details: { value: number[] }) => {
+        onAnswerChange(question.question_id, details.value.join(','));
+    };
+
+    const handleCheckboxChange = (values: string[]) => {
+        onAnswerChange(question.question_id, values); // Now matches updated interface
+    };
     const renderInput = () => {
         switch (question.question_type) {
             case 'D/A - 0-5': // Disagree - Agree
@@ -38,8 +51,8 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question }) => {
                                 </Box>
                                 {/* Radio buttons */}
                                 <RadioGroup
-                                    value={groupZeroValue}
-                                    onValueChange={(e) => setGroupZeroValue(e.value)}
+                                    value={value?.toString() || ''}
+                                    onValueChange={handleRadioChange}
                                     size={'lg'}
                                     width="50%"
                                     marginRight={"10vh"}
@@ -308,10 +321,11 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question }) => {
                                 <HStack width="50%" justify="center" align="center" marginLeft={'2vw'}>
                                     <Slider
                                         width={'full'}
-                                        value={sliderValue}
+
                                         thumbAlignment="contain"
                                         thumbSize={{ width: 16, height: 16 }}
-                                        onValueChange={(e) => setSliderValue(e.value)}
+                                        value={typeof value === 'string' ? value.split(',').map(Number) : [50]}
+                                        onValueChange={handleSliderChange}
                                         step={10}
                                         variant={'solid'}
                                         colorScheme={'grey'}

@@ -6,9 +6,12 @@ import SurveyItem from '../components/util/SurveyItem';
 import SurveyQuestionInterface from '../app/student-survey/SurveyQuestionInterface';
 import { useEffect, useState } from 'react';
 import ProgressBar from "@/components/util/ProgressBar";
-
+interface SurveyAnswer {
+    [key: string]: string | string[]; // Question ID as key
+}
 
 const TheSurvey = () => {
+    const [answers, setAnswers] = useState<SurveyAnswer>({});
     const [questions, setQuestions] = useState<SurveyQuestionInterface[]>([]);
     let headers = new Headers();
 
@@ -37,6 +40,13 @@ const TheSurvey = () => {
         }
         fetchQuestions();
     }, []);
+
+    const handleAnswerChange = (questionId: number, value: string | string[]) => {
+        setAnswers(prev => ({
+            ...prev,
+            [questionId]: value
+        }));
+    };
 
     const groupedQuestions = questions.reduce((groups, question) => {
         const groupKey = question.question_group || 'General';
@@ -70,6 +80,24 @@ const TheSurvey = () => {
         }
     };
 
+    const handleSubmit = () => {
+        console.log(answers);
+    };
+
+    const SubmitButton = () => {
+        return (
+            <Button
+                onClick={handleSubmit}
+                colorScheme="blue"
+                variant={'solid'}
+                size={'lg'}
+                className="next-button"
+            >
+                Submit
+            </Button>
+        );
+    }
+
     return (
         <>
             <Box maxW="100vw" mx="auto" mt={8} padding={'1vw'}>
@@ -80,7 +108,12 @@ const TheSurvey = () => {
                 <Box mt={4}>
                     <Heading size="lg">Group {currentGroup}</Heading>
                     {currentQuestions.map((question) => (
-                        <SurveyItem key={question.question_id} question={question} />
+                        <SurveyItem
+                            key={question.question_id}
+                            question={question}
+                            onAnswerChange={handleAnswerChange}
+                            value={answers[question.question_id]}
+                        />
                     ))}
                 </Box>
 
@@ -105,6 +138,7 @@ const TheSurvey = () => {
                         {/* Also add some functionality here to save users answers */}
                         {currentGroupIndex === groupNames.length - 1 ? "Finish" : "Next"}
                     </Button>
+                    <SubmitButton />
                 </Flex>
             </Box>
         </>
