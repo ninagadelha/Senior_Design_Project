@@ -2,43 +2,45 @@
 import React, { useState } from "react";
 import { Box, Input, Button, Text, Link } from "@chakra-ui/react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useRouter } from "next/navigation"; // Import useRouter
+import { useRouter } from "next/navigation";
 import colors from "../../public/colors";
 
 const LoginBox = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const router = useRouter(); // Initialize router
+    const router = useRouter();
 
-    // Check if both fields are filled
     const isFormValid = username.trim() !== "" && password.trim() !== "";
 
     const handleLogin = async () => {
         try {
-          const url = `https://b7ce3b86-888e-4709-bc5e-aadff548945c.mock.pstmn.io/?username=${encodeURIComponent(
-            username
-          )}&password=${encodeURIComponent(password)}`;
-          
-          const response = await fetch(url, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          });
-    
-          const data = await response.json();
-    
-          // Log the returned status (data is either "Passed" or "Failed")
-          console.log("Status:", data.status);
-          if(data.status === "passed") {
-            router.push("/student-home"); // Navigate to the student home page
-            alert("Login successful!");
-          }
+            const response = await fetch("http://localhost:3000/api/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: username,
+                    password: password,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+
+                router.push("/student-home");
+                alert("Login successful!");
+            } else {
+                alert(data.message || "Login failed.");
+            }
         } catch (error) {
-          console.error("Error during login:", error);
+            console.error("Error during login:", error);
+            alert("Something went wrong during login.");
         }
-      };
+    };
+
 
     return (
         <Box

@@ -1,4 +1,4 @@
-const pool = require('../../config/database'); // Ensure pool is correctly imported
+const pool = require("../../dbconfig.js");// Ensure pool is correctly imported
 
 exports.getSurveyResultsByUser = (userID, programID, callback) => {
     const query = `
