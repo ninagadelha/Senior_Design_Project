@@ -37,7 +37,7 @@ const Card: React.FC<CardProps> = ({ id, title, description, moreInfo, color }) 
             </div>
             <div className="card-body">
                 <div className="description-container">
-                    <p>{description}</p> {/* ✅ Ensure text wraps properly */}
+                    <p>{description}</p>
                 </div>
                 {showMore && <p id={`moreInfo-${id}`}>{moreInfo}</p>}
                 <button className="toggle-btn" onClick={toggleShowMore}>

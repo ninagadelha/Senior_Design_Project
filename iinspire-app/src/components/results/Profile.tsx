@@ -1,11 +1,15 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Card from "./card";
+import Legend from "./legend"
 import ChartComponent from "@/components/results/graph";
 import "../../../public/styles/profile.css";
+import anychart from "anychart";
+
+anychart.licenseKey("lsamp-iinspire-8c03f4be-8ef79ff2");
 
 const Profile = () => {
-    const [chartType, setChartType] = useState<"bubble" | "bar">("bubble");
+    const chartType = "bubble";
     const [isClient, setIsClient] = useState(false);
     const [cardText, setCardText] = useState({
         civicEngagement: "",
@@ -77,23 +81,23 @@ const Profile = () => {
         }
     }, [isClient]);
 
-    const toggleChartType = () => {
-        setChartType((prev) => (prev === "bubble" ? "bar" : "bubble"));
-    };
-
     return (
         <div>
             <div className="profile-container">
                 <h1 className="header-profile">My Profile</h1>
 
                 <div className="graph-container">
-                    {isClient && <ChartComponent dataSet={myData[0]} comparisonData={null} chartType={chartType}/>}
-                    <div className="button-container">
-                        <button className="toggleChart" onClick={toggleChartType}>
-                            {chartType === "bubble" ? "View as Bar Chart" : "View as Bubble Chart"}
-                        </button>
-                    </div>
+                    {isClient && (
+                        <ChartComponent
+                            dataSet={myData[0]}
+                            comparisonData={null}
+                            chartType={chartType}
+                        />
+                    )}
+
                 </div>
+
+                <Legend />
 
                 {isClient && (
                     <div className="card-container">
@@ -112,5 +116,6 @@ const Profile = () => {
 };
 
 export default Profile;
+
 
 
