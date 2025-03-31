@@ -1,0 +1,45 @@
+stages:
+  - build
+
+# Shared settings
+variables:
+  DOCKER_DRIVER: overlay2
+
+# ============================
+#  Backend Docker Image Build
+# ============================
+build-backend:
+  image: docker:latest
+  services:
+    - docker:dind
+  stage: build
+  script:
+    # Login to GitLab or AWS ECR
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+
+    # Optional: echo out DB host for debug (not password)
+    - echo "Building Backend with DB_HOST=$DB_HOST"
+
+    # Build and tag the image
+    - docker build -t $ECR_REPO_BACKEND ./Backend
+
+    # Push image to ECR or GitLab Registry
+    - docker push $ECR_REPO_BACKEND
+
+# ============================
+#  Frontend Docker Image Build
+# ============================
+build-frontend:
+  image: docker:latest
+  services:
+    - docker:dind
+  stage: build
+  script:
+    # Login to GitLab or AWS ECR
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+
+    # Build and tag the image
+    - docker build -t $ECR_REPO_FRONTEND ./iinspire-app
+
+    # Push image to ECR or GitLab Registry
+    - docker push $ECR_REPO_FRONTEND
