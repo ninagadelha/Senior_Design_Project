@@ -1,28 +1,34 @@
-const { createSurveyResult, getSurveyResultsByUserID } = require("./surveyResults.service");
+const {
+    createSurveyResult,
+    getSurveyResultsByUser
+} = require("./surveyResults.service");
 
-module.exports = {
-    postSurveyResult: (req, res) => {
-        const body = req.body;
-        if (!body.userID || !body.programID) {
-            return res.status(400).json({ message: "Missing required fields." });
-        }
+exports.postSurveyResult = (req, res) => {
+    const { userID, programID, category, score, max_score } = req.body;
 
-        createSurveyResult(body, (err, results) => {
-            if (err) {
-                return res.status(500).json({ message: "Database error", error: err });
-            }
-            return res.status(201).json({ message: "Survey result created successfully", resultId: results.insertId });
-        });
-    },
-
-    getUserSurveyResults: (req, res) => {
-        const userID = req.params.userID;
-
-        getSurveyResultsByUserID(userID, (err, results) => {
-            if (err) {
-                return res.status(500).json({ message: "Database error", error: err });
-            }
-            return res.status(200).json(results);
-        });
+    if (!userID || !programID || !category || score === undefined || !max_score) {
+        return res.status(400).json({ message: "Missing required fields" });
     }
+
+    createSurveyResult({ userID, programID, category, score, max_score }, (error, results) => {
+        if (error) {
+            return res.status(500).json({ message: "Database error", error });
+        }
+        return res.status(201).json({ message: "Survey result added successfully" });
+    });
+};
+
+exports.getUserSurveyResults = (req, res) => {
+    const { userID, programID } = req.params;
+
+    if (!userID || !programID) {
+        return res.status(400).json({ message: "Missing userID or programID" });
+    }
+
+    getSurveyResultsByUser(userID, programID, (error, results) => {
+        if (error) {
+            return res.status(500).json({ message: "Database error", error });
+        }
+        return res.status(200).json(results);
+    });
 };
