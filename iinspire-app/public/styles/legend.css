@@ -1,0 +1,38 @@
+.chart-legend {
+    display: inline-block;
+    font-size: 14px;
+    color: #333;
+    line-height: 1.5;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 12px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+
+.legend-circle {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+.legend-circle.filled {
+    background-color: #583096;
+}
+
+.legend-circle.dashed {
+    border: 2px dashed #999;
+    background-color: transparent;
+}
+
+.legend-title {
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 15px;
+    text-align: center;
+}
