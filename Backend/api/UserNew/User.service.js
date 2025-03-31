@@ -29,7 +29,7 @@ exports.loginUser = async (email) => {
 exports.PostNewUser = async (email, role, netid, age, gender, ethnicity, credits, stem_interests, institution, programid) => {
 
    return await queryDatabase( 'INSERT INTO Users (role, email, netid, age, gender, ethnicity, credits, stem_interests, institution, programid, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?, NOW())', 
-    [email, role, netid, age, gender, ethnicity, credits, stem_interests, institution, programid]);
+    [role, email, netid, age, gender, ethnicity, credits, stem_interests, institution, programid]);
 };
 
 

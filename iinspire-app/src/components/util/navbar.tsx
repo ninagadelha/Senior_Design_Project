@@ -1,10 +1,13 @@
+"use client"
 import React from 'react';
 import { Button, Flex, Image, Stack, Spacer } from '@chakra-ui/react';
 import Link from 'next/link';
 import colors from '../../../public/colors';
 import fonts from '../../../public/fonts';
+import {useRouter} from "next/navigation";
 
 function Navbar() {
+    const router = useRouter();
     return (
         <Flex as="nav" align="center" p={2} boxShadow="md" bg={colors.secondary_blue_dark}>
             {/* Logo */}
@@ -23,6 +26,7 @@ function Navbar() {
                             variant="ghost"
                             fontSize={fonts.default_font_size} 
                             fontWeight={fonts.default_weight}
+                            color="white"
                             _hover={{ bg: colors.secondary_blue_light }}
                         >
                             {navItem.label}
@@ -41,6 +45,7 @@ function Navbar() {
                 color={colors.black}
                 fontSize={fonts.default_font_size} 
                 fontWeight={fonts.default_weight}
+                onClick={() => router.push('/')}
             >
                 Sign Out
             </Button>
