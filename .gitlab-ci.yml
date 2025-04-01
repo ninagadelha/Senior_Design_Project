@@ -1,5 +1,6 @@
 stages:
   - build
+  - deploy
 
 variables:
   DOCKER_DRIVER: overlay2
@@ -42,3 +43,16 @@ build-frontend:
 
     # Push image to ECR
     - docker push $ECR_REPO_FRONTEND
+
+# ============================
+#       Deploy Backend
+# ============================
+deploy-backend:
+  image: amazon/aws-cli
+  stage: deploy
+  script:
+    - aws ecs update-service \
+      --cluster your-cluster-name \
+      --service your-backend-service-name \
+      --region $AWS_REGION \
+      --force-new-deployment
