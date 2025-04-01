@@ -1,9 +1,32 @@
 stages:
+  - test
   - build
   - deploy
 
 variables:
   DOCKER_DRIVER: overlay2
+
+# ============================
+#     Backend Unit Tests
+# ============================
+test-backend:
+  image: node:20
+  stage: test
+  script:
+    - cd Backend
+    - npm ci
+    - npm run test
+
+# ============================
+#    Frontend Unit Tests
+# ============================
+test-frontend:
+  image: node:20
+  stage: test
+  script:
+    - cd iinspire-app
+    - npm ci
+    - npm run test
 
 # ============================
 #  Backend Docker Image Build
