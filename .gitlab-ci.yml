@@ -1,7 +1,6 @@
 stages:
   - build
 
-# Shared settings
 variables:
   DOCKER_DRIVER: overlay2
 
@@ -14,16 +13,16 @@ build-backend:
     - docker:dind
   stage: build
   script:
-    # Login to GitLab or AWS ECR
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    # Login to AWS ECR
+    - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 
-    # Optional: echo out DB host for debug (not password)
+    # For debugging
     - echo "Building Backend with DB_HOST=$DB_HOST"
 
     # Build and tag the image
     - docker build -t $ECR_REPO_BACKEND ./Backend
 
-    # Push image to ECR or GitLab Registry
+    # Push image to ECR
     - docker push $ECR_REPO_BACKEND
 
 # ============================
@@ -35,11 +34,11 @@ build-frontend:
     - docker:dind
   stage: build
   script:
-    # Login to GitLab or AWS ECR
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    # Login to AWS ECR
+    - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
 
     # Build and tag the image
     - docker build -t $ECR_REPO_FRONTEND ./iinspire-app
 
-    # Push image to ECR or GitLab Registry
+    # Push image to ECR
     - docker push $ECR_REPO_FRONTEND
