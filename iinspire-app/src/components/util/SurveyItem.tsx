@@ -1,4 +1,4 @@
-import { Box, CheckboxGroup, Fieldset, HStack, Stack, Text, VStack } from '@chakra-ui/react';
+import { Box, CheckboxGroup, Fieldset, Flex, HStack, Stack, Text, VStack } from '@chakra-ui/react';
 import { Radio, RadioGroup } from "@/components/ui/radio"
 import { Checkbox } from "@/components/ui/checkbox"
 import SurveyQuestionInterface from '../../app/student-survey/SurveyQuestionInterface';
@@ -12,12 +12,6 @@ interface QuestionProps {
 }
 
 const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange, value }) => {
-    const [sliderValue, setSliderValue] = useState([40])
-    const [groupZeroValue, setGroupZeroValue] = useState("0");
-    const [groupOneValue, setGroupOneValue] = useState("0");
-    const [groupTwoValue, setGroupTwoValue] = useState("0");
-    const [groupThreeValue, setGroupThreeValue] = useState("0");
-    const [groupFourValue, setGroupFourValue] = useState("0");
 
     const handleRadioChange = (details: { value: string }) => {
         onAnswerChange(question.question_id, details.value);
@@ -52,7 +46,7 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                                 {/* Radio buttons */}
                                 <RadioGroup
                                     value={value?.toString() || ''}
-                                    onValueChange={handleRadioChange}
+                                    onValueChange={(details) => onAnswerChange(question.question_id, details.value)}
                                     size={'lg'}
                                     width="50%"
                                     marginRight={"10vh"}
@@ -72,7 +66,7 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                                             return (
                                                 <VStack key={option} gap={2} align="center">
                                                     <Radio
-                                                        value={option}
+                                                        value={option.toString()}
                                                         style={{ transform: 'scale(1.5)' }}
                                                     />
                                                     <Text fontSize="sm">{label}</Text>
@@ -106,8 +100,8 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
 
                                 {/* Radio buttons */}
                                 <RadioGroup
-                                    value={groupZeroValue}
-                                    onValueChange={(e) => setGroupZeroValue(e.value)}
+                                    value={value?.toString() || ''}
+                                    onValueChange={(details) => onAnswerChange(question.question_id, details.value)}
                                     size={'lg'}
                                     width="50%"
                                     marginRight={"10vh"}
@@ -126,7 +120,7 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                                             return (
                                                 <VStack key={option} gap={2} align="center">
                                                     <Radio
-                                                        value={option}
+                                                        value={option.toString()}
                                                         style={{ transform: 'scale(1.5)' }}
                                                     />
                                                     <Text fontSize="sm">{label}</Text>
@@ -159,8 +153,8 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
 
                                 {/* Radio buttons */}
                                 <RadioGroup
-                                    value={groupZeroValue}
-                                    onValueChange={(e) => setGroupZeroValue(e.value)}
+                                    value={value?.toString() || ''}
+                                    onValueChange={(details) => onAnswerChange(question.question_id, details.value)}
                                     size={'lg'}
                                     width="50%"
                                     marginRight={"10vh"}
@@ -179,7 +173,7 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                                             return (
                                                 <VStack key={option} gap={2} align="center">
                                                     <Radio
-                                                        value={option}
+                                                        value={option.toString()}
                                                         style={{ transform: 'scale(1.5)' }}
                                                     />
                                                     <Text fontSize="sm">{label}</Text>
@@ -197,30 +191,23 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
             case 'NC/CC - 0-9': //No confidence - Complete confidence
                 return (
                     <>
-                        <Box display={'flex'} alignItems={'start'} width="100%" maxWidth="100vw">
-                            <HStack
-                                width="100%"
-                                align="center"
-                                justify="space-between"
-                                marginTop="2vh"
-                                px={4}
-                            >
-                                {/* Question text */}
-                                <Box width="40%" maxWidth="400px" marginLeft={"10vh"}>
-                                    <Text>{question.question_text}</Text>
+                        <Box width="100%" p={4}>
+                            <Flex align="center" justify="space-between" gap={8} position="relative" zIndex={1}>
+                                {/* Question text - Add minWidth to prevent squishing */}
+                                <Box flex="1" minWidth="300px" maxWidth="400px" pr={8}>
+                                    <Text fontSize="md" fontWeight="medium">
+                                        {question.question_text}
+                                    </Text>
                                 </Box>
 
-                                {/* Radio buttons */}
                                 <RadioGroup
-                                    value={groupZeroValue}
-                                    onValueChange={(e) => setGroupZeroValue(e.value)}
-                                    size={'lg'}
-                                    width="50%"
-                                    marginRight={"10vh"}
-                                    variant={'subtle'}
+                                    value={value?.toString() || ''}
+                                    onValueChange={(details) => onAnswerChange(question.question_id, details.value)}
+                                    flex="2"
+                                    variant={"subtle"}
                                 >
-                                    <HStack width="100%" justify="space-between" align="start">
-                                        {question.options?.map((option, index) => {
+                                    <Flex justify="space-between" width="100%" gap={4} position="relative">
+                                    {question.options?.map((option) => {
                                             let label;
                                             if (option == "0") {
                                                 label = "No Confidence";
@@ -230,24 +217,33 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                                                 label = " ";
                                             }
                                             return (
-                                                <Box>
-                                                    <VStack key={option} gap={2} align="center">
+                                                <Box key={option} textAlign="center" flex="1">
+                                                    <VStack gap={4}>
                                                         <Radio
-                                                            value={option}
-                                                            style={{ transform: 'scale(1.5)' }}
+                                                            value={option.toString()}
+                                                            transform="scale(2)"  // Scale individual radios
+                                                            _hover={{ transform: 'scale(2.25)' }}
+                                                            transition="transform 0.2s"
+                                                            px={2}  // Add horizontal padding
+                                                            py={1}  // Add vertical padding
+                                                            whiteSpace="nowrap"
                                                         />
+                                                        <Text
+                                                            fontSize="sm"
+                                                            bg="white"
+                                                        >
+                                                            {label}
+                                                        </Text>
                                                     </VStack>
-                                                    <Text fontSize="sm">{label}</Text>
                                                 </Box>
                                             );
                                         })}
-                                    </HStack>
+                                    </Flex>
                                 </RadioGroup>
-                            </HStack>
+                            </Flex>
                         </Box>
-                        <br />
                         <hr />
-                    </ >
+                    </>
                 );
             case 'SD/SA - 0-4': //Strongly Disagree - Strongly Agree
                 return (
@@ -267,8 +263,8 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
 
                                 {/* Radio buttons */}
                                 <RadioGroup
-                                    value={groupZeroValue}
-                                    onValueChange={(e) => setGroupZeroValue(e.value)}
+                                    value={value?.toString() || ''}
+                                    onValueChange={(details) => onAnswerChange(question.question_id, details.value)}
                                     size={'lg'}
                                     width="50%"
                                     marginRight={"10vh"}
@@ -287,7 +283,7 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                                             return (
                                                 <VStack key={option} gap={2} align="center">
                                                     <Radio
-                                                        value={option}
+                                                        value={option.toString()}
                                                         style={{ transform: 'scale(1.5)' }}
                                                     />
                                                     <Text fontSize="sm">{label}</Text>
@@ -325,12 +321,14 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                                         thumbAlignment="contain"
                                         thumbSize={{ width: 16, height: 16 }}
                                         value={typeof value === 'string' ? value.split(',').map(Number) : [50]}
-                                        onValueChange={handleSliderChange}
+                                        onValueChange={(details) =>
+                                            onAnswerChange(question.question_id, details.value.join(','))
+                                        }
                                         step={10}
                                         variant={'solid'}
                                         colorScheme={'grey'}
                                     />
-                                    <Text>{sliderValue}</Text>
+                                    {/* <Text>{sliderValue}</Text> */}
                                 </HStack>
                             </HStack>
                         </Box>

@@ -4,7 +4,7 @@ import Footer from "@/components/util/footer";
 import { Box, Button, Flex, Heading } from '@chakra-ui/react';
 import SurveyItem from '../components/util/SurveyItem';
 import SurveyQuestionInterface from '../app/student-survey/SurveyQuestionInterface';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ProgressBar from "@/components/util/ProgressBar";
 interface SurveyAnswer {
     [key: string]: string | string[]; // Question ID as key
@@ -13,6 +13,18 @@ interface SurveyAnswer {
 const TheSurvey = () => {
     const [answers, setAnswers] = useState<SurveyAnswer>({});
     const [questions, setQuestions] = useState<SurveyQuestionInterface[]>([]);
+
+    const GROUP_MESSAGES: { [key: string]: string } = {
+        '0': 'Please indicate your level of agreement with the following statements:',
+        '1': 'How frequently do you experience these situations?',
+        '2': 'Rate your confidence in these areas:',
+        '3': 'Select your preferences regarding campus resources:',
+        '4': 'How would you describe your typical responses to these scenarios?',
+        '5': 'Please indicate your level of agreement with the following statements:',
+        '6': 'Select your level of confidence for each research skill.'
+        // Add more groups as needed
+    };
+
     let headers = new Headers();
 
     headers.append('Content-Type', 'application/json');
@@ -80,14 +92,16 @@ const TheSurvey = () => {
         }
     };
 
-    const handleSubmit = () => {
-        console.log(answers);
+    const handleConfirmSubmission = () => {
+        console.log('Submitting:', answers);
+        // add api endpoint from backend HERE
     };
 
     const SubmitButton = () => {
+
         return (
             <Button
-                onClick={handleSubmit}
+                onClick={handleConfirmSubmission}
                 colorScheme="blue"
                 variant={'solid'}
                 size={'lg'}
@@ -106,7 +120,9 @@ const TheSurvey = () => {
 
                 {/* Display only the current group */}
                 <Box mt={4}>
-                    <Heading size="lg">Group {currentGroup}</Heading>
+                    <Heading size="lg" mb={4}>
+                        {GROUP_MESSAGES[currentGroup]}
+                    </Heading>
                     {currentQuestions.map((question) => (
                         <SurveyItem
                             key={question.question_id}
@@ -135,10 +151,12 @@ const TheSurvey = () => {
                         size={'lg'}
                         className="next-button"
                     >
-                        {/* Also add some functionality here to save users answers */}
-                        {currentGroupIndex === groupNames.length - 1 ? "Finish" : "Next"}
+                        {currentGroupIndex === groupNames.length - 1 ? (
+                            <SubmitButton />
+                        ) : (
+                            "Next"
+                        )}
                     </Button>
-                    <SubmitButton />
                 </Flex>
             </Box>
         </>
