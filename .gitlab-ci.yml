@@ -8,26 +8,24 @@ stages:
   - build
   - deploy
 
-before_script:
-  - apk add --no-cache curl bash jq python3 py3-pip
-  - pip3 install awscli
-  - mkdir -p /kaniko/.docker
-  - echo "{\"credsStore\":\"ecr-login\"}" > /kaniko/.docker/config.json
-  - aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID"
-  - aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY"
-  - aws configure set region "$AWS_REGION"
-  - curl -L -H "Accept: application/octet-stream" \
-      https://github.com/GoogleContainerTools/kaniko/releases/latest/download/executor-linux-amd64 \
-      -o /kaniko/executor
-  - chmod +x /kaniko/executor
-  - echo "ECR Image (Backend): $ECR_REPO_BACKEND:$IMAGE_TAG"
-  - echo "ECR Image (Frontend): $ECR_REPO_FRONTEND:$IMAGE_TAG"
-
 # -----------------------------
 #    Build Backend
 # -----------------------------
 build-backend:
   stage: build
+  image: alpine:3.18
+  before_script:
+    - apk add --no-cache curl bash jq python3 py3-pip
+    - pip3 install awscli
+    - mkdir -p /kaniko/.docker
+    - echo "{\"credsStore\":\"ecr-login\"}" > /kaniko/.docker/config.json
+    - aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID"
+    - aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY"
+    - aws configure set region "$AWS_REGION"
+    - curl -L -H "Accept: application/octet-stream" \
+        https://github.com/GoogleContainerTools/kaniko/releases/latest/download/executor-linux-amd64 \
+        -o /kaniko/executor
+    - chmod +x /kaniko/executor
   script:
     - echo "Building backend using Kaniko..."
     - /kaniko/executor \
@@ -43,6 +41,19 @@ build-backend:
 # -----------------------------
 build-frontend:
   stage: build
+  image: alpine:3.18
+  before_script:
+    - apk add --no-cache curl bash jq python3 py3-pip
+    - pip3 install awscli
+    - mkdir -p /kaniko/.docker
+    - echo "{\"credsStore\":\"ecr-login\"}" > /kaniko/.docker/config.json
+    - aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID"
+    - aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY"
+    - aws configure set region "$AWS_REGION"
+    - curl -L -H "Accept: application/octet-stream" \
+        https://github.com/GoogleContainerTools/kaniko/releases/latest/download/executor-linux-amd64 \
+        -o /kaniko/executor
+    - chmod +x /kaniko/executor
   script:
     - echo "Building frontend using Kaniko..."
     - /kaniko/executor \
@@ -58,6 +69,13 @@ build-frontend:
 # -----------------------------
 deploy-backend:
   stage: deploy
+  image: alpine:3.18
+  before_script:
+    - apk add --no-cache curl bash jq python3 py3-pip
+    - pip3 install awscli
+    - aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID"
+    - aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY"
+    - aws configure set region "$AWS_REGION"
   script:
     - echo "Deploying backend to ECS..."
     - TASK_DEF=$(aws ecs describe-task-definition --task-definition "$TASK_DEF_BACKEND")
@@ -79,6 +97,13 @@ deploy-backend:
 # -----------------------------
 deploy-frontend:
   stage: deploy
+  image: alpine:3.18
+  before_script:
+    - apk add --no-cache curl bash jq python3 py3-pip
+    - pip3 install awscli
+    - aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID"
+    - aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY"
+    - aws configure set region "$AWS_REGION"
   script:
     - echo "Deploying frontend to ECS..."
     - TASK_DEF=$(aws ecs describe-task-definition --task-definition "$TASK_DEF_FRONTEND")
