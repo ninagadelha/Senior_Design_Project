@@ -5,7 +5,7 @@ services:
     alias: buildkitd
 
 variables:
-  BUILDKIT_HOST: tcp://buildkitd:1234
+  BUILDKIT_HOST: unix:///run/buildkit/buildkitd.sock
   IMAGE_TAG: "$CI_COMMIT_SHORT_SHA"
 
 stages:
@@ -18,14 +18,14 @@ before_script:
   - . /tmp/venv/bin/activate
   - pip install awscli
 
-  # install latest buildctl from GitHub tarball
+  # install latest buildctl from GitHub
   - VERSION=$(curl -s https://api.github.com/repos/moby/buildkit/releases/latest | jq -r .tag_name)
   - curl -LO https://github.com/moby/buildkit/releases/download/${VERSION}/buildkit-${VERSION}.linux-amd64.tar.gz
   - tar -xvf buildkit-${VERSION}.linux-amd64.tar.gz
   - mv bin/buildctl /usr/local/bin/buildctl
   - chmod +x /usr/local/bin/buildctl
 
-  # export AWS envs for BuildKit auth
+  # export AWS credentials (already passed as env vars)
   - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
   - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
   - export AWS_REGION=$AWS_REGION
@@ -37,12 +37,14 @@ build-backend:
   stage: build
   script:
     - echo "Building Backend with BuildKit..."
-    - buildctl --addr tcp://buildkitd:1234 build \
+    - |
+      buildctl --addr unix:///run/buildkit/buildkitd.sock build \
         --frontend dockerfile.v0 \
         --local context=./Backend \
         --local dockerfile=./Backend \
         --output type=image,name=$ECR_REPO_BACKEND:latest,push=true
-    - buildctl --addr tcp://buildkitd:1234 build \
+    - |
+      buildctl --addr unix:///run/buildkit/buildkitd.sock build \
         --frontend dockerfile.v0 \
         --local context=./Backend \
         --local dockerfile=./Backend \
@@ -57,19 +59,20 @@ build-frontend:
   stage: build
   script:
     - echo "Building Frontend with BuildKit..."
-    - buildctl --addr unix:///run/buildkit/buildkitd.sock build \
+    - |
+      buildctl --addr unix:///run/buildkit/buildkitd.sock build \
         --frontend dockerfile.v0 \
         --local context=./iinspire-app \
         --local dockerfile=./iinspire-app \
         --output type=image,name=$ECR_REPO_FRONTEND:latest,push=true
-    - buildctl --addr unix:///run/buildkit/buildkitd.sock build \
+    - |
+      buildctl --addr unix:///run/buildkit/buildkitd.sock build \
         --frontend dockerfile.v0 \
         --local context=./iinspire-app \
         --local dockerfile=./iinspire-app \
         --output type=image,name=$ECR_REPO_FRONTEND:$IMAGE_TAG,push=true
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
-
 
 # -----------------------------
 # Deploy Backend
