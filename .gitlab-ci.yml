@@ -1,10 +1,9 @@
-image: docker:19.03.10
-
-services:
-  - docker:dind
+image:
+  name: gcr.io/kaniko-project/executor:latest
+  entrypoint: [""]
 
 variables:
-  DOCKER_DRIVER: overlay2
+  DOCKER_CONFIG: "/kaniko/.docker/"
   IMAGE_TAG: "$CI_COMMIT_SHORT_SHA"
 
 stages:
@@ -12,79 +11,65 @@ stages:
   - deploy
 
 before_script:
+  - echo "{\"credsStore\":\"ecr-login\"}" > /kaniko/.docker/config.json
   - apk add --no-cache curl jq python3 py3-pip
   - pip3 install awscli
-  - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-  - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
-  - aws configure set region $AWS_REGION
-  - $(aws ecr get-login --no-include-email --region "$AWS_REGION")
+  - aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID"
+  - aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY"
+  - aws configure set region "$AWS_REGION"
 
-# -----------------------------
-#    Build Backend
-# -----------------------------
 build-backend:
   stage: build
   script:
-    - echo "Building Backend..."
-    - docker build -t $ECR_REPO_BACKEND:latest ./Backend
-    - docker tag $ECR_REPO_BACKEND:latest $ECR_REPO_BACKEND:$IMAGE_TAG
-    - docker push $ECR_REPO_BACKEND:latest
-    - docker push $ECR_REPO_BACKEND:$IMAGE_TAG
+    - echo "Building Backend with Kaniko..."
+    - /kaniko/executor --context ./Backend --dockerfile ./Backend/Dockerfile \
+        --destination "$ECR_REPO_BACKEND:latest" \
+        --destination "$ECR_REPO_BACKEND:$IMAGE_TAG"
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
 
-# -----------------------------
-#    Build Frontend
-# -----------------------------
 build-frontend:
   stage: build
   script:
-    - echo "Building Frontend..."
-    - docker build -t $ECR_REPO_FRONTEND:latest ./iinspire-app
-    - docker tag $ECR_REPO_FRONTEND:latest $ECR_REPO_FRONTEND:$IMAGE_TAG
-    - docker push $ECR_REPO_FRONTEND:latest
-    - docker push $ECR_REPO_FRONTEND:$IMAGE_TAG
+    - echo "Building Frontend with Kaniko..."
+    - /kaniko/executor --context ./iinspire-app --dockerfile ./iinspire-app/Dockerfile \
+        --destination "$ECR_REPO_FRONTEND:latest" \
+        --destination "$ECR_REPO_FRONTEND:$IMAGE_TAG"
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
 
-# -----------------------------
-# Deploy Backend with Task Def
-# -----------------------------
 deploy-backend:
   stage: deploy
   script:
     - echo "Preparing ECS task definition for Backend..."
-    - TASK_DEF=$(aws ecs describe-task-definition --task-definition $TASK_DEF_BACKEND)
+    - TASK_DEF=$(aws ecs describe-task-definition --task-definition "$TASK_DEF_BACKEND")
     - NEW_DEF=$(echo $TASK_DEF | jq --arg IMG "$ECR_REPO_BACKEND:$IMAGE_TAG" \
         '.taskDefinition.containerDefinitions[0].image = $IMG | .taskDefinition.containerDefinitions')
     - aws ecs register-task-definition \
-        --family $TASK_DEF_BACKEND \
+        --family "$TASK_DEF_BACKEND" \
         --container-definitions "$NEW_DEF"
     - aws ecs update-service \
-        --cluster $ECS_CLUSTER_NAME \
-        --service $ECS_SERVICE_BACKEND \
-        --region $AWS_REGION \
+        --cluster "$ECS_CLUSTER_NAME" \
+        --service "$ECS_SERVICE_BACKEND" \
+        --region "$AWS_REGION" \
         --force-new-deployment
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
 
-# -----------------------------
-# Deploy Frontend with Task Def
-# -----------------------------
 deploy-frontend:
   stage: deploy
   script:
     - echo "Preparing ECS task definition for Frontend..."
-    - TASK_DEF=$(aws ecs describe-task-definition --task-definition $TASK_DEF_FRONTEND)
+    - TASK_DEF=$(aws ecs describe-task-definition --task-definition "$TASK_DEF_FRONTEND")
     - NEW_DEF=$(echo $TASK_DEF | jq --arg IMG "$ECR_REPO_FRONTEND:$IMAGE_TAG" \
         '.taskDefinition.containerDefinitions[0].image = $IMG | .taskDefinition.containerDefinitions')
     - aws ecs register-task-definition \
-        --family $TASK_DEF_FRONTEND \
+        --family "$TASK_DEF_FRONTEND" \
         --container-definitions "$NEW_DEF"
     - aws ecs update-service \
-        --cluster $ECS_CLUSTER_NAME \
-        --service $ECS_SERVICE_FRONTEND \
-        --region $AWS_REGION \
+        --cluster "$ECS_CLUSTER_NAME" \
+        --service "$ECS_SERVICE_FRONTEND" \
+        --region "$AWS_REGION" \
         --force-new-deployment
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
