@@ -1,77 +1,56 @@
-image: docker:24.0.5-cli # Use docker cli image
+image: alpine:latest
 
 services:
-  - name: docker:24.0.5-dind
-    alias: docker
+  - name: moby/buildkit:latest
+    alias: buildkitd
 
 variables:
-  DOCKER_HOST: tcp://docker:2375
-  DOCKER_TLS_CERTDIR: ""        # Disable TLS for DinD
-  DOCKER_DRIVER: overlay2
+  BUILDKIT_HOST: tcp://buildkitd:1234
   IMAGE_TAG: "$CI_COMMIT_SHORT_SHA"
 
-stages:
-  - build
-  - deploy
-
 before_script:
-  - apk add --no-cache curl jq python3 py3-pip
+  - apk add --no-cache bash curl jq python3 py3-pip
   - pip3 install awscli
-  - echo "Logging into AWS ECR..."
+  - curl -LO https://github.com/moby/buildkit/releases/download/v0.12.4/buildctl-linux-amd64
+  - chmod +x buildctl-linux-amd64 && mv buildctl-linux-amd64 /usr/local/bin/buildctl
   - aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "$ECR_REGISTRY"
 
 # -----------------------------
-#  Build Backend
+# Build Backend
 # -----------------------------
 build-backend:
   stage: build
   script:
     - echo "Building Backend..."
-    - docker build -t $ECR_REPO_BACKEND:latest ./Backend
-    - docker tag $ECR_REPO_BACKEND:latest $ECR_REPO_BACKEND:$IMAGE_TAG
-    - docker push $ECR_REPO_BACKEND:latest
-    - docker push $ECR_REPO_BACKEND:$IMAGE_TAG
+    - buildctl --addr tcp://buildkitd:1234 build \
+        --frontend dockerfile.v0 \
+        --local context=./Backend \
+        --local dockerfile=./Backend \
+        --output type=image,name=$ECR_REPO_BACKEND:latest,push=true
+    - buildctl --addr tcp://buildkitd:1234 build \
+        --frontend dockerfile.v0 \
+        --local context=./Backend \
+        --local dockerfile=./Backend \
+        --output type=image,name=$ECR_REPO_BACKEND:$IMAGE_TAG,push=true
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
 
 # -----------------------------
-#  Build Frontend
+# Build Frontend
 # -----------------------------
 build-frontend:
   stage: build
   script:
     - echo "Building Frontend..."
-    - docker build -t $ECR_REPO_FRONTEND:latest ./iinspire-app
-    - docker tag $ECR_REPO_FRONTEND:latest $ECR_REPO_FRONTEND:$IMAGE_TAG
-    - docker push $ECR_REPO_FRONTEND:latest
-    - docker push $ECR_REPO_FRONTEND:$IMAGE_TAG
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "master"'
-
-# -----------------------------
-# Deploy Backend
-# -----------------------------
-deploy-backend:
-  stage: deploy
-  script:
-    - echo "Updating ECS Backend Service..."
-    - TASK_DEF=$(aws ecs describe-task-definition --task-definition $TASK_DEF_BACKEND)
-    - NEW_DEF=$(echo $TASK_DEF | jq --arg IMG "$ECR_REPO_BACKEND:$IMAGE_TAG" '.taskDefinition.containerDefinitions[0].image = $IMG | .taskDefinition.containerDefinitions')
-    - aws ecs register-task-definition --family $TASK_DEF_BACKEND --container-definitions "$NEW_DEF"
-    - aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_BACKEND --region $AWS_REGION --force-new-deployment
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "master"'
-
-# -----------------------------
-# Deploy Frontend
-# -----------------------------
-deploy-frontend:
-  stage: deploy
-  script:
-    - echo "Updating ECS Frontend Service..."
-    - TASK_DEF=$(aws ecs describe-task-definition --task-definition $TASK_DEF_FRONTEND)
-    - NEW_DEF=$(echo $TASK_DEF | jq --arg IMG "$ECR_REPO_FRONTEND:$IMAGE_TAG" '.taskDefinition.containerDefinitions[0].image = $IMG | .taskDefinition.containerDefinitions')
-    - aws ecs register-task-definition --family $TASK_DEF_FRONTEND --container-definitions "$NEW_DEF"
-    - aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_FRONTEND --region $AWS_REGION --force-new-deployment
+    - buildctl --addr tcp://buildkitd:1234 build \
+        --frontend dockerfile.v0 \
+        --local context=./iinspire-app \
+        --local dockerfile=./iinspire-app \
+        --output type=image,name=$ECR_REPO_FRONTEND:latest,push=true
+    - buildctl --addr tcp://buildkitd:1234 build \
+        --frontend dockerfile.v0 \
+        --local context=./iinspire-app \
+        --local dockerfile=./iinspire-app \
+        --output type=image,name=$ECR_REPO_FRONTEND:$IMAGE_TAG,push=true
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
