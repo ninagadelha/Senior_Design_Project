@@ -25,7 +25,7 @@ before_script:
   - mv bin/buildctl /usr/local/bin/buildctl
   - chmod +x /usr/local/bin/buildctl
 
-  # export AWS envs for BuildKit to authenticate
+  # export AWS envs for BuildKit auth
   - export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
   - export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
   - export AWS_REGION=$AWS_REGION
