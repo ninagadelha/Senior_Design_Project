@@ -1,38 +1,35 @@
-image: alpine:3.18
+image: docker:19.03.10
+
+services:
+  - docker:dind
 
 variables:
-  DOCKER_CONFIG: "/kaniko/.docker/"
+  DOCKER_DRIVER: overlay2
   IMAGE_TAG: "$CI_COMMIT_SHORT_SHA"
 
 stages:
   - build
   - deploy
 
+before_script:
+  - apk add --no-cache curl jq python3 py3-pip
+  - pip3 install awscli
+  - aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+  - aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+  - aws configure set region $AWS_REGION
+  - $(aws ecr get-login --no-include-email --region "$AWS_REGION")
+
 # -----------------------------
 #    Build Backend
 # -----------------------------
 build-backend:
   stage: build
-  image: alpine:3.18
-  before_script:
-    - apk add --no-cache curl bash jq python3 py3-pip
-    - pip3 install awscli
-    - mkdir -p /kaniko/.docker
-    - echo "{\"credsStore\":\"ecr-login\"}" > /kaniko/.docker/config.json
-    - aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID"
-    - aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY"
-    - aws configure set region "$AWS_REGION"
-    - curl -L -H "Accept: application/octet-stream" \
-        https://github.com/GoogleContainerTools/kaniko/releases/latest/download/executor-linux-amd64 \
-        -o /kaniko/executor
-    - chmod +x /kaniko/executor
   script:
-    - echo "Building backend using Kaniko..."
-    - /kaniko/executor \
-        --context ./Backend \
-        --dockerfile ./Backend/Dockerfile \
-        --destination "$ECR_REPO_BACKEND:latest" \
-        --destination "$ECR_REPO_BACKEND:$IMAGE_TAG"
+    - echo "Building Backend..."
+    - docker build -t $ECR_REPO_BACKEND:latest ./Backend
+    - docker tag $ECR_REPO_BACKEND:latest $ECR_REPO_BACKEND:$IMAGE_TAG
+    - docker push $ECR_REPO_BACKEND:latest
+    - docker push $ECR_REPO_BACKEND:$IMAGE_TAG
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
 
@@ -41,26 +38,12 @@ build-backend:
 # -----------------------------
 build-frontend:
   stage: build
-  image: alpine:3.18
-  before_script:
-    - apk add --no-cache curl bash jq python3 py3-pip
-    - pip3 install awscli
-    - mkdir -p /kaniko/.docker
-    - echo "{\"credsStore\":\"ecr-login\"}" > /kaniko/.docker/config.json
-    - aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID"
-    - aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY"
-    - aws configure set region "$AWS_REGION"
-    - curl -L -H "Accept: application/octet-stream" \
-        https://github.com/GoogleContainerTools/kaniko/releases/latest/download/executor-linux-amd64 \
-        -o /kaniko/executor
-    - chmod +x /kaniko/executor
   script:
-    - echo "Building frontend using Kaniko..."
-    - /kaniko/executor \
-        --context ./iinspire-app \
-        --dockerfile ./iinspire-app/Dockerfile \
-        --destination "$ECR_REPO_FRONTEND:latest" \
-        --destination "$ECR_REPO_FRONTEND:$IMAGE_TAG"
+    - echo "Building Frontend..."
+    - docker build -t $ECR_REPO_FRONTEND:latest ./iinspire-app
+    - docker tag $ECR_REPO_FRONTEND:latest $ECR_REPO_FRONTEND:$IMAGE_TAG
+    - docker push $ECR_REPO_FRONTEND:latest
+    - docker push $ECR_REPO_FRONTEND:$IMAGE_TAG
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
 
@@ -69,25 +52,18 @@ build-frontend:
 # -----------------------------
 deploy-backend:
   stage: deploy
-  image: alpine:3.18
-  before_script:
-    - apk add --no-cache curl bash jq python3 py3-pip
-    - pip3 install awscli
-    - aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID"
-    - aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY"
-    - aws configure set region "$AWS_REGION"
   script:
-    - echo "Deploying backend to ECS..."
-    - TASK_DEF=$(aws ecs describe-task-definition --task-definition "$TASK_DEF_BACKEND")
+    - echo "Preparing ECS task definition for Backend..."
+    - TASK_DEF=$(aws ecs describe-task-definition --task-definition $TASK_DEF_BACKEND)
     - NEW_DEF=$(echo $TASK_DEF | jq --arg IMG "$ECR_REPO_BACKEND:$IMAGE_TAG" \
         '.taskDefinition.containerDefinitions[0].image = $IMG | .taskDefinition.containerDefinitions')
     - aws ecs register-task-definition \
-        --family "$TASK_DEF_BACKEND" \
+        --family $TASK_DEF_BACKEND \
         --container-definitions "$NEW_DEF"
     - aws ecs update-service \
-        --cluster "$ECS_CLUSTER_NAME" \
-        --service "$ECS_SERVICE_BACKEND" \
-        --region "$AWS_REGION" \
+        --cluster $ECS_CLUSTER_NAME \
+        --service $ECS_SERVICE_BACKEND \
+        --region $AWS_REGION \
         --force-new-deployment
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
@@ -97,25 +73,18 @@ deploy-backend:
 # -----------------------------
 deploy-frontend:
   stage: deploy
-  image: alpine:3.18
-  before_script:
-    - apk add --no-cache curl bash jq python3 py3-pip
-    - pip3 install awscli
-    - aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID"
-    - aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY"
-    - aws configure set region "$AWS_REGION"
   script:
-    - echo "Deploying frontend to ECS..."
-    - TASK_DEF=$(aws ecs describe-task-definition --task-definition "$TASK_DEF_FRONTEND")
+    - echo "Preparing ECS task definition for Frontend..."
+    - TASK_DEF=$(aws ecs describe-task-definition --task-definition $TASK_DEF_FRONTEND)
     - NEW_DEF=$(echo $TASK_DEF | jq --arg IMG "$ECR_REPO_FRONTEND:$IMAGE_TAG" \
         '.taskDefinition.containerDefinitions[0].image = $IMG | .taskDefinition.containerDefinitions')
     - aws ecs register-task-definition \
-        --family "$TASK_DEF_FRONTEND" \
+        --family $TASK_DEF_FRONTEND \
         --container-definitions "$NEW_DEF"
     - aws ecs update-service \
-        --cluster "$ECS_CLUSTER_NAME" \
-        --service "$ECS_SERVICE_FRONTEND" \
-        --region "$AWS_REGION" \
+        --cluster $ECS_CLUSTER_NAME \
+        --service $ECS_SERVICE_FRONTEND \
+        --region $AWS_REGION \
         --force-new-deployment
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
