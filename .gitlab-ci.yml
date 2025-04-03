@@ -5,7 +5,7 @@ services:
     alias: docker
 
 variables:
-  DOCKER_HOST: tcp://docker:2375     # Docker CLI talks to DinD
+  DOCKER_HOST: tcp://docker:2375
   DOCKER_TLS_CERTDIR: ""             # Disable TLS for DinD
   DOCKER_DRIVER: overlay2
   IMAGE_TAG: "$CI_COMMIT_SHORT_SHA"
@@ -17,11 +17,13 @@ stages:
 before_script:
   - apk add --no-cache curl jq python3 py3-pip
   - pip3 install awscli
-  - aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID"
-  - aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY"
-  - aws configure set region "$AWS_REGION"
-  - eval $(aws ecr get-login --no-include-email --region "$AWS_REGION")  # 👈 Use eval instead of $()
+  - echo "Logging into AWS ECR..."
+  - aws ecr get-login-password --region "$AWS_REGION" | \
+    docker login --username AWS --password-stdin "$ECR_REGISTRY"
 
+# -----------------------------
+#    Build Backend
+# -----------------------------
 build-backend:
   stage: build
   script:
@@ -33,6 +35,9 @@ build-backend:
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
 
+# -----------------------------
+#    Build Frontend
+# -----------------------------
 build-frontend:
   stage: build
   script:
@@ -44,6 +49,9 @@ build-frontend:
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
 
+# -----------------------------
+# Deploy Backend
+# -----------------------------
 deploy-backend:
   stage: deploy
   script:
@@ -57,6 +65,9 @@ deploy-backend:
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
 
+# -----------------------------
+# Deploy Frontend
+# -----------------------------
 deploy-frontend:
   stage: deploy
   script:
