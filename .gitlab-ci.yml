@@ -1,6 +1,4 @@
-image:
-  name: gcr.io/kaniko-project/executor:latest
-  entrypoint: [""]
+image: alpine:3.18
 
 variables:
   DOCKER_CONFIG: "/kaniko/.docker/"
@@ -11,37 +9,46 @@ stages:
   - deploy
 
 before_script:
-  - echo "{\"credsStore\":\"ecr-login\"}" > /kaniko/.docker/config.json
-  - apk add --no-cache curl jq python3 py3-pip
+  - apk add --no-cache curl bash jq python3 py3-pip
   - pip3 install awscli
+  - mkdir -p /kaniko/.docker
+  - echo "{\"credsStore\":\"ecr-login\"}" > /kaniko/.docker/config.json
   - aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID"
   - aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY"
   - aws configure set region "$AWS_REGION"
+  - curl -sSL https://github.com/GoogleContainerTools/kaniko/releases/download/v1.17.0/executor-linux-amd64 -o /kaniko/executor
+  - chmod +x /kaniko/executor
 
 build-backend:
   stage: build
   script:
-    - echo "Building Backend with Kaniko..."
-    - /kaniko/executor --context ./Backend --dockerfile ./Backend/Dockerfile \
+    - echo "Building backend using Kaniko..."
+    - /kaniko/executor \
+        --context ./Backend \
+        --dockerfile ./Backend/Dockerfile \
         --destination "$ECR_REPO_BACKEND:latest" \
         --destination "$ECR_REPO_BACKEND:$IMAGE_TAG"
+
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
 
 build-frontend:
   stage: build
   script:
-    - echo "Building Frontend with Kaniko..."
-    - /kaniko/executor --context ./iinspire-app --dockerfile ./iinspire-app/Dockerfile \
+    - echo "Building frontend using Kaniko..."
+    - /kaniko/executor \
+        --context ./iinspire-app \
+        --dockerfile ./iinspire-app/Dockerfile \
         --destination "$ECR_REPO_FRONTEND:latest" \
         --destination "$ECR_REPO_FRONTEND:$IMAGE_TAG"
+
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
 
 deploy-backend:
   stage: deploy
   script:
-    - echo "Preparing ECS task definition for Backend..."
+    - echo "Deploying backend..."
     - TASK_DEF=$(aws ecs describe-task-definition --task-definition "$TASK_DEF_BACKEND")
     - NEW_DEF=$(echo $TASK_DEF | jq --arg IMG "$ECR_REPO_BACKEND:$IMAGE_TAG" \
         '.taskDefinition.containerDefinitions[0].image = $IMG | .taskDefinition.containerDefinitions')
@@ -53,13 +60,14 @@ deploy-backend:
         --service "$ECS_SERVICE_BACKEND" \
         --region "$AWS_REGION" \
         --force-new-deployment
+
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
 
 deploy-frontend:
   stage: deploy
   script:
-    - echo "Preparing ECS task definition for Frontend..."
+    - echo "Deploying frontend..."
     - TASK_DEF=$(aws ecs describe-task-definition --task-definition "$TASK_DEF_FRONTEND")
     - NEW_DEF=$(echo $TASK_DEF | jq --arg IMG "$ECR_REPO_FRONTEND:$IMAGE_TAG" \
         '.taskDefinition.containerDefinitions[0].image = $IMG | .taskDefinition.containerDefinitions')
@@ -71,5 +79,6 @@ deploy-frontend:
         --service "$ECS_SERVICE_FRONTEND" \
         --region "$AWS_REGION" \
         --force-new-deployment
+
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
