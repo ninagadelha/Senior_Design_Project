@@ -1,10 +1,8 @@
-
-image: docker:23.0.1
+image: docker:23.0.2
 
 services:
-  - name: docker:23.0.1-dind
+  - name: docker:23.0.2-dind
     alias: docker
-
     command: ["--tls=false", "--host=tcp://0.0.0.0:2375", "--storage-driver=overlay2"]
 
 stages:
@@ -18,54 +16,56 @@ variables:
 
 before_script:
   - apk add --no-cache python3 py3-pip aws-cli
-  - aws --version
   - >
     aws ecr get-login-password --region "$AWS_REGION" |
     docker login --username AWS --password-stdin "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
 
-# ------------------------------
-# BUILD & PUSH IMAGES
-# ------------------------------
-build-and-push:
+build-backend:
   stage: build
   script:
-    # Build the backend image from ./Backend
     - docker build -t "$ECR_REPO_BACKEND:$CI_COMMIT_SHA" ./Backend
-
-    # Build the frontend image from ./inspire-app
-    - docker build -t "$ECR_REPO_FRONTEND:$CI_COMMIT_SHA" ./inspire-app
-
-    # Push both images to ECR (tagged with the Git commit SHA)
     - docker push "$ECR_REPO_BACKEND:$CI_COMMIT_SHA"
+  only:
+    - master
+
+build-frontend:
+  stage: build
+  script:
+    - docker build -t "$ECR_REPO_FRONTEND:$CI_COMMIT_SHA" ./inspire-app
     - docker push "$ECR_REPO_FRONTEND:$CI_COMMIT_SHA"
   only:
     - master
 
-# ------------------------------
-# DEPLOY TO ECS
-# ------------------------------
-deploy-ecs:
+deploy-backend:
   stage: deploy
   script:
+    - docker pull "$ECR_REPO_BACKEND:$CI_COMMIT_SHA"
     - docker tag "$ECR_REPO_BACKEND:$CI_COMMIT_SHA" "$ECR_REPO_BACKEND:latest"
-    - docker tag "$ECR_REPO_FRONTEND:$CI_COMMIT_SHA" "$ECR_REPO_FRONTEND:latest"
     - docker push "$ECR_REPO_BACKEND:latest"
-    - docker push "$ECR_REPO_FRONTEND:latest"
-
-    # Force ECS to pull the new images
-    - >
+    - |
       aws ecs update-service \
-        --cluster "$ECS_CLUSTER_NAME" \
-        --service "$ECS_SERVICE_BACKEND" \
+        --cluster "$BACKEND_ECS_CLUSTER" \
+        --service "$BACKEND_ECS_SERVICE" \
         --force-new-deployment \
         --region "$AWS_REGION"
-    - >
-      aws ecs update-service \
-        --cluster "$ECS_CLUSTER_NAME" \
-        --service "$ECS_SERVICE_FRONTEND" \
-        --force-new-deployment \
-        --region "$AWS_REGION"
+  needs:
+    - build-backend
   only:
     - master
+
+deploy-frontend:
+  stage: deploy
+  script:
+    - docker pull "$ECR_REPO_FRONTEND:$CI_COMMIT_SHA"
+    - docker tag "$ECR_REPO_FRONTEND:$CI_COMMIT_SHA" "$ECR_REPO_FRONTEND:latest"
+    - docker push "$ECR_REPO_FRONTEND:latest"
+    - |
+      aws ecs update-service \
+        --cluster "$FRONTEND_ECS_CLUSTER" \
+        --service "$FRONTEND_ECS_SERVICE" \
+        --force-new-deployment \
+        --region "$AWS_REGION"
   needs:
-    - build-and-push
+    - build-frontend
+  only:
+    - master
