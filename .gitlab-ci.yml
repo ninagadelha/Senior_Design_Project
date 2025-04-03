@@ -1,7 +1,5 @@
-image: docker.io/library/docker:latest
+image: docker:latest
 
-
-# If using GitLab shared runners, enable Docker-in-Docker:
 services:
   - docker:dind
 
@@ -10,58 +8,38 @@ stages:
   - deploy
 
 variables:
-  # For Docker-in-Docker
-  DOCKER_DRIVER: overlay2
   DOCKER_TLS_CERTDIR: ""
+  DOCKER_DRIVER: overlay2
+  DOCKER_HOST: "tcp://docker:2375"
 
 before_script:
-  # Install AWS CLI so we can push images and update ECS
   - apk add --no-cache python3 py3-pip
   - pip install awscli
-  - aws --version
-
-  # Log into ECR (this uses the AWS_REGION variable)
   - eval "$(aws ecr get-login --no-include-email --region "$AWS_REGION")"
 
-# ------------------------------
-# BUILD & PUSH IMAGES
-# ------------------------------
 build-and-push:
   stage: build
   script:
-    # Build the backend image from /Backend
     - docker build -t "$ECR_REPO_BACKEND:$CI_COMMIT_SHA" ./Backend
-
-    # Build the frontend image from /inspire-app
     - docker build -t "$ECR_REPO_FRONTEND:$CI_COMMIT_SHA" ./inspire-app
-
-    # Push both images to ECR
     - docker push "$ECR_REPO_BACKEND:$CI_COMMIT_SHA"
     - docker push "$ECR_REPO_FRONTEND:$CI_COMMIT_SHA"
   only:
-    - main
+    - master
 
-# ------------------------------
-# DEPLOY TO ECS
-# ------------------------------
 deploy-ecs:
   stage: deploy
   script:
-    # Optionally re-tag each image as 'latest' (or any version tag you like)
     - docker tag "$ECR_REPO_BACKEND:$CI_COMMIT_SHA" "$ECR_REPO_BACKEND:latest"
     - docker tag "$ECR_REPO_FRONTEND:$CI_COMMIT_SHA" "$ECR_REPO_FRONTEND:latest"
-
     - docker push "$ECR_REPO_BACKEND:latest"
     - docker push "$ECR_REPO_FRONTEND:latest"
-
-    # Update ECS services to pick up the new images
     - |
       aws ecs update-service \
         --cluster "$ECS_CLUSTER_NAME" \
         --service "$ECS_SERVICE_BACKEND" \
         --force-new-deployment \
         --region "$AWS_REGION"
-
     - |
       aws ecs update-service \
         --cluster "$ECS_CLUSTER_NAME" \
