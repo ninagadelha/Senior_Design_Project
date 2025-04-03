@@ -8,9 +8,15 @@ variables:
   BUILDKIT_HOST: tcp://buildkitd:1234
   IMAGE_TAG: "$CI_COMMIT_SHORT_SHA"
 
+stages:
+  - build
+  - deploy
+
 before_script:
   - apk add --no-cache bash curl jq python3 py3-pip
-  - pip3 install awscli
+  - python3 -m venv /tmp/venv
+  - . /tmp/venv/bin/activate
+  - pip install awscli
   - curl -LO https://github.com/moby/buildkit/releases/download/v0.12.4/buildctl-linux-amd64
   - chmod +x buildctl-linux-amd64 && mv buildctl-linux-amd64 /usr/local/bin/buildctl
   - aws ecr get-login-password --region "$AWS_REGION" | docker login --username AWS --password-stdin "$ECR_REGISTRY"
@@ -52,5 +58,35 @@ build-frontend:
         --local context=./iinspire-app \
         --local dockerfile=./iinspire-app \
         --output type=image,name=$ECR_REPO_FRONTEND:$IMAGE_TAG,push=true
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+
+# -----------------------------
+# Deploy Backend
+# -----------------------------
+deploy-backend:
+  stage: deploy
+  script:
+    - . /tmp/venv/bin/activate
+    - echo "Updating ECS Backend Service..."
+    - TASK_DEF=$(aws ecs describe-task-definition --task-definition $TASK_DEF_BACKEND)
+    - NEW_DEF=$(echo $TASK_DEF | jq --arg IMG "$ECR_REPO_BACKEND:$IMAGE_TAG" '.taskDefinition.containerDefinitions[0].image = $IMG | .taskDefinition.containerDefinitions')
+    - aws ecs register-task-definition --family $TASK_DEF_BACKEND --container-definitions "$NEW_DEF"
+    - aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_BACKEND --region $AWS_REGION --force-new-deployment
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+
+# -----------------------------
+# Deploy Frontend
+# -----------------------------
+deploy-frontend:
+  stage: deploy
+  script:
+    - . /tmp/venv/bin/activate
+    - echo "Updating ECS Frontend Service..."
+    - TASK_DEF=$(aws ecs describe-task-definition --task-definition $TASK_DEF_FRONTEND)
+    - NEW_DEF=$(echo $TASK_DEF | jq --arg IMG "$ECR_REPO_FRONTEND:$IMAGE_TAG" '.taskDefinition.containerDefinitions[0].image = $IMG | .taskDefinition.containerDefinitions')
+    - aws ecs register-task-definition --family $TASK_DEF_FRONTEND --container-definitions "$NEW_DEF"
+    - aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_FRONTEND --region $AWS_REGION --force-new-deployment
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
