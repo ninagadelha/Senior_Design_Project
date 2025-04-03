@@ -10,16 +10,16 @@ variables:
 # -----------------------------
 build-backend:
   image: gcr.io/kaniko-project/executor:latest
-  entrypoint: [""]
   stage: build
   script:
-    - /kaniko/executor
-        --context $CI_PROJECT_DIR/Backend
-        --dockerfile $CI_PROJECT_DIR/Backend/Dockerfile
-        --destination $ECR_REPO_BACKEND
-        --insecure
-        --insecure-pull
-        --cache=false
+    - >
+      /kaniko/executor
+      --context $CI_PROJECT_DIR/Backend
+      --dockerfile $CI_PROJECT_DIR/Backend/Dockerfile
+      --destination $ECR_REPO_BACKEND
+      --insecure
+      --insecure-pull
+      --cache=false
   only:
     - master
 
@@ -28,16 +28,16 @@ build-backend:
 # -----------------------------
 build-frontend:
   image: gcr.io/kaniko-project/executor:latest
-  entrypoint: [""]
   stage: build
   script:
-    - /kaniko/executor
-        --context $CI_PROJECT_DIR/iinspire-app
-        --dockerfile $CI_PROJECT_DIR/iinspire-app/Dockerfile
-        --destination $ECR_REPO_FRONTEND
-        --insecure
-        --insecure-pull
-        --cache=false
+    - >
+      /kaniko/executor
+      --context $CI_PROJECT_DIR/iinspire-app
+      --dockerfile $CI_PROJECT_DIR/iinspire-app/Dockerfile
+      --destination $ECR_REPO_FRONTEND
+      --insecure
+      --insecure-pull
+      --cache=false
   only:
     - master
 
