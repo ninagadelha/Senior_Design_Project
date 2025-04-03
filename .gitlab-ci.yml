@@ -20,7 +20,7 @@ build-backend:
         --insecure-pull
         --cache=false
   only:
-    - main
+    - master
 
 # -----------------------------
 #    Build & Push Frontend (Kaniko)
@@ -37,7 +37,7 @@ build-frontend:
         --insecure-pull
         --cache=false
   only:
-    - main
+    - master
 
 # -----------------------------
 #     Deploy to Backend ECS
@@ -52,7 +52,7 @@ deploy-backend:
         --region $AWS_REGION \
         --force-new-deployment
   rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "master"'
 
 # -----------------------------
 #     Deploy to Frontend ECS
