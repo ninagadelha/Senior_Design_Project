@@ -15,8 +15,7 @@ build-backend:
     - apk add --no-cache curl unzip python3 py3-pip
     - pip3 install awscli
     - aws --version
-    - aws ecr get-login-password --region $AWS_REGION \
-      | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+    - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
   script:
     - docker build -t $ECR_REPO_BACKEND ./Backend
     - docker push $ECR_REPO_BACKEND
@@ -31,8 +30,7 @@ build-frontend:
     - apk add --no-cache curl unzip python3 py3-pip
     - pip3 install awscli
     - aws --version
-    - aws ecr get-login-password --region $AWS_REGION \
-      | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+    - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
   script:
     - docker build -t $ECR_REPO_FRONTEND ./iinspire-app
     - docker push $ECR_REPO_FRONTEND
