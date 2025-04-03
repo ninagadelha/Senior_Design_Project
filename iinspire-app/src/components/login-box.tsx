@@ -30,6 +30,11 @@ const LoginBox = () => {
 
             if (response.ok) {
 
+                const {id, programid} = data.user;
+
+                localStorage.setItem("userID", id);
+                localStorage.setItem("programID", programid);
+
                 router.push("/student-home");
                 alert("Login successful!");
             } else {

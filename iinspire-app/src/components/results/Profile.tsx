@@ -31,10 +31,18 @@ const Profile = () => {
         },
     ];
 
+    const [userID, setUserID] = useState<string | null>(null);
+    const [programID, setProgramID] = useState<string | null>(null);
+
     useEffect(() => {
         if (typeof window !== "undefined") {
             anychart.licenseKey("lsamp-iinspire-8c03f4be-8ef79ff2");
             setIsClient(true);
+
+            const storedUserID = localStorage.getItem("userID");
+            const storedProgramID = localStorage.getItem("programID");
+            setUserID(storedUserID);
+            setProgramID(storedProgramID);
         }
     }, []);
 
