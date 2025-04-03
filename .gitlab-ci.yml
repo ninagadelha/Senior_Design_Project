@@ -68,6 +68,6 @@ deploy-ecs:
         --force-new-deployment \
         --region "$AWS_REGION"
   only:
-    - main
+    - master
   needs:
     - build-and-push
