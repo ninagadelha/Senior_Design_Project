@@ -1,7 +1,10 @@
 image: docker:latest
 
 services:
-  - docker:dind
+  - name: docker:dind
+    alias: docker
+    # Provide arguments to run Docker-in-Docker in plain TCP mode
+    command: ["--tls=false", "--host=tcp://0.0.0.0:2375", "--storage-driver=overlay2"]
 
 stages:
   - build
@@ -10,21 +13,31 @@ stages:
 variables:
   DOCKER_TLS_CERTDIR: ""
   DOCKER_DRIVER: overlay2
-  DOCKER_HOST: tcp://docker:2375
+  # Match DOCKER_HOST to the alias ("docker") plus the port
+  DOCKER_HOST: "tcp://docker:2375"
 
 before_script:
-  # Install AWS CLI from the Alpine package, rather than pip
+  # Install AWS CLI from the Alpine repo
   - apk add --no-cache python3 py3-pip aws-cli
+
+  # Confirm the version
   - aws --version
 
-  # Log into ECR
-  - eval "$(aws ecr get-login --no-include-email --region "$AWS_REGION")"
+  # AWS CLI v2 requires get-login-password to log in to ECR:
+  # You can define AWS_ACCOUNT_ID or parse it from ECR_REPO env. 
+  # The example here uses a separate env var "AWS_ACCOUNT_ID".
+  - >
+    aws ecr get-login-password --region "$AWS_REGION" |
+    docker login --username AWS --password-stdin "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
 
 build-and-push:
   stage: build
   script:
+    # Build the backend image
     - docker build -t "$ECR_REPO_BACKEND:$CI_COMMIT_SHA" ./Backend
+    # Build the frontend image
     - docker build -t "$ECR_REPO_FRONTEND:$CI_COMMIT_SHA" ./inspire-app
+    # Push both images to ECR
     - docker push "$ECR_REPO_BACKEND:$CI_COMMIT_SHA"
     - docker push "$ECR_REPO_FRONTEND:$CI_COMMIT_SHA"
   only:
@@ -33,18 +46,19 @@ build-and-push:
 deploy-ecs:
   stage: deploy
   script:
+    # Tag and push as "latest" (optional step)
     - docker tag "$ECR_REPO_BACKEND:$CI_COMMIT_SHA" "$ECR_REPO_BACKEND:latest"
     - docker tag "$ECR_REPO_FRONTEND:$CI_COMMIT_SHA" "$ECR_REPO_FRONTEND:latest"
     - docker push "$ECR_REPO_BACKEND:latest"
     - docker push "$ECR_REPO_FRONTEND:latest"
 
+    # Now force ECS to pull the new images
     - |
       aws ecs update-service \
         --cluster "$ECS_CLUSTER_NAME" \
         --service "$ECS_SERVICE_BACKEND" \
         --force-new-deployment \
         --region "$AWS_REGION"
-
     - |
       aws ecs update-service \
         --cluster "$ECS_CLUSTER_NAME" \
