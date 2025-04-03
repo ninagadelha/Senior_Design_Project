@@ -14,14 +14,14 @@ build-backend:
   script:
     - >
       /kaniko/executor
-      --context $CI_PROJECT_DIR/Backend
-      --dockerfile $CI_PROJECT_DIR/Backend/Dockerfile
-      --destination $ECR_REPO_BACKEND
+      --context=dir://Backend
+      --dockerfile=Backend/Dockerfile
+      --destination=$ECR_REPO_BACKEND
       --insecure
       --insecure-pull
       --cache=false
-  only:
-    - master
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
 
 # -----------------------------
 #    Build & Push Frontend (Kaniko)
@@ -32,14 +32,15 @@ build-frontend:
   script:
     - >
       /kaniko/executor
-      --context $CI_PROJECT_DIR/iinspire-app
-      --dockerfile $CI_PROJECT_DIR/iinspire-app/Dockerfile
-      --destination $ECR_REPO_FRONTEND
+      --context=dir://iinspire-app
+      --dockerfile=iinspire-app/Dockerfile
+      --destination=$ECR_REPO_FRONTEND
       --insecure
       --insecure-pull
       --cache=false
-  only:
-    - master
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
+
 
 # -----------------------------
 #     Deploy to Backend ECS
