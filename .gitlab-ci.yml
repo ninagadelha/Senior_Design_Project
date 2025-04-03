@@ -1,11 +1,12 @@
-image: docker:19.03.10
+image: docker:20.10.16
 
 services:
-  - docker:dind
+  - name: docker:20.10.16-dind
+    alias: docker
 
 variables:
+  DOCKER_TLS_CERTDIR: "/certs"
   DOCKER_DRIVER: overlay2
-  IMAGE_TAG: "$CI_COMMIT_SHORT_SHA"
 
 stages:
   - build
@@ -19,9 +20,6 @@ before_script:
   - aws configure set region $AWS_REGION
   - $(aws ecr get-login --no-include-email --region "$AWS_REGION")
 
-# -----------------------------
-#    Build Backend
-# -----------------------------
 build-backend:
   stage: build
   script:
@@ -33,9 +31,6 @@ build-backend:
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
 
-# -----------------------------
-#    Build Frontend
-# -----------------------------
 build-frontend:
   stage: build
   script:
@@ -47,44 +42,24 @@ build-frontend:
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
 
-# -----------------------------
-# Deploy Backend with Task Def
-# -----------------------------
 deploy-backend:
   stage: deploy
   script:
     - echo "Preparing ECS task definition for Backend..."
     - TASK_DEF=$(aws ecs describe-task-definition --task-definition $TASK_DEF_BACKEND)
-    - NEW_DEF=$(echo $TASK_DEF | jq --arg IMG "$ECR_REPO_BACKEND:$IMAGE_TAG" \
-        '.taskDefinition.containerDefinitions[0].image = $IMG | .taskDefinition.containerDefinitions')
-    - aws ecs register-task-definition \
-        --family $TASK_DEF_BACKEND \
-        --container-definitions "$NEW_DEF"
-    - aws ecs update-service \
-        --cluster $ECS_CLUSTER_NAME \
-        --service $ECS_SERVICE_BACKEND \
-        --region $AWS_REGION \
-        --force-new-deployment
+    - NEW_DEF=$(echo $TASK_DEF | jq --arg IMG "$ECR_REPO_BACKEND:$IMAGE_TAG" '.taskDefinition.containerDefinitions[0].image = $IMG | .taskDefinition.containerDefinitions')
+    - aws ecs register-task-definition --family $TASK_DEF_BACKEND --container-definitions "$NEW_DEF"
+    - aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_BACKEND --region $AWS_REGION --force-new-deployment
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
 
-# -----------------------------
-# Deploy Frontend with Task Def
-# -----------------------------
 deploy-frontend:
   stage: deploy
   script:
     - echo "Preparing ECS task definition for Frontend..."
     - TASK_DEF=$(aws ecs describe-task-definition --task-definition $TASK_DEF_FRONTEND)
-    - NEW_DEF=$(echo $TASK_DEF | jq --arg IMG "$ECR_REPO_FRONTEND:$IMAGE_TAG" \
-        '.taskDefinition.containerDefinitions[0].image = $IMG | .taskDefinition.containerDefinitions')
-    - aws ecs register-task-definition \
-        --family $TASK_DEF_FRONTEND \
-        --container-definitions "$NEW_DEF"
-    - aws ecs update-service \
-        --cluster $ECS_CLUSTER_NAME \
-        --service $ECS_SERVICE_FRONTEND \
-        --region $AWS_REGION \
-        --force-new-deployment
+    - NEW_DEF=$(echo $TASK_DEF | jq --arg IMG "$ECR_REPO_FRONTEND:$IMAGE_TAG" '.taskDefinition.containerDefinitions[0].image = $IMG | .taskDefinition.containerDefinitions')
+    - aws ecs register-task-definition --family $TASK_DEF_FRONTEND --container-definitions "$NEW_DEF"
+    - aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_FRONTEND --region $AWS_REGION --force-new-deployment
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
