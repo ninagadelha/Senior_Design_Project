@@ -57,4 +57,4 @@ deploy-frontend:
         --region $AWS_REGION \
         --force-new-deployment
   rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_COMMIT_BRANCH == "master"'
