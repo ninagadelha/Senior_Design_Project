@@ -57,18 +57,19 @@ build-frontend:
   stage: build
   script:
     - echo "Building Frontend with BuildKit..."
-    - buildctl --addr tcp://buildkitd:1234 build \
+    - buildctl --addr unix:///run/buildkit/buildkitd.sock build \
         --frontend dockerfile.v0 \
         --local context=./iinspire-app \
         --local dockerfile=./iinspire-app \
         --output type=image,name=$ECR_REPO_FRONTEND:latest,push=true
-    - buildctl --addr tcp://buildkitd:1234 build \
+    - buildctl --addr unix:///run/buildkit/buildkitd.sock build \
         --frontend dockerfile.v0 \
         --local context=./iinspire-app \
         --local dockerfile=./iinspire-app \
         --output type=image,name=$ECR_REPO_FRONTEND:$IMAGE_TAG,push=true
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
+
 
 # -----------------------------
 # Deploy Backend
