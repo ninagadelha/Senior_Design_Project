@@ -2,12 +2,12 @@ image: docker:24.0.5
 
 services:
   - name: docker:24.0.5-dind
-    alias: docker  # Ensure hostname 'docker' resolves
+    alias: docker
 
 variables:
-  DOCKER_HOST: tcp://docker:2375       # Tell Docker CLI where the daemon is
-  DOCKER_TLS_CERTDIR: ""               # Disable TLS
-  DOCKER_DRIVER: overlay2              # Faster builds
+  DOCKER_HOST: tcp://docker:2375     # Docker CLI talks to DinD
+  DOCKER_TLS_CERTDIR: ""             # Disable TLS for DinD
+  DOCKER_DRIVER: overlay2
   IMAGE_TAG: "$CI_COMMIT_SHORT_SHA"
 
 stages:
@@ -20,11 +20,8 @@ before_script:
   - aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID"
   - aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY"
   - aws configure set region "$AWS_REGION"
-  - $(aws ecr get-login --no-include-email --region "$AWS_REGION")
+  - eval $(aws ecr get-login --no-include-email --region "$AWS_REGION")  # 👈 Use eval instead of $()
 
-# -----------------------------
-#    Build Backend
-# -----------------------------
 build-backend:
   stage: build
   script:
@@ -36,9 +33,6 @@ build-backend:
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
 
-# -----------------------------
-#    Build Frontend
-# -----------------------------
 build-frontend:
   stage: build
   script:
@@ -50,13 +44,10 @@ build-frontend:
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
 
-# -----------------------------
-# Deploy Backend with Task Def
-# -----------------------------
 deploy-backend:
   stage: deploy
   script:
-    - echo "Preparing ECS task definition for Backend..."
+    - echo "Updating ECS Backend Service..."
     - TASK_DEF=$(aws ecs describe-task-definition --task-definition $TASK_DEF_BACKEND)
     - NEW_DEF=$(echo $TASK_DEF | jq --arg IMG "$ECR_REPO_BACKEND:$IMAGE_TAG" \
         '.taskDefinition.containerDefinitions[0].image = $IMG | .taskDefinition.containerDefinitions')
@@ -66,13 +57,10 @@ deploy-backend:
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
 
-# -----------------------------
-# Deploy Frontend with Task Def
-# -----------------------------
 deploy-frontend:
   stage: deploy
   script:
-    - echo "Preparing ECS task definition for Frontend..."
+    - echo "Updating ECS Frontend Service..."
     - TASK_DEF=$(aws ecs describe-task-definition --task-definition $TASK_DEF_FRONTEND)
     - NEW_DEF=$(echo $TASK_DEF | jq --arg IMG "$ECR_REPO_FRONTEND:$IMAGE_TAG" \
         '.taskDefinition.containerDefinitions[0].image = $IMG | .taskDefinition.containerDefinitions')
