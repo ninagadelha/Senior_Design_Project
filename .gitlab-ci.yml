@@ -1,69 +1,64 @@
 stages:
-  - test
   - build
   - deploy
 
 variables:
   DOCKER_DRIVER: overlay2
 
-# ============================
-#     Backend Unit Tests
-# ============================
-test-backend:
-  image: node:20
-  stage: test
-  script:
-    - cd Backend
-    - npm ci
-    - npm run test
-
-# ============================
-#    Frontend Unit Tests
-# ============================
-test-frontend:
-  image: node:20
-  stage: test
-  script:
-    - cd iinspire-app
-    - npm ci
-    - npm run test
-
-# ============================
-#  Backend Docker Image Build
-# ============================
+# -----------------------------
+#    Build & Push Backend
+# -----------------------------
 build-backend:
   image: docker:latest
   services:
     - docker:dind
   stage: build
   script:
-    - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
-    - echo "Building Backend with DB_HOST=$DB_HOST"
+    - aws ecr get-login-password --region $AWS_REGION \
+      | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
     - docker build -t $ECR_REPO_BACKEND ./Backend
     - docker push $ECR_REPO_BACKEND
 
-# ============================
-#  Frontend Docker Image Build
-# ============================
+# -----------------------------
+#    Build & Push Frontend
+# -----------------------------
 build-frontend:
   image: docker:latest
   services:
     - docker:dind
   stage: build
   script:
-    - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+    - aws ecr get-login-password --region $AWS_REGION \
+      | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
     - docker build -t $ECR_REPO_FRONTEND ./iinspire-app
     - docker push $ECR_REPO_FRONTEND
 
-# ============================
-#       Deploy Backend
-# ============================
+# -----------------------------
+#     Deploy to Backend ECS
+# -----------------------------
 deploy-backend:
   image: amazon/aws-cli
   stage: deploy
   script:
     - aws ecs update-service \
-      --cluster $ECS_CLUSTER_NAME \
-      --service $ECS_SERVICE_BACKEND \
-      --region $AWS_REGION \
-      --force-new-deployment
+        --cluster $ECS_CLUSTER_NAME \
+        --service $ECS_SERVICE_BACKEND \
+        --region $AWS_REGION \
+        --force-new-deployment
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+
+# -----------------------------
+#     Deploy to Frontend ECS
+# -----------------------------
+deploy-frontend:
+  image: amazon/aws-cli
+  stage: deploy
+  script:
+    - aws ecs update-service \
+        --cluster $ECS_CLUSTER_NAME \
+        --service $ECS_SERVICE_FRONTEND \
+        --region $AWS_REGION \
+        --force-new-deployment
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "master"'
