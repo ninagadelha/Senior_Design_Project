@@ -6,36 +6,38 @@ variables:
   DOCKER_DRIVER: overlay2
 
 # -----------------------------
-#    Build & Push Backend
+#    Build & Push Backend (Kaniko)
 # -----------------------------
 build-backend:
-  image: docker:stable
+  image: gcr.io/kaniko-project/executor:latest
   stage: build
-  before_script:
-    - apk add --no-cache python3 py3-pip curl
-    - pip3 install awscli
-    - aws --version
-    - docker --version
-    - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
   script:
-    - docker build -t $ECR_REPO_BACKEND ./Backend
-    - docker push $ECR_REPO_BACKEND
+    - /kaniko/executor
+        --context $CI_PROJECT_DIR/Backend
+        --dockerfile $CI_PROJECT_DIR/Backend/Dockerfile
+        --destination $ECR_REPO_BACKEND
+        --insecure
+        --insecure-pull
+        --cache=false
+  only:
+    - main
 
 # -----------------------------
-#    Build & Push Frontend
+#    Build & Push Frontend (Kaniko)
 # -----------------------------
 build-frontend:
-  image: docker:stable
+  image: gcr.io/kaniko-project/executor:latest
   stage: build
-  before_script:
-    - apk add --no-cache python3 py3-pip curl
-    - pip3 install awscli
-    - aws --version
-    - docker --version
-    - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
   script:
-    - docker build -t $ECR_REPO_FRONTEND ./iinspire-app
-    - docker push $ECR_REPO_FRONTEND
+    - /kaniko/executor
+        --context $CI_PROJECT_DIR/iinspire-app
+        --dockerfile $CI_PROJECT_DIR/iinspire-app/Dockerfile
+        --destination $ECR_REPO_FRONTEND
+        --insecure
+        --insecure-pull
+        --cache=false
+  only:
+    - main
 
 # -----------------------------
 #     Deploy to Backend ECS
