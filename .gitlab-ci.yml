@@ -16,9 +16,16 @@ before_script:
   - aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID"
   - aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY"
   - aws configure set region "$AWS_REGION"
-  - curl -sSL https://github.com/GoogleContainerTools/kaniko/releases/download/v1.17.0/executor-linux-amd64 -o /kaniko/executor
+  - curl -L -H "Accept: application/octet-stream" \
+      https://github.com/GoogleContainerTools/kaniko/releases/latest/download/executor-linux-amd64 \
+      -o /kaniko/executor
   - chmod +x /kaniko/executor
+  - echo "ECR Image (Backend): $ECR_REPO_BACKEND:$IMAGE_TAG"
+  - echo "ECR Image (Frontend): $ECR_REPO_FRONTEND:$IMAGE_TAG"
 
+# -----------------------------
+#    Build Backend
+# -----------------------------
 build-backend:
   stage: build
   script:
@@ -28,10 +35,12 @@ build-backend:
         --dockerfile ./Backend/Dockerfile \
         --destination "$ECR_REPO_BACKEND:latest" \
         --destination "$ECR_REPO_BACKEND:$IMAGE_TAG"
-
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
 
+# -----------------------------
+#    Build Frontend
+# -----------------------------
 build-frontend:
   stage: build
   script:
@@ -41,14 +50,16 @@ build-frontend:
         --dockerfile ./iinspire-app/Dockerfile \
         --destination "$ECR_REPO_FRONTEND:latest" \
         --destination "$ECR_REPO_FRONTEND:$IMAGE_TAG"
-
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
 
+# -----------------------------
+# Deploy Backend with Task Def
+# -----------------------------
 deploy-backend:
   stage: deploy
   script:
-    - echo "Deploying backend..."
+    - echo "Deploying backend to ECS..."
     - TASK_DEF=$(aws ecs describe-task-definition --task-definition "$TASK_DEF_BACKEND")
     - NEW_DEF=$(echo $TASK_DEF | jq --arg IMG "$ECR_REPO_BACKEND:$IMAGE_TAG" \
         '.taskDefinition.containerDefinitions[0].image = $IMG | .taskDefinition.containerDefinitions')
@@ -60,14 +71,16 @@ deploy-backend:
         --service "$ECS_SERVICE_BACKEND" \
         --region "$AWS_REGION" \
         --force-new-deployment
-
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
 
+# -----------------------------
+# Deploy Frontend with Task Def
+# -----------------------------
 deploy-frontend:
   stage: deploy
   script:
-    - echo "Deploying frontend..."
+    - echo "Deploying frontend to ECS..."
     - TASK_DEF=$(aws ecs describe-task-definition --task-definition "$TASK_DEF_FRONTEND")
     - NEW_DEF=$(echo $TASK_DEF | jq --arg IMG "$ECR_REPO_FRONTEND:$IMAGE_TAG" \
         '.taskDefinition.containerDefinitions[0].image = $IMG | .taskDefinition.containerDefinitions')
@@ -79,6 +92,5 @@ deploy-frontend:
         --service "$ECS_SERVICE_FRONTEND" \
         --region "$AWS_REGION" \
         --force-new-deployment
-
   rules:
     - if: '$CI_COMMIT_BRANCH == "master"'
