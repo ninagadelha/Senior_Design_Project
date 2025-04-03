@@ -10,6 +10,7 @@ variables:
 # -----------------------------
 build-backend:
   image: gcr.io/kaniko-project/executor:latest
+  entrypoint: [""]
   stage: build
   script:
     - /kaniko/executor
@@ -27,6 +28,7 @@ build-backend:
 # -----------------------------
 build-frontend:
   image: gcr.io/kaniko-project/executor:latest
+  entrypoint: [""]
   stage: build
   script:
     - /kaniko/executor
