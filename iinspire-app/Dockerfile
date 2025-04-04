@@ -1,17 +1,21 @@
-# Build Next.js app
-FROM node:18-alpine AS builder
+# Use full Node image (not Alpine) to avoid some build issues with native packages
+FROM node:20
+
+# Create app directory
 WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm install
+
+
+ENV CI=true
+
+# Copy only package files first (for caching layers)
+COPY package*.json ./
+
+
+# Clean install without peer issues
+RUN npm install --legacy-peer-deps
 COPY . .
-ENV NEXT_DISABLE_ESLINT_PLUGIN=true
+
+# Build Next.js app
 RUN npm run build
-
-
-#Run it
-FROM node:18-alpine
-WORKDIR /app
-COPY --from=builder /app ./
-RUN npm install --only=production
-EXPOSE 3000
+EXPOSE 3001
 CMD ["npm", "start"]

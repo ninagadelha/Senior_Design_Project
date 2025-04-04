@@ -1,12 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
 import Card from "./card";
-import Legend from "./legend"
+import Legend from "./legend";
 import ChartComponent from "@/components/results/graph";
 import "../../../public/styles/profile.css";
 import anychart from "anychart";
-
-anychart.licenseKey("lsamp-iinspire-8c03f4be-8ef79ff2");
 
 const Profile = () => {
     const chartType = "bubble";
@@ -20,10 +18,6 @@ const Profile = () => {
         researchSelfEfficacy: "",
     });
 
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
-
     const myData = [
         {
             groupAverages: {
@@ -36,6 +30,21 @@ const Profile = () => {
             },
         },
     ];
+
+    const [userID, setUserID] = useState<string | null>(null);
+    const [programID, setProgramID] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            anychart.licenseKey("lsamp-iinspire-8c03f4be-8ef79ff2");
+            setIsClient(true);
+
+            const storedUserID = localStorage.getItem("userID");
+            const storedProgramID = localStorage.getItem("programID");
+            setUserID(storedUserID);
+            setProgramID(storedProgramID);
+        }
+    }, []);
 
     useEffect(() => {
         if (isClient && myData.length > 0) {
@@ -94,7 +103,6 @@ const Profile = () => {
                             chartType={chartType}
                         />
                     )}
-
                 </div>
 
                 <Legend />
@@ -116,6 +124,3 @@ const Profile = () => {
 };
 
 export default Profile;
-
-
-
