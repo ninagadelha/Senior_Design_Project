@@ -46,7 +46,7 @@ exports.loginUser = async (req, res) => {
       });
     } else {
       // No user found with that email
-      res.status(401).send('Invalid email or password');
+      res.status(401).send('Invalid email');
     }
   }
   catch (error) {
@@ -56,27 +56,33 @@ exports.loginUser = async (req, res) => {
 }
 
 exports.newUser = async (req, res) => {
-  const { email, role, netid, age, gender, ethnicity, credits, stem_interests, institution, programid } = req.body;
+  const { email, netid, age, gender, ethnicity, credits, stem_interests, institution, code, fullname } = req.body;
   
   if (!email) {
     return res.status(400).send('Email is required');
-  } if (!role) {
-    return res.status(400).send('Role is required');
-  }
-  if (!programid) {
-    return res.status(400).send('Program is required');
+  } 
+  if (!code) {
+    return res.status(400).send('Program code is required');
   }
 
   try {
     // Query the Users table to find a user by the provided email
-    const results = await userService.PostNewUser( email, role, netid, age, gender, ethnicity, credits, stem_interests, institution, programid);
+    const response = await userService.PostNewUser(email, netid, age, gender, ethnicity, credits, stem_interests, institution, code, fullname);
 
    
-      // User found with the provided email
-      res.json({
-        message: 'User Created successful'
-      });
+     // Check if the user was created successfully
+  if (response.success) {
+    // If successful, send a success message in the response
+    res.json({
+      message: 'User Created successfully'
+    });
+  } else {
+    // If there was an error (e.g., program doesn't exist), send an error message
+    res.status(400).json({
+      message: response.message  // The message will come from the error or validation
+    });
   }
+}
   catch (error) {
     console.error('Error Creating New User:', error);
     res.status(500).send('Error Creating New User');
