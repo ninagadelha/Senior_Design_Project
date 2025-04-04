@@ -4,12 +4,27 @@ import Footer from "@/components/util/footer";
 import { Box, Button, Flex, Heading } from '@chakra-ui/react';
 import SurveyItem from '../components/util/SurveyItem';
 import SurveyQuestionInterface from '../app/student-survey/SurveyQuestionInterface';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ProgressBar from "@/components/util/ProgressBar";
-
+interface SurveyAnswer {
+    [key: string]: string | string[]; // Question ID as key
+}
 
 const TheSurvey = () => {
+    const [answers, setAnswers] = useState<SurveyAnswer>({});
     const [questions, setQuestions] = useState<SurveyQuestionInterface[]>([]);
+
+    const GROUP_MESSAGES: { [key: string]: string } = {
+        '0': 'Please indicate your level of agreement with the following statements:',
+        '1': 'How frequently do you experience these situations?',
+        '2': 'Rate your confidence in these areas:',
+        '3': 'Select your preferences regarding campus resources:',
+        '4': 'How would you describe your typical responses to these scenarios?',
+        '5': 'Please indicate your level of agreement with the following statements:',
+        '6': 'Select your level of confidence for each research skill.'
+        // Add more groups as needed
+    };
+
     let headers = new Headers();
 
     headers.append('Content-Type', 'application/json');
@@ -37,6 +52,13 @@ const TheSurvey = () => {
         }
         fetchQuestions();
     }, []);
+
+    const handleAnswerChange = (questionId: number, value: string | string[]) => {
+        setAnswers(prev => ({
+            ...prev,
+            [questionId]: value
+        }));
+    };
 
     const groupedQuestions = questions.reduce((groups, question) => {
         const groupKey = question.question_group || 'General';
@@ -70,22 +92,49 @@ const TheSurvey = () => {
         }
     };
 
+    const handleConfirmSubmission = () => {
+        console.log('Submitting:', answers);
+        // add api endpoint from backend HERE
+    };
+
+    const SubmitButton = () => {
+
+        return (
+            <Button
+                onClick={handleConfirmSubmission}
+                colorScheme="blue"
+                variant={'solid'}
+                size={'lg'}
+                className="next-button"
+            >
+                Submit
+            </Button>
+        );
+    }
+
     return (
         <>
-            <Box maxW="100vw" mx="auto" mt={8} padding={'1vw'}>
+            <Box maxW="100vw" mx="auto" mt={8} padding={'1vw'} suppressHydrationWarning>
                 <ProgressBar current={currentGroupIndex + 1} total={groupNames.length} />
                 <Heading size="3xl">Survey Form</Heading>
 
                 {/* Display only the current group */}
-                <Box mt={4}>
-                    <Heading size="lg">Group {currentGroup}</Heading>
+                <Box mt={4} suppressHydrationWarning>
+                    <Heading size="lg" mb={4}>
+                        {GROUP_MESSAGES[currentGroup]}
+                    </Heading>
                     {currentQuestions.map((question) => (
-                        <SurveyItem key={question.question_id} question={question} />
+                        <SurveyItem
+                            key={question.question_id}
+                            question={question}
+                            onAnswerChange={handleAnswerChange}
+                            value={answers[question.question_id]}
+                        />
                     ))}
                 </Box>
 
                 {/* Navigation buttons */}
-                <Flex justify="space-between" mt={6} mb={8}>
+                <Flex justify="space-between" mt={6} mb={8} suppressHydrationWarning>
                     <Button
                         onClick={handlePrevious}
                         disabled={currentGroupIndex === 0}
@@ -102,8 +151,11 @@ const TheSurvey = () => {
                         size={'lg'}
                         className="next-button"
                     >
-                        {/* Also add some functionality here to save users answers */}
-                        {currentGroupIndex === groupNames.length - 1 ? "Finish" : "Next"}
+                        {currentGroupIndex === groupNames.length - 1 ? (
+                            <SubmitButton />
+                        ) : (
+                            "Next"
+                        )}
                     </Button>
                 </Flex>
             </Box>
