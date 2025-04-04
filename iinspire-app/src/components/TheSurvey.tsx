@@ -139,24 +139,32 @@ const TheSurvey = () => {
                         onClick={handlePrevious}
                         disabled={currentGroupIndex === 0}
                         colorScheme="gray"
-                        variant={'outline'}
+                        variant="outline"
                     >
                         Previous
                     </Button>
 
-                    <Button
-                        onClick={handleNext}
-                        colorScheme="blue"
-                        variant={'solid'}
-                        size={'lg'}
-                        className="next-button"
-                    >
-                        {currentGroupIndex === groupNames.length - 1 ? (
-                            <SubmitButton />
-                        ) : (
-                            "Next"
-                        )}
-                    </Button>
+                    {currentGroupIndex === groupNames.length - 1 ? (
+                        <Button
+                            onClick={handleConfirmSubmission}
+                            colorScheme="blue"
+                            variant="solid"
+                            size="lg"
+                            className="next-button"
+                        >
+                            Submit
+                        </Button>
+                    ) : (
+                        <Button
+                            onClick={handleNext}
+                            colorScheme="blue"
+                            variant="solid"
+                            size="lg"
+                            className="next-button"
+                        >
+                            Next
+                        </Button>
+                    )}
                 </Flex>
             </Box>
         </>
