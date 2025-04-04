@@ -114,12 +114,12 @@ const TheSurvey = () => {
 
     return (
         <>
-            <Box maxW="100vw" mx="auto" mt={8} padding={'1vw'}>
+            <Box maxW="100vw" mx="auto" mt={8} padding={'1vw'} suppressHydrationWarning>
                 <ProgressBar current={currentGroupIndex + 1} total={groupNames.length} />
                 <Heading size="3xl">Survey Form</Heading>
 
                 {/* Display only the current group */}
-                <Box mt={4}>
+                <Box mt={4} suppressHydrationWarning>
                     <Heading size="lg" mb={4}>
                         {GROUP_MESSAGES[currentGroup]}
                     </Heading>
@@ -134,7 +134,7 @@ const TheSurvey = () => {
                 </Box>
 
                 {/* Navigation buttons */}
-                <Flex justify="space-between" mt={6} mb={8}>
+                <Flex justify="space-between" mt={6} mb={8} suppressHydrationWarning>
                     <Button
                         onClick={handlePrevious}
                         disabled={currentGroupIndex === 0}

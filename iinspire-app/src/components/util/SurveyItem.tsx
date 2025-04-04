@@ -29,7 +29,7 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
             case 'D/A - 0-5': // Disagree - Agree
                 return (
                     <>
-                        <Box display={'flex'} alignItems={'start'} width="100%" maxWidth="100vw">
+                        <Box display={'flex'} alignItems={'start'} width="100%" maxWidth="100vw" suppressHydrationWarning>
 
                             <HStack
                                 width="100%"
@@ -85,7 +85,7 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
             case 'N/A - 0-6': //Never - Always
                 return (
                     <>
-                        <Box display={'flex'} alignItems={'start'} width="100%" maxWidth="100vw">
+                        <Box display={'flex'} alignItems={'start'} width="100%" maxWidth="100vw" suppressHydrationWarning>
                             <HStack
                                 width="100%"
                                 align="center"
@@ -138,7 +138,7 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
             case 'SD/SL - 0-4': //Strongly Dislike - Strongly Like
                 return (
                     <>
-                        <Box display={'flex'} alignItems={'start'} width="100%" maxWidth="100vw">
+                        <Box display={'flex'} alignItems={'start'} width="100%" maxWidth="100vw" suppressHydrationWarning>
                             <HStack
                                 width="100%"
                                 align="center"
@@ -192,7 +192,7 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                 return (
                     <>
                         <Box width="100%" p={4}>
-                            <Flex align="center" justify="space-between" gap={8} position="relative" zIndex={1}>
+                            <Flex align="center" justify="space-between" gap={8} position="relative" zIndex={1} suppressHydrationWarning>
                                 {/* Question text - Add minWidth to prevent squishing */}
                                 <Box flex="1" minWidth="300px" maxWidth="400px" pr={8}>
                                     <Text fontSize="md" fontWeight="medium">
@@ -248,7 +248,7 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
             case 'SD/SA - 0-4': //Strongly Disagree - Strongly Agree
                 return (
                     <>
-                        <Box display={'flex'} alignItems={'start'} width="100%" maxWidth="100vw">
+                        <Box display={'flex'} alignItems={'start'} width="100%" maxWidth="100vw" suppressHydrationWarning>
                             <HStack
                                 width="100%"
                                 align="center"
@@ -299,25 +299,27 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                     </ >
                 );
             case '% / 0-100': //Percentage
+            //const sliderValue = 50;
+            value = typeof value === 'string' ? value : '50';
                 return (
                     <>
-                        <Box display={'flex'} alignItems={'start'} width="100%" maxWidth="100vw">
+                        <Box display={'flex'} alignItems={'start'} width="100%" maxWidth="100vw" suppressHydrationWarning>
                             <HStack
                                 width="100%"
                                 align="center"
                                 justify="space-between"
                                 marginTop="2vh"
                                 px={4}
+                                suppressHydrationWarning
                             >
                                 {/* Question text */}
-                                <Box width="40%" maxWidth="400px" marginLeft={"10vh"}>
+                                <Box width="40%" maxWidth="400px" marginLeft={"10vh"} suppressHydrationWarning>
                                     <Text>{question.question_text}</Text>
                                 </Box>
 
-                                <HStack width="50%" justify="center" align="center" marginLeft={'2vw'}>
+                                <HStack width="50%" justify="center" align="center" marginLeft={'2vw'} suppressHydrationWarning>
                                     <Slider
                                         width={'full'}
-
                                         thumbAlignment="contain"
                                         thumbSize={{ width: 16, height: 16 }}
                                         value={typeof value === 'string' ? value.split(',').map(Number) : [50]}
@@ -327,8 +329,9 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                                         step={10}
                                         variant={'solid'}
                                         colorScheme={'grey'}
+                                        suppressHydrationWarning
                                     />
-                                    {/* <Text>{sliderValue}</Text> */}
+                                    <Text suppressHydrationWarning>{value}</Text>
                                 </HStack>
                             </HStack>
                         </Box>
@@ -342,7 +345,7 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
     };
 
     return (
-        <Box mb={4}>
+        <Box mb={4} suppressHydrationWarning>
             {renderInput()}
         </Box>
     );
