@@ -11,16 +11,14 @@ build-backend:
     entrypoint: [""]
   stage: build
   script:
-    - mkdir -p /kaniko/.docker
-    - echo "{\"credsStore\":\"ecr-login\"}" > /kaniko/.docker/config.json
-    - >
-      /kaniko/executor
+    - /kaniko/executor
       --context $CI_PROJECT_DIR/Backend
       --dockerfile $CI_PROJECT_DIR/Backend/Dockerfile
       --destination $ECR_REPO_BACKEND:$CI_COMMIT_SHA
       --destination $ECR_REPO_BACKEND:latest
   only:
     - master
+
 
 build-frontend:
   image:
