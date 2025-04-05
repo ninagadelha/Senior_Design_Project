@@ -20,4 +20,4 @@ test-dind:
     - docker info     
     - docker run hello-world
   only:
-    - maste
+    - master
