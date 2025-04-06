@@ -7,17 +7,15 @@ variables:
   REGION: $AWS_REGION
   CLUSTER: $ECS_CLUSTER_NAME
 
-# =============================
-# BACKEND: Build + Deploy
-# =============================
-
+# ========================================
+# Build Backend with Kaniko (debug shell)
+# ========================================
 build-backend:
   stage: build
-  image:
-    name: gcr.io/kaniko-project/executor:latest
-    entrypoint: [""]
+  image: gcr.io/kaniko-project/executor:debug
   script:
-    - /kaniko/executor
+    - >
+      /kaniko/executor
       --context $CI_PROJECT_DIR/Backend
       --dockerfile $CI_PROJECT_DIR/Backend/Dockerfile
       --destination $ECR_REPO_BACKEND:$IMAGE_TAG
@@ -30,26 +28,15 @@ build-backend:
       - Backend/**/*
       - .gitlab-ci.yml
 
-deploy-backend:
-  stage: deploy
-  image: amazon/aws-cli
-  script:
-    - aws ecs update-service --cluster $CLUSTER --service $ECS_SERVICE_BACKEND --force-new-deployment
-  only:
-    refs:
-      - main
-
-# =============================
-# FRONTEND: Build + Deploy
-# =============================
-
+# ========================================
+# Build Frontend with Kaniko (debug shell)
+# ========================================
 build-frontend:
   stage: build
-  image:
-    name: gcr.io/kaniko-project/executor:latest
-    entrypoint: [""]
+  image: gcr.io/kaniko-project/executor:debug
   script:
-    - /kaniko/executor
+    - >
+      /kaniko/executor
       --context $CI_PROJECT_DIR/iinspire-app
       --dockerfile $CI_PROJECT_DIR/iinspire-app/Dockerfile
       --destination $ECR_REPO_FRONTEND:$IMAGE_TAG
@@ -62,11 +49,26 @@ build-frontend:
       - iinspire-app/**/*
       - .gitlab-ci.yml
 
+# ========================================
+# Deploy Backend to ECS
+# ========================================
+deploy-backend:
+  stage: deploy
+  image: amazon/aws-cli
+  script:
+    - aws ecs update-service --cluster $CLUSTER --service $ECS_SERVICE_BACKEND --force-new-deployment --region $REGION
+  only:
+    refs:
+      - master
+
+# ========================================
+# Deploy Frontend to ECS
+# ========================================
 deploy-frontend:
   stage: deploy
   image: amazon/aws-cli
   script:
-    - aws ecs update-service --cluster $CLUSTER --service $ECS_SERVICE_FRONTEND --force-new-deployment
+    - aws ecs update-service --cluster $CLUSTER --service $ECS_SERVICE_FRONTEND --force-new-deployment --region $REGION
   only:
     refs:
-      - main
+      - master
