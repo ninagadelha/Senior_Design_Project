@@ -54,6 +54,7 @@ build-frontend:
       - iinspire-app/**/*
       - .gitlab-ci.yml
 
+
 # ===============================
 # Deploy Backend to ECS
 # ===============================
@@ -61,16 +62,15 @@ deploy-backend:
   stage: deploy
   image: amazon/aws-cli:2.13.22
   script:
-    - echo "Deploying to ECS..."
-    - aws ecs update-service --cluster "$ECS_CLUSTER_NAME" --service "$ECS_SERVICE_BACKEND" --force-new-deployment --region "$AWS_REGION"
+    - >
+      aws ecs update-service
+      --cluster "$ECS_CLUSTER_NAME"
+      --service "$ECS_SERVICE_BACKEND"
+      --force-new-deployment
+      --region "$AWS_REGION"
   only:
     refs:
       - master
-
-
-
-
-
 
 # ===============================
 # Deploy Frontend to ECS
@@ -79,10 +79,6 @@ deploy-frontend:
   stage: deploy
   image: amazon/aws-cli:2.13.22
   script:
-    - echo "Deploying frontend to ECS..."
-    - echo "Cluster: $ECS_CLUSTER_NAME"
-    - echo "Service: $ECS_SERVICE_FRONTEND"
-    - echo "Region: $AWS_REGION"
     - >
       aws ecs update-service
       --cluster "$ECS_CLUSTER_NAME"
