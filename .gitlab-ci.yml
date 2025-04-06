@@ -59,37 +59,33 @@ build-frontend:
 # ===============================
 deploy-backend:
   stage: deploy
-  image: public.ecr.aws/aws-cli/aws-cli:latest
+  image: amazon/aws-cli
   script:
-    - aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID"
-    - aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY"
-    - aws configure set region "$AWS_REGION"
     - aws ecs update-service \
         --cluster "$ECS_CLUSTER_NAME" \
         --service "$ECS_SERVICE_BACKEND" \
         --force-new-deployment \
         --region "$AWS_REGION"
   only:
-    refs:
-      - master
+    changes:
+      - Backend/**/*
+      - .gitlab-ci.yml
 
 # ===============================
 # Deploy Frontend to ECS
 # ===============================
 deploy-frontend:
   stage: deploy
-  image: public.ecr.aws/aws-cli/aws-cli:latest
+  image: amazon/aws-cli
   script:
-    - aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID"
-    - aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY"
-    - aws configure set region "$AWS_REGION"
     - aws ecs update-service \
         --cluster "$ECS_CLUSTER_NAME" \
         --service "$ECS_SERVICE_FRONTEND" \
         --force-new-deployment \
         --region "$AWS_REGION"
   only:
-    refs:
-      - master
+    changes:
+      - iinspire-app/**/*
+      - .gitlab-ci.yml
 
  
