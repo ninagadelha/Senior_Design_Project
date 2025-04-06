@@ -1,19 +1,72 @@
-image: docker:23.0.2
-
-services:
-  - name: docker:23.0.2-dind
-    alias: dind
-    command: ["--tls=false", "--host=tcp://0.0.0.0:2375", "--storage-driver=overlay2"]
-
-variables:
-  DOCKER_HOST: "tcp://dind:2375"
-  DOCKER_DRIVER: overlay2
-  DOCKER_TLS_CERTDIR: ""
-
 stages:
   - build
+  - deploy
 
-build:
+variables:
+  IMAGE_TAG: $CI_COMMIT_SHORT_SHA
+  REGION: $AWS_REGION
+  CLUSTER: $ECS_CLUSTER_NAME
+
+# =============================
+# BACKEND: Build + Deploy
+# =============================
+
+build-backend:
   stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:latest
+    entrypoint: [""]
   script:
-    - docker info
+    - /kaniko/executor
+      --context $CI_PROJECT_DIR/Backend
+      --dockerfile $CI_PROJECT_DIR/Backend/Dockerfile
+      --destination $ECR_REPO_BACKEND:$IMAGE_TAG
+      --destination $ECR_REPO_BACKEND:latest
+      --insecure
+      --insecure-pull
+      --skip-tls-verify
+  only:
+    changes:
+      - Backend/**/*
+      - .gitlab-ci.yml
+
+deploy-backend:
+  stage: deploy
+  image: amazon/aws-cli
+  script:
+    - aws ecs update-service --cluster $CLUSTER --service $ECS_SERVICE_BACKEND --force-new-deployment
+  only:
+    refs:
+      - main
+
+# =============================
+# FRONTEND: Build + Deploy
+# =============================
+
+build-frontend:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:latest
+    entrypoint: [""]
+  script:
+    - /kaniko/executor
+      --context $CI_PROJECT_DIR/iinspire-app
+      --dockerfile $CI_PROJECT_DIR/iinspire-app/Dockerfile
+      --destination $ECR_REPO_FRONTEND:$IMAGE_TAG
+      --destination $ECR_REPO_FRONTEND:latest
+      --insecure
+      --insecure-pull
+      --skip-tls-verify
+  only:
+    changes:
+      - iinspire-app/**/*
+      - .gitlab-ci.yml
+
+deploy-frontend:
+  stage: deploy
+  image: amazon/aws-cli
+  script:
+    - aws ecs update-service --cluster $CLUSTER --service $ECS_SERVICE_FRONTEND --force-new-deployment
+  only:
+    refs:
+      - main
