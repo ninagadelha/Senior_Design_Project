@@ -59,7 +59,7 @@ build-frontend:
 # ===============================
 deploy-backend:
   stage: deploy
-  image: public.ecr.aws/aws-cli/aws-cli:2.13.22
+  image: amazon/aws-cli:2.13.22
   script:
     - echo "Deploying backend to ECS..."
     - aws ecs update-service \
@@ -77,7 +77,7 @@ deploy-backend:
 # ===============================
 deploy-frontend:
   stage: deploy
-  image: public.ecr.aws/aws-cli/aws-cli:2.13.22
+  image:  amazon/aws-cli:2.13.22
   script:
     - echo "Deploying frontend to ECS..."
     - aws ecs update-service \
