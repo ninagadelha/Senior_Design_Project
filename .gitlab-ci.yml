@@ -66,11 +66,11 @@ deploy-backend:
     - unzip awscliv2.zip
     - ./aws/install
   script:
-    - echo "Deploying backend..."
-    - echo "Cluster: $ECS_CLUSTER_NAME"
-    - echo "Service: $ECS_SERVICE_BACKEND"
-    - echo "Region: $AWS_REGION"
-    - /usr/local/bin/aws ecs update-service --cluster "$ECS_CLUSTER_NAME" --service "$ECS_SERVICE_BACKEND" --force-new-deployment --region "$AWS_REGION"
+    - "echo Deploying backend..."
+    - "echo Cluster: $ECS_CLUSTER_NAME"
+    - "echo Service: $ECS_SERVICE_BACKEND"
+    - "echo Region: $AWS_REGION"
+    - "/usr/local/bin/aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_BACKEND --force-new-deployment --region $AWS_REGION"
   only:
     changes:
       - Backend/**/*
