@@ -61,8 +61,10 @@ deploy-backend:
   stage: deploy
   image: amazon/aws-cli:2.13.22
   script:
-    - |
-      aws ecs update-service \
+    - aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID"
+    - aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY"
+    - aws configure set region "$AWS_REGION"
+    - aws ecs update-service \
         --cluster "$ECS_CLUSTER_NAME" \
         --service "$ECS_SERVICE_BACKEND" \
         --force-new-deployment \
@@ -78,8 +80,10 @@ deploy-frontend:
   stage: deploy
   image: amazon/aws-cli:2.13.22
   script:
-    - |
-      aws ecs update-service \
+    - aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID"
+    - aws configure set aws_secret_access_key "$AWS_SECRET_ACCESS_KEY"
+    - aws configure set region "$AWS_REGION"
+    - aws ecs update-service \
         --cluster "$ECS_CLUSTER_NAME" \
         --service "$ECS_SERVICE_FRONTEND" \
         --force-new-deployment \
