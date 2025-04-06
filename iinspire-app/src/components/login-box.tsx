@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { Box, Input, Button, Text, Link } from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/toast"; 
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import colors from "../../public/colors";
@@ -10,7 +11,7 @@ const LoginBox = () => {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
-
+    const toast = useToast();
     const isFormValid = username.trim() !== "" && password.trim() !== "";
 
     const handleLogin = async () => {
@@ -29,23 +30,56 @@ const LoginBox = () => {
             const data = await response.json();
 
             if (response.ok) {
-
-                const {id, programid} = data.user;
-
+                const { id, programid, role } = data.user;
+            
                 localStorage.setItem("userID", id);
                 localStorage.setItem("programID", programid);
-
-                router.push("/student-home");
-                alert("Login successful!");
+                localStorage.setItem("userRole", role);
+            
+                // Normalize role to lowercase for consistent comparison
+                const normalizedRole = role.toLowerCase();
+            
+                // Go to dashboard based on user role
+                switch(normalizedRole) {
+                    case "student": 
+                        router.push("/student-home");
+                        break;
+                    case "programcoordinator":
+                        router.push("/pc-dashboard");
+                        break;
+                    case "admin":
+                        router.push("/admin-dashboard");
+                        break;
+                    default:
+                        break;
+                }
+            
+                toast({
+                    title: "Login Successful",
+                    description: "Redirecting to dashboard...",
+                    status: "success",
+                    duration: 3000,
+                    position: "top-right",
+                  });
             } else {
-                alert(data.message || "Login failed.");
+                toast({
+                    title: "Error",
+                    description: "Unknown error",
+                    status: "error",
+                  });
             }
         } catch (error) {
             console.error("Error during login:", error);
-            alert("Something went wrong during login.");
+            toast({
+                title: "Error",
+                description: "Something went wrong during login",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+                position: "top",
+            });
         }
     };
-
 
     return (
         <Box
