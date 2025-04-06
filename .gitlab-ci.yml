@@ -66,7 +66,11 @@ deploy-backend:
     - unzip awscliv2.zip
     - ./aws/install
   script:
-    - aws ecs update-service \
+    - echo "Deploying backend..."
+    - echo "Cluster: $ECS_CLUSTER_NAME"
+    - echo "Service: $ECS_SERVICE_BACKEND"
+    - echo "Region: $AWS_REGION"
+    - /usr/local/bin/aws ecs update-service \
         --cluster "$ECS_CLUSTER_NAME" \
         --service "$ECS_SERVICE_BACKEND" \
         --force-new-deployment \
@@ -86,8 +90,12 @@ deploy-backend:
 # ===============================
 deploy-frontend:
   stage: deploy
-  image: amazon/aws-cli
+  image: bitnami/aws-cli:latest
   script:
+    - echo "Deploying frontend..."
+    - echo "Cluster: $ECS_CLUSTER_NAME"
+    - echo "Service: $ECS_SERVICE_FRONTEND"
+    - echo "Region: $AWS_REGION"
     - aws ecs update-service \
         --cluster "$ECS_CLUSTER_NAME" \
         --service "$ECS_SERVICE_FRONTEND" \
@@ -97,5 +105,8 @@ deploy-frontend:
     changes:
       - iinspire-app/**/*
       - .gitlab-ci.yml
+  variables:
+    AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+    AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
 
  
