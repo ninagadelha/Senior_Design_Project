@@ -8,7 +8,7 @@ variables:
   CLUSTER: $ECS_CLUSTER_NAME
 
 # ===============================
-# Backend Build with Kaniko
+# Build Backend with Kaniko
 # ===============================
 build-backend:
   stage: build
@@ -31,7 +31,7 @@ build-backend:
       - .gitlab-ci.yml
 
 # ===============================
-# Frontend Build with Kaniko
+# Build Frontend with Kaniko
 # ===============================
 build-frontend:
   stage: build
@@ -60,7 +60,11 @@ deploy-backend:
   stage: deploy
   image: amazon/aws-cli
   script:
-    - aws ecs update-service --cluster $CLUSTER --service $ECS_SERVICE_BACKEND --force-new-deployment --region $REGION
+    - aws ecs update-service \
+        --cluster "$ECS_CLUSTER_NAME" \
+        --service "$ECS_SERVICE_BACKEND" \
+        --force-new-deployment \
+        --region "$AWS_REGION"
   only:
     refs:
       - master
@@ -72,7 +76,11 @@ deploy-frontend:
   stage: deploy
   image: amazon/aws-cli
   script:
-    - aws ecs update-service --cluster $CLUSTER --service $ECS_SERVICE_FRONTEND --force-new-deployment --region $REGION
+    - aws ecs update-service \
+        --cluster "$ECS_CLUSTER_NAME" \
+        --service "$ECS_SERVICE_FRONTEND" \
+        --force-new-deployment \
+        --region "$AWS_REGION"
   only:
     refs:
       - master
