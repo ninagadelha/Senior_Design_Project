@@ -61,13 +61,20 @@ deploy-backend:
   stage: deploy
   image: amazon/aws-cli:2.13.22
   script:
-    - >
-      echo "Deploying backend to ECS... | CLUSTER: $ECS_CLUSTER_NAME | SERVICE: $ECS_SERVICE_BACKEND | REGION: $AWS_REGION"
-    - >
-      aws ecs update-service --cluster "$ECS_CLUSTER_NAME" --service "$ECS_SERVICE_BACKEND" --force-new-deployment --region "$AWS_REGION"
+    - echo "ECS_CLUSTER_NAME = $ECS_CLUSTER_NAME"
+    - echo "ECS_SERVICE_BACKEND = $ECS_SERVICE_BACKEND"
+    - echo "AWS_REGION = $AWS_REGION"
+    - |
+      if [ -z "$ECS_CLUSTER_NAME" ] || [ -z "$ECS_SERVICE_BACKEND" ] || [ -z "$AWS_REGION" ]; then
+        echo "❌ One or more required variables are missing! Failing now."
+        exit 1
+      fi
+    - echo "Deploying to ECS..."
+    - aws ecs update-service --cluster "$ECS_CLUSTER_NAME" --service "$ECS_SERVICE_BACKEND" --force-new-deployment --region "$AWS_REGION"
   only:
     refs:
       - master
+
 
 
 
