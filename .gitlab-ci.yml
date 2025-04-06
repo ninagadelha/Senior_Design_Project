@@ -60,6 +60,10 @@ build-frontend:
 deploy-backend:
   stage: deploy
   image: amazon/aws-cli
+  variables:
+    AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+    AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+    AWS_REGION: $AWS_REGION
   script:
     - echo "Deploying backend to ECS..."
     - aws ecs update-service \
@@ -71,12 +75,17 @@ deploy-backend:
     refs:
       - master
 
+
 # ===============================
 # Deploy Frontend to ECS
 # ===============================
 deploy-frontend:
   stage: deploy
   image: amazon/aws-cli
+  variables:
+    AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+    AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+    AWS_REGION: $AWS_REGION
   script:
     - echo "Deploying frontend to ECS..."
     - aws ecs update-service \
