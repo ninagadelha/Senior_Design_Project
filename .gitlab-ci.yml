@@ -6,7 +6,7 @@ variables:
   IMAGE_TAG: $CI_COMMIT_SHORT_SHA
   REGION: $AWS_REGION
   CLUSTER: $ECS_CLUSTER_NAME
-  ECR_REGISTRY: 471112510011.dkr.ecr.us-east-2.amazonaws.com  # update if your AWS account/region differs
+  ECR_REGISTRY: 471112510011.dkr.ecr.us-east-2.amazonaws.com  # update if needed
 
 # ===============================
 # Build Backend with Kaniko
@@ -16,12 +16,6 @@ build-backend:
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
-  before_script:
-    - echo "Authenticating to ECR..."
-    - aws --version
-    - >
-      aws ecr get-login-password --region $AWS_REGION |
-      docker login --username AWS --password-stdin $ECR_REGISTRY
   script:
     - >
       /kaniko/executor
@@ -45,12 +39,6 @@ build-frontend:
   image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
-  before_script:
-    - echo "Authenticating to ECR..."
-    - aws --version
-    - >
-      aws ecr get-login-password --region $AWS_REGION |
-      docker login --username AWS --password-stdin $ECR_REGISTRY
   script:
     - >
       /kaniko/executor
