@@ -1,58 +1,19 @@
-stages:
-  - build
-  - deploy
+image: docker:23.0.2
+
+services:
+  - name: docker:23.0.2-dind
+    alias: dind
+    command: ["--tls=false", "--host=tcp://0.0.0.0:2375", "--storage-driver=overlay2"]
 
 variables:
-  AWS_ECR_REGISTRY: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+  DOCKER_HOST: "tcp://dind:2375"
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
 
-build-backend:
-  image:
-    name: gcr.io/kaniko-project/executor:latest
-    entrypoint: [""]
+stages:
+  - build
+
+build:
   stage: build
   script:
-    - /kaniko/executor
-      --context $CI_PROJECT_DIR/Backend
-      --dockerfile $CI_PROJECT_DIR/Backend/Dockerfile
-      --destination $ECR_REPO_BACKEND:$CI_COMMIT_SHA
-      --destination $ECR_REPO_BACKEND:latest
-  only:
-    - master
-
-
-build-frontend:
-  image:
-    name: gcr.io/kaniko-project/executor:latest
-    entrypoint: [""]
-  stage: build
-  script:
-    - mkdir -p /kaniko/.docker
-    - echo "{\"credsStore\":\"ecr-login\"}" > /kaniko/.docker/config.json
-    - >
-      /kaniko/executor
-      --context $CI_PROJECT_DIR/inspire-app
-      --dockerfile $CI_PROJECT_DIR/inspire-app/Dockerfile
-      --destination $ECR_REPO_FRONTEND:$CI_COMMIT_SHA
-      --destination $ECR_REPO_FRONTEND:latest
-  only:
-    - master
-
-deploy-backend:
-  image: amazon/aws-cli
-  stage: deploy
-  script:
-    - aws ecs update-service --cluster "$BACKEND_ECS_CLUSTER" --service "$BACKEND_ECS_SERVICE" --force-new-deployment --region "$AWS_REGION"
-  needs:
-    - build-backend
-  only:
-    - master
-
-deploy-frontend:
-  image: amazon/aws-cli
-  stage: deploy
-  script:
-    - aws ecs update-service --cluster "$FRONTEND_ECS_CLUSTER" --service "$FRONTEND_ECS_SERVICE" --force-new-deployment --region "$AWS_REGION"
-  needs:
-    - build-frontend
-  only:
-    - master
+    - docker info
