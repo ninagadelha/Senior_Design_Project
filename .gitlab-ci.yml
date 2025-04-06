@@ -7,12 +7,14 @@ variables:
   REGION: $AWS_REGION
   CLUSTER: $ECS_CLUSTER_NAME
 
-# ========================================
-# Build Backend with Kaniko (debug shell)
-# ========================================
+# ===============================
+# Backend Build with Kaniko
+# ===============================
 build-backend:
   stage: build
-  image: gcr.io/kaniko-project/executor:debug
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
   script:
     - >
       /kaniko/executor
@@ -28,12 +30,14 @@ build-backend:
       - Backend/**/*
       - .gitlab-ci.yml
 
-# ========================================
-# Build Frontend with Kaniko (debug shell)
-# ========================================
+# ===============================
+# Frontend Build with Kaniko
+# ===============================
 build-frontend:
   stage: build
-  image: gcr.io/kaniko-project/executor:debug
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
   script:
     - >
       /kaniko/executor
@@ -49,9 +53,9 @@ build-frontend:
       - iinspire-app/**/*
       - .gitlab-ci.yml
 
-# ========================================
+# ===============================
 # Deploy Backend to ECS
-# ========================================
+# ===============================
 deploy-backend:
   stage: deploy
   image: amazon/aws-cli
@@ -61,9 +65,9 @@ deploy-backend:
     refs:
       - master
 
-# ========================================
+# ===============================
 # Deploy Frontend to ECS
-# ========================================
+# ===============================
 deploy-frontend:
   stage: deploy
   image: amazon/aws-cli
