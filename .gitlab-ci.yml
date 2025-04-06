@@ -61,18 +61,14 @@ deploy-backend:
   stage: deploy
   image: amazon/aws-cli:2.13.22
   script:
-    - echo "Deploying backend to ECS..."
-    - echo "CLUSTER: $ECS_CLUSTER_NAME"
-    - echo "SERVICE: $ECS_SERVICE_BACKEND"
-    - echo "REGION: $AWS_REGION"
-    - aws ecs update-service \
-        --cluster "$ECS_CLUSTER_NAME" \
-        --service "$ECS_SERVICE_BACKEND" \
-        --force-new-deployment \
-        --region "$AWS_REGION"
+    - >
+      echo "Deploying backend to ECS... | CLUSTER: $ECS_CLUSTER_NAME | SERVICE: $ECS_SERVICE_BACKEND | REGION: $AWS_REGION"
+    - >
+      aws ecs update-service --cluster "$ECS_CLUSTER_NAME" --service "$ECS_SERVICE_BACKEND" --force-new-deployment --region "$AWS_REGION"
   only:
     refs:
       - master
+
 
 
 
