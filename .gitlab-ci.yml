@@ -62,6 +62,9 @@ deploy-backend:
   image: amazon/aws-cli:2.13.22
   script:
     - echo "Deploying backend to ECS..."
+    - echo "CLUSTER: $ECS_CLUSTER_NAME"
+    - echo "SERVICE: $ECS_SERVICE_BACKEND"
+    - echo "REGION: $AWS_REGION"
     - aws ecs update-service \
         --cluster "$ECS_CLUSTER_NAME" \
         --service "$ECS_SERVICE_BACKEND" \
@@ -70,6 +73,7 @@ deploy-backend:
   only:
     refs:
       - master
+
 
 
 # ===============================
