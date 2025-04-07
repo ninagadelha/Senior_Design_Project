@@ -7,6 +7,7 @@ import SurveyQuestionInterface from '../app/student-survey/SurveyQuestionInterfa
 import { useEffect, useRef, useState } from 'react';
 import ProgressBar from "@/components/util/ProgressBar";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/auth-context";
 interface SurveyAnswer {
     [key: string]: string | string[]; // Question ID as key
 }
@@ -14,6 +15,7 @@ interface SurveyAnswer {
 const TheSurvey = () => {
     const [answers, setAnswers] = useState<SurveyAnswer>({});
     const [questions, setQuestions] = useState<SurveyQuestionInterface[]>([]);
+    const {user} = useAuth();
     const router = useRouter();
 
     const GROUP_MESSAGES: { [key: string]: string } = {
@@ -95,10 +97,15 @@ const TheSurvey = () => {
     };
 
     const handleConfirmSubmission = () => {
+        const programId = user?.programid;
+        const userId = user?.id;
+        const payload = { userId, programId, answers };
         if (Object.keys(answers).length < questions.length) {
             alert('Please answer all questions.');
         }
         else if (Object.keys(answers).length == questions.length) {
+            console.log("User ID:", userId);
+            console.log("Program ID:", programId);
             console.log('Submitting:', answers);
             router.push('view-results');
             alert('Form submitted successfully!');
@@ -108,7 +115,7 @@ const TheSurvey = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                //body: JSON.stringify(payload),
+                body: JSON.stringify(payload),
             })
             .then((res) => {
                 if (!res.ok) throw new Error('Network response was not ok');
