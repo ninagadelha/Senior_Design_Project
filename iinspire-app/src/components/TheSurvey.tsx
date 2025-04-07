@@ -74,14 +74,6 @@ const TheSurvey = () => {
         return groups;
     }, {} as Record<string, SurveyQuestionInterface[]>);
 
-    const { colorMode, setColorMode } = useColorMode();
-
-    useEffect(() => {
-        if (colorMode !== 'light') {
-            setColorMode('light');
-        }
-    }, [colorMode, setColorMode]);
-
     // Track the current group index
     const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
 
@@ -156,14 +148,14 @@ const TheSurvey = () => {
     }
 
     return (
-        <>
-            <Box maxW="100vw" mx="auto" mt={8} padding={'1vw'} suppressHydrationWarning>
-                <ProgressBar current={currentGroupIndex + 1} total={groupNames.length} />
-                <Heading size="3xl">Survey: {user?.programid}</Heading>
+        <Box bg="white" color="black">
+            <Box maxW="100vw" mx="auto" mt={8} padding={'1vw'} bg="white" color="black" suppressHydrationWarning>
+                <ProgressBar  current={currentGroupIndex + 1} total={groupNames.length} />
+                <Heading bg="white" color="black" size="3xl">Survey: {user?.programid}</Heading>
 
                 {/* Display only the current group */}
-                <Box mt={4} suppressHydrationWarning>
-                    <Heading size="lg" mb={4}>
+                <Box mt={4} bg="white" color="black" suppressHydrationWarning>
+                    <Heading  bg="white" color="black" size="lg" mb={4}>
                         {GROUP_MESSAGES[currentGroup]}
                     </Heading>
                     {currentQuestions.map((question) => (
@@ -210,7 +202,7 @@ const TheSurvey = () => {
                     )}
                 </Flex>
             </Box>
-        </>
+        </Box>
     );
 };
 
