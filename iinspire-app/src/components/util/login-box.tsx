@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import { Box, Input, Button, Text, Link } from "@chakra-ui/react";
-import { useToast } from "@chakra-ui/toast"; 
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import colors from "../../../public/colors";
@@ -11,7 +10,6 @@ const LoginBox = () => {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
-    const toast = useToast();
     const isFormValid = username.trim() !== "" && password.trim() !== "";
 
     const handleLogin = async () => {
@@ -55,30 +53,13 @@ const LoginBox = () => {
                         break;
                 }
             
-                toast({
-                    title: "Login Successful",
-                    description: "Redirecting to dashboard...",
-                    status: "success",
-                    duration: 3000,
-                    position: "top-right",
-                  });
+                alert("logged in");
             } else {
-                toast({
-                    title: "Error",
-                    description: "Unknown error",
-                    status: "error",
-                  });
+                alert("error");
             }
         } catch (error) {
             console.error("Error during login:", error);
-            toast({
-                title: "Error",
-                description: "Something went wrong during login",
-                status: "error",
-                duration: 5000,
-                isClosable: true,
-                position: "top",
-            });
+            alert("error");
         }
     };
 
