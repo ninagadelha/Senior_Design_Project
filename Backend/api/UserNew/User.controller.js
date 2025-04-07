@@ -11,13 +11,22 @@ exports.getTimestamp = async (req,res) => {
   }
 };
 
+exports.getAdminUsers = async (req,res)=>{
+  try {
+    // Query the Users table
+    const results = await userService.getAdminUsers();
+    // Send the results as a JSON response
+    res.json(results);
+  } catch (error) {
+    console.error('Error querying the Admin Users table:', error);
+    res.status(500).send('Error fetching Admin users from the database');
+  }
+}
+
 exports.getUsers = async (req,res) => {
   try {
     // Query the Users table
     const results = await userService.getUsers();
-    // Log the query result
-    console.log('Users Table Results:', results);
-
     // Send the results as a JSON response
     res.json(results);
   } catch (error) {

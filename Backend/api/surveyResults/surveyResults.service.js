@@ -14,6 +14,25 @@ const queryDatabase = async (query, params = []) => {
     return await queryDatabase(sql, [userID, programID]);
   };
 
+  exports.getSurveyResultsByProgram = async (programID) => {
+    const sql = `
+      SELECT 
+        Users.email,
+        Users.netid,
+        Users.age,
+        Users.gender,
+        Users.ethnicity,
+        Users.credits,
+        Users.stem_interests,
+        Users.institution,
+        SurveyResults.*
+      FROM SurveyResults
+      LEFT JOIN Users ON SurveyResults.userID = Users.id
+      WHERE SurveyResults.programID = ?
+    `;
+    return await queryDatabase(sql, [programID]);
+  };
+  
 
 
 

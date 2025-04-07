@@ -14,8 +14,15 @@ const queryDatabase = async (query, params = []) => {
 
   //service method to get all programs
   exports.getAllPrograms = async () => {
-    return await queryDatabase('SELECT * FROM Program');
+    return await queryDatabase(`
+      SELECT 
+        Program.*, 
+        Users.fullname AS owner_fullname
+      FROM Program
+      LEFT JOIN Users ON Program.owner_userid = Users.id
+    `);
   };
+  
 
   exports.getPCPrograms = async (program_userid) => {
     const query = `
