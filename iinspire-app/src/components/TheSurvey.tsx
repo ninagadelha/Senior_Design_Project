@@ -6,6 +6,7 @@ import SurveyItem from '../components/util/SurveyItem';
 import SurveyQuestionInterface from '../app/student-survey/SurveyQuestionInterface';
 import { useEffect, useRef, useState } from 'react';
 import ProgressBar from "@/components/util/ProgressBar";
+import { useRouter } from "next/navigation";
 interface SurveyAnswer {
     [key: string]: string | string[]; // Question ID as key
 }
@@ -13,6 +14,7 @@ interface SurveyAnswer {
 const TheSurvey = () => {
     const [answers, setAnswers] = useState<SurveyAnswer>({});
     const [questions, setQuestions] = useState<SurveyQuestionInterface[]>([]);
+    const router = useRouter();
 
     const GROUP_MESSAGES: { [key: string]: string } = {
         '0': 'Please indicate your level of agreement with the following statements:',
@@ -93,8 +95,33 @@ const TheSurvey = () => {
     };
 
     const handleConfirmSubmission = () => {
-        console.log('Submitting:', answers);
-        // add api endpoint from backend HERE
+        if (Object.keys(answers).length < questions.length) {
+            alert('Please answer all questions.');
+        }
+        else if (Object.keys(answers).length == questions.length) {
+            console.log('Submitting:', answers);
+            router.push('view-results');
+            alert('Form submitted successfully!');
+
+            fetch('http://localhost:3000/api/survey-results', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                //body: JSON.stringify(payload),
+            })
+            .then((res) => {
+                if (!res.ok) throw new Error('Network response was not ok');
+                return res.json();
+            })
+            .then((data) => {
+                console.log('Success:', data);
+                router.push('view-results');
+            })
+            .catch((error) => {
+                console.error('Error submitting survey:', error);
+            });
+        }
     };
 
     const SubmitButton = () => {
