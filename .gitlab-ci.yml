@@ -6,7 +6,7 @@ variables:
   IMAGE_TAG: $CI_COMMIT_SHORT_SHA
   REGION: $AWS_REGION
   CLUSTER: $ECS_CLUSTER_NAME
-  ECR_REGISTRY: 471112510011.dkr.ecr.us-east-2.amazonaws.com
+  ECR_REGISTRY: 471112510011.dkr.ecr.us-east-2.amazonaws.com  # update if needed
 
 # ===============================
 # Build Backend with Kaniko
@@ -59,49 +59,47 @@ build-frontend:
       - .gitlab-ci.yml
 
 # ===============================
-# Deploy Frontend to ECS (with new task definition)
+# Deploy Backend to ECS
+# ===============================
+deploy-backend:
+  stage: deploy
+  image: amazonlinux:2
+  before_script:
+    - yum install -y unzip curl
+    - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    - unzip awscliv2.zip
+    - ./aws/install
+  script:
+    - "echo Deploying backend..."
+    - "echo Cluster: $ECS_CLUSTER_NAME"
+    - "echo Service: $ECS_SERVICE_BACKEND"
+    - "echo Region: $AWS_REGION"
+    - "/usr/local/bin/aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_BACKEND --force-new-deployment --region $AWS_REGION"
+  only:
+    changes:
+      - Backend/**/*
+      - .gitlab-ci.yml
+  variables:
+    AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+    AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+
+# ===============================
+# Deploy Frontend to ECS
 # ===============================
 deploy-frontend:
   stage: deploy
   image: amazonlinux:2
   before_script:
-    - yum install -y unzip curl jq
+    - yum install -y unzip curl
     - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
     - unzip awscliv2.zip
     - ./aws/install
   script:
-    - echo "Fetching current task definition..."
-    - |
-      TASK_DEF_JSON=$(aws ecs describe-task-definition \
-        --task-definition $ECS_TASK_DEF_FRONTEND \
-        --region $AWS_REGION)
-    - echo "Registering new task definition with updated image..."
-    - |
-      echo "$TASK_DEF_JSON" | jq \
-        --arg IMG "$ECR_REPO_FRONTEND:$IMAGE_TAG" \
-        '.taskDefinition |
-         {
-           family: .family,
-           executionRoleArn: .executionRoleArn,
-           networkMode: .networkMode,
-           containerDefinitions: (.containerDefinitions | map(if .name == "frontend" then .image = $IMG else . end)),
-           requiresCompatibilities: .requiresCompatibilities,
-           cpu: .cpu,
-           memory: .memory
-         }' > new-task-def.json
-    - |
-      NEW_ARN=$(aws ecs register-task-definition \
-        --cli-input-json file://new-task-def.json \
-        --region $AWS_REGION \
-        --query 'taskDefinition.taskDefinitionArn' \
-        --output text)
-    - echo "Updating service with new task definition..."
-    - |
-      aws ecs update-service \
-        --cluster $ECS_CLUSTER_NAME \
-        --service $ECS_SERVICE_FRONTEND \
-        --task-definition $NEW_ARN \
-        --region $AWS_REGION
+    - "echo Deploying frontend..."
+    - "echo Cluster: $ECS_CLUSTER_NAME"
+    - "echo Service: $ECS_SERVICE_FRONTEND"
+    - "echo Region: $AWS_REGION"
+    - "/usr/local/bin/aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_FRONTEND --force-new-deployment --region $AWS_REGION"
   only:
     changes:
       - iinspire-app/**/*
