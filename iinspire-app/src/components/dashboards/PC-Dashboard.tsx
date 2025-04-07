@@ -6,9 +6,12 @@ import { IoBarChartSharp } from 'react-icons/io5';
 import { HiUsers } from "react-icons/hi";
 import { CgNotes } from "react-icons/cg";
 import { GrResources } from "react-icons/gr";
+import { useAuth } from '@/context/auth-context';
 import colors from '../../../public/colors';
 
 const PCDashboard = () => {
+  const { user, isAuthenticated } = useAuth();
+
   // Responsive configuration
   const responsiveConfig = useBreakpointValue({
     base: { 
@@ -71,6 +74,12 @@ const PCDashboard = () => {
     },
   ];
 
+  if (!isAuthenticated) {
+    return (
+      <div>Please login to view this content</div>
+    );
+  }
+
   return (
     <Box 
       flex="1"
@@ -95,7 +104,7 @@ const PCDashboard = () => {
           color="black"
           fontWeight="bold"
         >
-          Welcome!
+          Welcome, {user?.fullname}!
         </Heading>
       </Box>
 
