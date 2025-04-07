@@ -1,14 +1,14 @@
 import Link from "next/link";
 import React from "react";
-//import colors from "../../../public/colors";
+import { useAuth } from "@/context/auth-context";
 
 const AboutPage = () => {
+    const { getHomePath } = useAuth();
+
     return (
-
-
                 <div className="text-center mt-4">
                     <Link
-                        href="/"
+                        href= {getHomePath()}
                         className="text-blue-500 hover:underline text-sm"
                     >
                         ← Back to Home
@@ -16,4 +16,5 @@ const AboutPage = () => {
                 </div>
     );
 };
+
 export default AboutPage;

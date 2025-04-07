@@ -9,7 +9,7 @@ import { useAuth } from "@/context/auth-context";
 function Navbar() {
     const { logout, getHomePath, isAuthenticated } = useAuth();
 
-    // Base items that are always visible
+    // Base items that are always visible on Navbar
     const BASE_ITEMS: Array<NavItem> = [
         { label: 'About', href: '/about' }
     ];
