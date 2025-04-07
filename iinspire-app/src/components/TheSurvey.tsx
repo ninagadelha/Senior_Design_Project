@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 import ProgressBar from "@/components/util/ProgressBar";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
+import { useColorMode } from "./ui/color-mode";
 interface SurveyAnswer {
     [key: string]: string | string[]; // Question ID as key
 }
@@ -19,13 +20,13 @@ const TheSurvey = () => {
     const router = useRouter();
 
     const GROUP_MESSAGES: { [key: string]: string } = {
-        '0': 'Please indicate your level of agreement with the following statements:',
-        '1': 'How frequently do you experience these situations?',
-        '2': 'Rate your confidence in these areas:',
-        '3': 'Select your preferences regarding campus resources:',
-        '4': 'How would you describe your typical responses to these scenarios?',
-        '5': 'Please indicate your level of agreement with the following statements:',
-        '6': 'Select your level of confidence for each research skill.'
+        '0': 'Please indicate the level to which you agree or disagree with each statement',
+        '1': 'Please indicate the level to which you have participated on a scale from never to always',
+        '2': 'Now, please indicate your degree of interest in doing each of the following activities, Use the scale below to show how interested you are in each activity.',
+        '3': 'For each task listed below, please indicate how confident you are that you could successfully complete it - assuming you were motivated to make your best effort',
+        '4': 'Using the scale below, please indicate the extent to which you agree or disagree with each of the following statements.',
+        '5': 'Please indicate the level to which you agree or disagree with each statement ',
+        '6': 'Please indicate your degree of confidence you have in your ability to successfully perform each behavior. Your strength will be rated on a 100-point scale ranging from 0 (no confidence) to 100 (complete confidence) for each of the following items.'
         // Add more groups as needed
     };
 
@@ -148,14 +149,14 @@ const TheSurvey = () => {
     }
 
     return (
-        <>
-            <Box maxW="100vw" mx="auto" mt={8} padding={'1vw'} suppressHydrationWarning>
-                <ProgressBar current={currentGroupIndex + 1} total={groupNames.length} />
-                <Heading size="3xl">Survey Form</Heading>
+        <Box bg="white" color="black">
+            <Box maxW="100vw" mx="auto" mt={8} padding={'1vw'} bg="white" color="black" suppressHydrationWarning>
+                <ProgressBar  current={currentGroupIndex + 1} total={groupNames.length} />
+                <Heading bg="white" color="black" size="3xl">Survey: {user?.programid}</Heading>
 
                 {/* Display only the current group */}
-                <Box mt={4} suppressHydrationWarning>
-                    <Heading size="lg" mb={4}>
+                <Box mt={4} bg="white" color="black" suppressHydrationWarning>
+                    <Heading  bg="white" color="black" size="lg" mb={4}>
                         {GROUP_MESSAGES[currentGroup]}
                     </Heading>
                     {currentQuestions.map((question) => (
@@ -202,7 +203,7 @@ const TheSurvey = () => {
                     )}
                 </Flex>
             </Box>
-        </>
+        </Box>
     );
 };
 

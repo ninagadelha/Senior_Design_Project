@@ -320,7 +320,7 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                 );
             case '% / 0-100': //Percentage
             //const sliderValue = 50;
-            value = typeof value === 'string' ? value : '50';
+            value = typeof value === 'string' ? value : '0';
                 return (
                     <>
                         <Box display={'flex'} alignItems={'start'} width="100%" maxWidth="100vw" suppressHydrationWarning>
@@ -342,7 +342,7 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                                         width={'full'}
                                         thumbAlignment="contain"
                                         thumbSize={{ width: 16, height: 16 }}
-                                        value={typeof value === 'string' ? value.split(',').map(Number) : [50]}
+                                        value={typeof value === 'string' ? value.split(',').map(Number) : [0]}
                                         onValueChange={(details) =>
                                             onAnswerChange(question.question_id, details.value.join(','))
                                         }
