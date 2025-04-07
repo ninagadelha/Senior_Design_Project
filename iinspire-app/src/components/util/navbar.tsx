@@ -4,10 +4,28 @@ import { Button, Flex, Image, Stack, Spacer } from '@chakra-ui/react';
 import Link from 'next/link';
 import colors from '../../../public/colors';
 import fonts from '../../../public/fonts';
-import {useRouter} from "next/navigation";
+import { useAuth } from "@/context/auth-context";
 
 function Navbar() {
-    const router = useRouter();
+    const { logout, getHomePath, isAuthenticated } = useAuth();
+
+    // Base items that are always visible
+    const BASE_ITEMS: Array<NavItem> = [
+        { label: 'About', href: '/about' }
+    ];
+
+    // Items only shown when authenticated
+    const AUTH_ITEMS: Array<NavItem> = [
+        { label: 'Home', href: getHomePath() },
+        { label: 'Survey', href: '/student-survey' }
+    ];
+
+    // Combine items based on auth status
+    const NAV_ITEMS = [
+        ...BASE_ITEMS,
+        ...(isAuthenticated ? AUTH_ITEMS : [])
+    ];
+
     return (
         <Flex as="nav" align="center" p={2} boxShadow="md" bg={colors.secondary_blue_dark}>
             {/* Logo */}
@@ -38,17 +56,19 @@ function Navbar() {
             {/* Push Sign Out button to the right */}
             <Spacer />
 
-            <Button 
-                colorScheme="red" 
-                variant="outline"
-                bg={colors.off_white}
-                color={colors.black}
-                fontSize={fonts.default_font_size} 
-                fontWeight={fonts.default_weight}
-                onClick={() => router.push('/')}
-            >
-                Sign Out
-            </Button>
+            {isAuthenticated && (
+                <Button 
+                    colorScheme="red" 
+                    variant="outline"
+                    bg={colors.off_white}
+                    color={colors.black}
+                    fontSize={fonts.default_font_size} 
+                    fontWeight={fonts.default_weight}
+                    onClick={() => logout()}
+                >
+                    Sign Out
+                </Button>
+            )}
         </Flex>
     );
 }
@@ -59,9 +79,3 @@ interface NavItem {
     label: string;
     href?: string;
 }
-
-const NAV_ITEMS: Array<NavItem> = [
-    { label: 'Home', href: '/student-home' },
-    { label: 'About', href: '/about' }, 
-    { label: 'Survey', href: '/student-survey' },
-];
