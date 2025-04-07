@@ -1,9 +1,9 @@
 const express = require("express");
-const { postSurveyResult, getUserSurveyResults } = require("./surveyResults.controller");
-
+const srController = require('./surveyResults.controller')
 const router = express.Router();
 
-router.post("/survey-results", postSurveyResult);
-router.get("/survey-results/:userID/:programID", getUserSurveyResults);
+
+router.post("/survey-results", srController.postSurveyResult);
+router.get("/survey-results", srController.getUserSurveyResults);
 
 module.exports = router;

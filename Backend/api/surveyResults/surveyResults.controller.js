@@ -1,34 +1,45 @@
-const {
-    createSurveyResult,
-    getSurveyResultsByUser
-} = require("./surveyResults.service");
+const srService = require("./surveyResults.service");
 
-exports.postSurveyResult = (req, res) => {
-    const { userID, programID, category, score, max_score } = req.body;
+exports.postSurveyResult = async (req, res) => {
+    const { userID, programID, civicEngagement, stemInterest,stemEfficacy,stemOutcome, researchOutcome, researchEfficacy } = req.body;
 
-    if (!userID || !programID || !category || score === undefined || !max_score) {
+    if (!userID || !programID || !civicEngagement || !stemInterest|| !stemEfficacy|| !stemOutcome|| !researchOutcome || !researchEfficacy) {
         return res.status(400).json({ message: "Missing required fields" });
     }
+    try {
+        // Query the Users table to find a user by the provided email
+        const results = await srService.createSurveyResult(userID, programID, civicEngagement, stemInterest,stemEfficacy,stemOutcome, researchOutcome, researchEfficacy);
+          // User found with the provided email
+          res.json({
+            message: 'Results Saved Succesfully:',
+            Results: results
+          });
+      }
+      catch (error) {
+        console.error('Error saving User Survey Results:', error);
+        res.status(500).send('Error saving User Survey Results');
+      }
+    };
 
-    createSurveyResult({ userID, programID, category, score, max_score }, (error, results) => {
-        if (error) {
-            return res.status(500).json({ message: "Database error", error });
-        }
-        return res.status(201).json({ message: "Survey result added successfully" });
-    });
-};
 
-exports.getUserSurveyResults = (req, res) => {
-    const { userID, programID } = req.params;
+exports.getUserSurveyResults = async (req, res) => {
+    const { userID, programID } = req.body;
 
     if (!userID || !programID) {
         return res.status(400).json({ message: "Missing userID or programID" });
     }
 
-    getSurveyResultsByUser(userID, programID, (error, results) => {
-        if (error) {
-            return res.status(500).json({ message: "Database error", error });
-        }
-        return res.status(200).json(results);
-    });
+try {
+    // Query the Users table to find a user by the provided email
+    const results = await srService.getSurveyResultsByUser(userID, programID);
+      // User found with the provided email
+      res.json({
+        message: 'User results:',
+        Results: results
+      });
+  }
+  catch (error) {
+    console.error('Error fetching User Survey Results:', error);
+    res.status(500).send('Error fetching User Survey Results');
+  }
 };
