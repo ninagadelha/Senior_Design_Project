@@ -6,7 +6,7 @@ import colors from '../../../public/colors';
 interface DashboardBoxProps {
   icon: React.ElementType;
   dashboardCardHeader: string;
-  dashboardCardText: string;
+  dashboardCardValue: string;
   dashboardButton: {
     text: string;
     link: string;
@@ -16,25 +16,25 @@ interface DashboardBoxProps {
 const DashboardCard: React.FC<DashboardBoxProps> = ({
   icon: IconComponent,
   dashboardCardHeader,
-  dashboardCardText,
+  dashboardCardValue,
   dashboardButton
 }) => {
   return (
     <CardRoot 
-    w="300px" // Fixed width for consistency
-    minH="200px" // Minimum height to prevent shrinking
-    border="2px solid #D9D9D9"
-    borderRadius="lg"
-    p={6}
-    textAlign="center"
-    alignItems="center"
-    overflow="hidden" 
-    className="dashboard-box-card" 
-    variant="outline"
-    background={colors.white}
-    display="flex"
-    flexDirection="column"
-    justifyContent="space-between"
+      w="300px" // Fixed width for consistency
+      minH="225px" // Minimum height to prevent shrinking
+      border="2px solid #D9D9D9"
+      borderRadius="lg"
+      p={7}
+      textAlign="center"
+      alignItems="center"
+      overflow="hidden" 
+      className="dashboard-box-card" 
+      variant="outline"
+      background={colors.white}
+      display="flex"
+      flexDirection="column"
+      justifyContent="space-between"
     >
       <Box>
         <Icon boxSize={8} color="black">
@@ -42,9 +42,12 @@ const DashboardCard: React.FC<DashboardBoxProps> = ({
         </Icon>
       </Box>
 
-      <Box m={2}>
-        <Text fontSize="lg" fontWeight="bold">{dashboardCardHeader}</Text>
-        <Text fontSize="sm" color="gray.600" mt={2}>{dashboardCardText}</Text>
+      <Box>
+        <Text fontSize="lg" fontWeight="bold">{dashboardCardValue}</Text>
+      </Box>
+
+      <Box >
+        <Text fontSize="lg">{dashboardCardHeader}</Text>
       </Box>
 
         <Button 
@@ -54,7 +57,7 @@ const DashboardCard: React.FC<DashboardBoxProps> = ({
             color="white"
             _hover={{ bg: "gray.800" }}
             borderRadius="md"
-            px={4}
+            px={3}
             py={2}
         >
             <a href={dashboardButton.link}>{dashboardButton.text}</a>

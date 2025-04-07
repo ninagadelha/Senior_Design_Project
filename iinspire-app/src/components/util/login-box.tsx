@@ -3,14 +3,13 @@ import React, { useState } from "react";
 import { Box, Input, Button, Text, Link } from "@chakra-ui/react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
-import colors from "../../public/colors";
+import colors from "../../../public/colors";
 
 const LoginBox = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
-
     const isFormValid = username.trim() !== "" && password.trim() !== "";
 
     const handleLogin = async () => {
@@ -29,23 +28,40 @@ const LoginBox = () => {
             const data = await response.json();
 
             if (response.ok) {
-
-                const {id, programid} = data.user;
-
+                const { id, programid, role, netid } = data.user;
+            
                 localStorage.setItem("userID", id);
                 localStorage.setItem("programID", programid);
-
-                router.push("/student-home");
-                alert("Login successful!");
+                localStorage.setItem("userRole", role);
+                localStorage.setItem("netID", netid);
+            
+                // Normalize role to lowercase for consistent comparison
+                const normalizedRole = role.toLowerCase();
+            
+                // Go to dashboard based on user role
+                switch(normalizedRole) {
+                    case "student": 
+                        router.push("/student-home");
+                        break;
+                    case "programcoordinator":
+                        router.push("/pc-home");
+                        break;
+                    case "admin":
+                        router.push("/admin-home");
+                        break;
+                    default:
+                        break;
+                }
+            
+                alert("logged in");
             } else {
-                alert(data.message || "Login failed.");
+                alert("error");
             }
         } catch (error) {
             console.error("Error during login:", error);
-            alert("Something went wrong during login.");
+            alert("error");
         }
     };
-
 
     return (
         <Box
