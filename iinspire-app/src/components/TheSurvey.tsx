@@ -110,7 +110,8 @@ const TheSurvey = () => {
             router.push('view-results');
             alert('Form submitted successfully!');
 
-            fetch('http://localhost:3000/api/survey-results', {
+
+            fetch('http://backend-service.backend-namespace:5000/api/survey-results', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
