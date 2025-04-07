@@ -22,6 +22,10 @@ exports.getUsers = async () => {
   return await queryDatabase('SELECT * FROM Users');
 };
 
+exports.getprogramusers = async (programid)  => {
+  return await queryDatabase('SELECT * FROM Users where programid=?', [programid]);
+};
+
 exports.loginUser = async (email) => {
   return await queryDatabase('SELECT * FROM Users WHERE email = ?', [email]);
 };

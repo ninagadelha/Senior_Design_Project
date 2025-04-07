@@ -17,11 +17,19 @@ const queryDatabase = async (query, params = []) => {
     return await queryDatabase('SELECT * FROM Program');
   };
 
- /*service method to get all programs
- exports.putprogram = async () => {
-  return await queryDatabase('SELECT * FROM Program');
-};*/
+  exports.getPCPrograms = async (program_userid) => {
+    const query = `
+      SELECT 
+        p.*, 
+        (SELECT COUNT(*) FROM Users u WHERE u.programid = p.program_id) AS student_count
+      FROM 
+        Program p
+      WHERE 
+        p.owner_userid = ?
+    `;
+    return await queryDatabase(query, [program_userid]);
+  };
 
-exports.postnewprogram = async(program_name, owner_userid) => {
-  return await queryDatabase('INSERT into Program (name, owner_userid) values (?, ?)', [program_name, owner_userid]);
+exports.postnewprogram = async(program_name, owner_userid, code) => {
+  return await queryDatabase('INSERT into Program (name, owner_userid, code) values (?, ?, ?)', [program_name, owner_userid, code]);
 }
