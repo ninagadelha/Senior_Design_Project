@@ -4,7 +4,7 @@ import { Box, Input, Button, Text, Link } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/toast"; 
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
-import colors from "../../public/colors";
+import colors from "../../../public/colors";
 
 const LoginBox = () => {
     const [username, setUsername] = useState("");
@@ -30,11 +30,12 @@ const LoginBox = () => {
             const data = await response.json();
 
             if (response.ok) {
-                const { id, programid, role } = data.user;
+                const { id, programid, role, netid } = data.user;
             
                 localStorage.setItem("userID", id);
                 localStorage.setItem("programID", programid);
                 localStorage.setItem("userRole", role);
+                localStorage.setItem("netID", netid);
             
                 // Normalize role to lowercase for consistent comparison
                 const normalizedRole = role.toLowerCase();
@@ -45,10 +46,10 @@ const LoginBox = () => {
                         router.push("/student-home");
                         break;
                     case "programcoordinator":
-                        router.push("/pc-dashboard");
+                        router.push("/pc-home");
                         break;
                     case "admin":
-                        router.push("/admin-dashboard");
+                        router.push("/admin-home");
                         break;
                     default:
                         break;

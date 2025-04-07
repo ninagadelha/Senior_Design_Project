@@ -1,4 +1,4 @@
-import LoginBox from "@/components/login-box";
+import LoginBox from "@/components/util/login-box";
 import colors from "../../public/colors";
 import Navbar from "@/components/util/navbar";
 import { Box } from "@chakra-ui/react";

@@ -1,8 +1,8 @@
 import React from 'react';
 import { VStack, Text, Heading, Box } from '@chakra-ui/react';
-import colors from '../../public/colors';
-import fonts from '../../public/fonts';
-import HeroCard from './dashboards/hero-card';
+import fonts from '../../../public/fonts';
+import colors from '../../../public/colors';
+import HeroCard from './hero-card';
 
 function StudentDashboardNew() {
     return (
