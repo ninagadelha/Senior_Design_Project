@@ -7,4 +7,6 @@ router.post("/newprogram", programController.postnewprogram);
 //router.put("/editprogram", programController.putprogram);
 router.get("/getprograms", programController.getPrograms)
 
+router.get("/getPCprograms", programController.getPCPrograms)
+
 module.exports = router;

@@ -1,46 +1,55 @@
-const pool = require("../../dbconfig.js");// Ensure pool is correctly imported
+const pool = require("../../dbconfig");// Ensure pool is correctly imported
 
-exports.getSurveyResultsByUser = (userID, programID, callback) => {
-    const query = `
-        SELECT category, score, max_score 
-        FROM survey_results 
-        WHERE userID = ? AND programID = ?
+const queryDatabase = async (query, params = []) => {
+    try {
+        const [results] = await pool.query(query, params);
+        return results;
+      } catch (err) {
+        throw err;
+      }
+  };
+  
+  exports.getSurveyResultsByUser = async (userID, programID) => {
+    const sql = `SELECT * from SurveyResults WHERE userID = ? AND programID = ?`;
+    return await queryDatabase(sql, [userID, programID]);
+  };
+
+
+
+
+exports.createSurveyResult = async (userID, programID, civicEngagement, stemInterest,stemEfficacy,stemOutcome, researchOutcome, researchEfficacy) => {
+    maxScores = [5,6,4,9,4,100];
+    const calculateNormalizedScore = (scores, maxScore) => {
+        const avgScore = scores.reduce((sum, score) => sum + score, 0) / scores.length; // Calculate the average
+        return (avgScore / maxScore) * 10; // Normalize
+    };
+
+    // Normalize each of the arrays
+    const normalizedCivicEngagement = calculateNormalizedScore(civicEngagement, maxScores[0]);
+    const normalizedStemInterest = calculateNormalizedScore(stemInterest, maxScores[1]);
+    const normalizedStemEfficacy = calculateNormalizedScore(stemEfficacy, maxScores[2]);
+    const normalizedStemOutcome = calculateNormalizedScore(stemOutcome, maxScores[3]);
+    const normalizedResearchOutcome = calculateNormalizedScore(researchOutcome, maxScores[4]);
+    const normalizedResearchEfficacy = calculateNormalizedScore(researchEfficacy, maxScores[5]);
+
+    // SQL query to insert the data
+    const sql = `
+        INSERT INTO SurveyResults 
+        (userID, programID, dataCreated, civicEngagement, stemInterest, stemEfficacy, stemOutcome, researchOutcome, researchEfficacy)
+        VALUES (?, ?, NOW(), ?, ?, ?, ?, ?, ?)
     `;
 
-    pool.query(query, [userID, programID], (error, results) => {
-        if (error) {
-            return callback(error);
-        }
+    // Return the query promise
+    return await queryDatabase(sql, [
+        userID, 
+        programID,  
+        normalizedCivicEngagement, 
+        normalizedStemInterest, 
+        normalizedStemEfficacy, 
+        normalizedStemOutcome, 
+        normalizedResearchOutcome, 
+        normalizedResearchEfficacy
+    ]);
 
-        if (results.length === 0) {
-            return callback(null, { message: "No survey results found." });
-        }
+  };
 
-        // Group scores by category
-        const categoryScores = {};
-
-        results.forEach(({ category, score, max_score }) => {
-            if (!categoryScores[category]) {
-                categoryScores[category] = { total: 0, count: 0, maxScore: max_score };
-            }
-            categoryScores[category].total += score;
-            categoryScores[category].count += 1;
-        });
-
-        // Compute normalized and scaled averages
-        const formattedResults = Object.entries(categoryScores).map(([category, data]) => {
-            const average = data.total / data.count;
-            const normalized = (average / data.maxScore) * 10; // Normalize and scale to 1-10 range
-            return { category, normalizedScore: normalized.toFixed(2) };
-        });
-
-        callback(null, formattedResults);
-    });
-};
-
-//Example Output
-//[
-//     { "category": "Civil Engagement", "normalizedScore": "8.25" },
-//     { "category": "Leadership", "normalizedScore": "6.90" },
-//     { "category": "Community Service", "normalizedScore": "7.50" }
-// ]

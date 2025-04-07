@@ -185,3 +185,25 @@ exports.getExistingUser = async (req, res) => {
     res.status(500).send('Error checking if user exists');
   }
 }
+
+
+exports.getUsersProgram = async (req,res) => {
+  const { programid } = req.body;
+  
+  if (!programid) {
+    return res.status(400).send('Program ID is required');
+  }
+  try {
+    // Query the Users table to find a user by the provided email
+    const results = await userService.getprogramusers(programid);
+      // User found with the provided email
+        res.json({
+          message: 'Fetched Programs users successfully',
+          Users: results
+        });
+  }
+  catch (error) {
+    console.error('Error Checking for Programs Users', error);
+    res.status(500).send('Error checking for Programs Users');
+  }
+}

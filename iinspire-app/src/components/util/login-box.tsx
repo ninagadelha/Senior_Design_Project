@@ -4,12 +4,14 @@ import { Box, Input, Button, Text, Link } from "@chakra-ui/react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import colors from "../../../public/colors";
+import { useAuth } from "@/context/auth-context";
 
 const LoginBox = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
+    const { login } = useAuth();
     const isFormValid = username.trim() !== "" && password.trim() !== "";
 
     const handleLogin = async () => {
@@ -28,15 +30,10 @@ const LoginBox = () => {
             const data = await response.json();
 
             if (response.ok) {
-                const { id, programid, role, netid } = data.user;
-            
-                localStorage.setItem("userID", id);
-                localStorage.setItem("programID", programid);
-                localStorage.setItem("userRole", role);
-                localStorage.setItem("netID", netid);
-            
+                login(data.user);
+                
                 // Normalize role to lowercase for consistent comparison
-                const normalizedRole = role.toLowerCase();
+                const normalizedRole = data.user.role.toLowerCase();
             
                 // Go to dashboard based on user role
                 switch(normalizedRole) {
@@ -53,13 +50,13 @@ const LoginBox = () => {
                         break;
                 }
             
-                alert("logged in");
+                alert("Logged in successfully");
             } else {
-                alert("error");
+                alert(data.message || "Login failed");
             }
         } catch (error) {
             console.error("Error during login:", error);
-            alert("error");
+            alert("An error occurred during login");
         }
     };
 
