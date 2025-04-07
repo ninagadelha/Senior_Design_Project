@@ -46,7 +46,11 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                                 {/* Radio buttons */}
                                 <RadioGroup
                                     value={value?.toString() || ''}
-                                    onValueChange={(details) => onAnswerChange(question.question_id, details.value)}
+                                    onValueChange={(details) => {
+                                        if (details.value) {  // Add null check
+                                          onAnswerChange(question.question_id, details.value);
+                                        }
+                                      }}
                                     size={'lg'}
                                     width="50%"
                                     marginRight={"10vh"}
@@ -101,7 +105,11 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                                 {/* Radio buttons */}
                                 <RadioGroup
                                     value={value?.toString() || ''}
-                                    onValueChange={(details) => onAnswerChange(question.question_id, details.value)}
+                                    onValueChange={(details) => {
+                                        if (details.value) {
+                                          onAnswerChange(question.question_id, details.value);
+                                        }
+                                      }}
                                     size={'lg'}
                                     width="50%"
                                     marginRight={"10vh"}
@@ -154,7 +162,11 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                                 {/* Radio buttons */}
                                 <RadioGroup
                                     value={value?.toString() || ''}
-                                    onValueChange={(details) => onAnswerChange(question.question_id, details.value)}
+                                    onValueChange={(details) => {
+                                        if (details.value) {  // Add null check
+                                          onAnswerChange(question.question_id, details.value);
+                                        }
+                                      }}
                                     size={'lg'}
                                     width="50%"
                                     marginRight={"10vh"}
@@ -202,7 +214,11 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
 
                                 <RadioGroup
                                     value={value?.toString() || ''}
-                                    onValueChange={(details) => onAnswerChange(question.question_id, details.value)}
+                                    onValueChange={(details) => {
+                                        if (details.value) {  // Add null check
+                                          onAnswerChange(question.question_id, details.value);
+                                        }
+                                      }}
                                     flex="2"
                                     variant={"subtle"}
                                 >
@@ -264,7 +280,11 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                                 {/* Radio buttons */}
                                 <RadioGroup
                                     value={value?.toString() || ''}
-                                    onValueChange={(details) => onAnswerChange(question.question_id, details.value)}
+                                    onValueChange={(details) => {
+                                        if (details.value) {  // Add null check
+                                          onAnswerChange(question.question_id, details.value);
+                                        }
+                                      }}
                                     size={'lg'}
                                     width="50%"
                                     marginRight={"10vh"}
