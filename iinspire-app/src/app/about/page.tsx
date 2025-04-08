@@ -1,19 +1,19 @@
-import Link from "next/link";
 import React from "react";
-//import colors from "../../../public/colors";
+import { Box } from "@chakra-ui/react";
+import Navbar from "@/components/util/navbar";
+import Footer from "@/components/util/footer";
+import AboutPageSection from "@/components/util/about-section";
 
 const AboutPage = () => {
+
     return (
-
-
-                <div className="text-center mt-4">
-                    <Link
-                        href="/"
-                        className="text-blue-500 hover:underline text-sm"
-                    >
-                        ← Back to Home
-                    </Link>
-                </div>
+        <Box>
+            <Navbar />
+            <AboutPageSection />
+            <Footer />
+        </Box>
+            
     );
 };
+
 export default AboutPage;

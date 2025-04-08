@@ -22,6 +22,12 @@ exports.getUsers = async () => {
   return await queryDatabase('SELECT * FROM Users');
 };
 
+exports.getAdminUsers = async () => {
+  return await queryDatabase("SELECT * FROM `Users` WHERE `role` IN ('ProgramCoordinator', 'Admin')");
+};
+
+
+
 exports.getprogramusers = async (programid)  => {
   return await queryDatabase('SELECT * FROM Users where programid=?', [programid]);
 };

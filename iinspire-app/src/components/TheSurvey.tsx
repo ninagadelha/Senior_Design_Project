@@ -151,8 +151,11 @@ const TheSurvey = () => {
             console.log("User ID:", userID);
             console.log("Program ID:", programID);
             console.log('Submitting:', answers);
-            
-            fetch('http://localhost:3000/api/survey-results', {
+            router.push('view-results');
+            alert('Form submitted successfully!');
+
+
+            fetch('http://backend-service.backend-namespace:5000/api/survey-results', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
