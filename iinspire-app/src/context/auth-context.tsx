@@ -52,7 +52,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const getHomePath = () => {
-        if (!user) return "/"; // Default for logged out users
+        if (!user || !isAuthenticated) return "/"; // Default for logged out users
         switch(user.role.toLowerCase()) {
           case 'student': 
             return '/student-home';

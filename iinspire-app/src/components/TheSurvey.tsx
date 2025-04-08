@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 import ProgressBar from "@/components/util/ProgressBar";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
+import { useColorMode } from "./ui/color-mode";
 interface SurveyAnswer {
     [key: string]: string | string[]; // Question ID as key
 }
@@ -15,19 +16,29 @@ interface SurveyAnswer {
 const TheSurvey = () => {
     const [answers, setAnswers] = useState<SurveyAnswer>({});
     const [questions, setQuestions] = useState<SurveyQuestionInterface[]>([]);
-    const {user} = useAuth();
+    const { user } = useAuth();
     const router = useRouter();
 
     const GROUP_MESSAGES: { [key: string]: string } = {
-        '0': 'Please indicate your level of agreement with the following statements:',
-        '1': 'How frequently do you experience these situations?',
-        '2': 'Rate your confidence in these areas:',
-        '3': 'Select your preferences regarding campus resources:',
-        '4': 'How would you describe your typical responses to these scenarios?',
-        '5': 'Please indicate your level of agreement with the following statements:',
-        '6': 'Select your level of confidence for each research skill.'
+        '0': 'Please indicate the level to which you agree or disagree with each statement',
+        '1': 'Please indicate the level to which you have participated on a scale from never to always',
+        '2': 'Now, please indicate your degree of interest in doing each of the following activities, Use the scale below to show how interested you are in each activity.',
+        '3': 'For each task listed below, please indicate how confident you are that you could successfully complete it - assuming you were motivated to make your best effort',
+        '4': 'Using the scale below, please indicate the extent to which you agree or disagree with each of the following statements.',
+        '5': 'Please indicate the level to which you agree or disagree with each statement ',
+        '6': 'Please indicate your degree of confidence you have in your ability to successfully perform each behavior. Your strength will be rated on a 100-point scale ranging from 0 (no confidence) to 100 (complete confidence) for each of the following items.'
         // Add more groups as needed
     };
+    const GROUP_KEYS: { [key: string]: string } = {
+        '0': 'civicEngagement',
+        //'1': 'civicParticipation',
+        '2': 'stemInterest',
+        '3': 'stemEfficacy',
+        '4': 'stemOutcome',
+        '5': 'researchOutcome',
+        '6': 'researchEfficacy'
+    };
+
 
     let headers = new Headers();
 
@@ -96,16 +107,49 @@ const TheSurvey = () => {
         }
     };
 
+    const formatAnswersByGroupKey = (): Record<string, (string | number)[]> => {
+        const grouped: Record<string, (string | number)[]> = {};
+
+        questions.forEach((question) => {
+            const group = question.question_group?.toString() || 'General';
+            const groupKey = GROUP_KEYS[group];
+
+            if (!groupKey) return;
+
+            const answer = answers[question.question_id];
+            if (answer !== undefined) {
+                if (!grouped[groupKey]) grouped[groupKey] = [];
+
+                // If the answer is a string and can be parsed as a number, parse it
+                if (typeof answer === 'string' && !isNaN(Number(answer))) {
+                    grouped[groupKey].push(Number(answer));
+                } else if (Array.isArray(answer)) {
+                    // Convert array of strings to numbers if possible
+                    grouped[groupKey].push(
+                        ...answer.map(a => isNaN(Number(a)) ? a : Number(a))
+                    );
+                } else {
+                    grouped[groupKey].push(answer);
+                }
+            }
+        });
+
+        return grouped;
+    };
+
+
+
     const handleConfirmSubmission = () => {
-        const programId = user?.programid;
-        const userId = user?.id;
-        const payload = { userId, programId, answers };
+        const programID = user?.programid;
+        const userID = user?.id;
+        const formattedAnswers = formatAnswersByGroupKey();
+        const payload = { userID, programID, ...formattedAnswers };
         if (Object.keys(answers).length < questions.length) {
             alert('Please answer all questions.');
         }
         else if (Object.keys(answers).length == questions.length) {
-            console.log("User ID:", userId);
-            console.log("Program ID:", programId);
+            console.log("User ID:", userID);
+            console.log("Program ID:", programID);
             console.log('Submitting:', answers);
             router.push('view-results');
             alert('Form submitted successfully!');
@@ -118,17 +162,19 @@ const TheSurvey = () => {
                 },
                 body: JSON.stringify(payload),
             })
-            .then((res) => {
-                if (!res.ok) throw new Error('Network response was not ok');
-                return res.json();
-            })
-            .then((data) => {
-                console.log('Success:', data);
-                router.push('view-results');
-            })
-            .catch((error) => {
-                console.error('Error submitting survey:', error);
-            });
+                .then((res) => {
+                    if (!res.ok) throw new Error('Network response was not ok');
+                    return res.json();
+                })
+                .then((data) => {
+                    console.log('Success:', data);
+                    alert('Form submitted successfully!');
+                    router.push('view-results');
+                })
+                .catch((error) => {
+                    console.error('Error submitting survey:', error);
+                });
+            console.log(JSON.stringify(payload));
         }
     };
 
@@ -148,14 +194,14 @@ const TheSurvey = () => {
     }
 
     return (
-        <>
-            <Box maxW="100vw" mx="auto" mt={8} padding={'1vw'} suppressHydrationWarning>
+        <Box bg="white" color="black">
+            <Box maxW="100vw" mx="auto" mt={8} padding={'1vw'} bg="white" color="black" suppressHydrationWarning>
                 <ProgressBar current={currentGroupIndex + 1} total={groupNames.length} />
-                <Heading size="3xl">Survey Form</Heading>
+                <Heading bg="white" color="black" size="3xl">Survey: {user?.programid}</Heading>
 
                 {/* Display only the current group */}
-                <Box mt={4} suppressHydrationWarning>
-                    <Heading size="lg" mb={4}>
+                <Box mt={4} bg="white" color="black" suppressHydrationWarning>
+                    <Heading bg="white" color="black" size="lg" mb={4}>
                         {GROUP_MESSAGES[currentGroup]}
                     </Heading>
                     {currentQuestions.map((question) => (
@@ -202,7 +248,7 @@ const TheSurvey = () => {
                     )}
                 </Flex>
             </Box>
-        </>
+        </Box>
     );
 };
 
