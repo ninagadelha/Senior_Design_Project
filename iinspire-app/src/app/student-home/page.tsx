@@ -12,4 +12,5 @@ const StudentHome = () => {
             </div>
     );
 };
+
 export default StudentHome;

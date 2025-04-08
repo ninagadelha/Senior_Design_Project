@@ -43,3 +43,28 @@ try {
     res.status(500).send('Error fetching User Survey Results');
   }
 };
+
+
+
+exports.getProgramSurveyResults = async (req, res) => {
+  const {programID } = req.body;
+
+  if (!programID) {
+      return res.status(400).json({ message: "Missing programID" });
+  }
+
+try {
+  // Query the Users table to find a user by the provided email
+  const results = await srService.getSurveyResultsByProgram(programID);
+    // User found with the provided email
+    res.json({
+      message: 'Program results:',
+      Results: results
+    });
+}
+catch (error) {
+  console.error('Error fetching Programs Survey Results for admin:', error);
+  res.status(500).send('Error fetching Programs Survey Results for Admin');
+}
+};
+

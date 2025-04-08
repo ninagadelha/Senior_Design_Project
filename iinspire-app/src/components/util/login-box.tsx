@@ -16,7 +16,7 @@ const LoginBox = () => {
 
     const handleLogin = async () => {
         try {
-            const response = await fetch("http://localhost:3000/api/login", {
+            const response = await fetch("http://backend-service.backend-namespace:5000/api/login", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -26,18 +26,19 @@ const LoginBox = () => {
                     password: password,
                 }),
             });
-
+            console.log("Login API status:", response.status);
+            console.log("Login API headers:", response.headers);
             const data = await response.json();
 
             if (response.ok) {
                 login(data.user);
-                
+
                 // Normalize role to lowercase for consistent comparison
                 const normalizedRole = data.user.role.toLowerCase();
-            
+
                 // Go to dashboard based on user role
                 switch(normalizedRole) {
-                    case "student": 
+                    case "student":
                         router.push("/student-home");
                         break;
                     case "programcoordinator":
@@ -49,7 +50,7 @@ const LoginBox = () => {
                     default:
                         break;
                 }
-            
+
                 alert("Logged in successfully");
             } else {
                 alert(data.message || "Login failed");

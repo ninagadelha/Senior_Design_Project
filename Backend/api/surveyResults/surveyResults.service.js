@@ -14,6 +14,25 @@ const queryDatabase = async (query, params = []) => {
     return await queryDatabase(sql, [userID, programID]);
   };
 
+  exports.getSurveyResultsByProgram = async (programID) => {
+    const sql = `
+      SELECT 
+        Users.email,
+        Users.netid,
+        Users.age,
+        Users.gender,
+        Users.ethnicity,
+        Users.credits,
+        Users.stem_interests,
+        Users.institution,
+        SurveyResults.*
+      FROM SurveyResults
+      LEFT JOIN Users ON SurveyResults.userID = Users.id
+      WHERE SurveyResults.programID = ?
+    `;
+    return await queryDatabase(sql, [programID]);
+  };
+  
 
 
 
@@ -34,22 +53,32 @@ exports.createSurveyResult = async (userID, programID, civicEngagement, stemInte
 
     // SQL query to insert the data
     const sql = `
-        INSERT INTO SurveyResults 
-        (userID, programID, dataCreated, civicEngagement, stemInterest, stemEfficacy, stemOutcome, researchOutcome, researchEfficacy)
-        VALUES (?, ?, NOW(), ?, ?, ?, ?, ?, ?)
-    `;
+    INSERT INTO SurveyResults 
+    (userID, programID, dataCreated, civicEngagement, stemInterest, stemEfficacy, stemOutcome, researchOutcome, researchEfficacy, civicEngagementArray, stemInterestArray, stemEfficacyArray, stemOutcomeArray, researchOutcomeArray, researchEfficacyArray)
+    VALUES (?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+`;
 
-    // Return the query promise
-    return await queryDatabase(sql, [
-        userID, 
-        programID,  
-        normalizedCivicEngagement, 
-        normalizedStemInterest, 
-        normalizedStemEfficacy, 
-        normalizedStemOutcome, 
-        normalizedResearchOutcome, 
-        normalizedResearchEfficacy
-    ]);
+// Serialize the array data before passing it to the query
+const surveyData = [
+    userID, 
+    programID,  
+    normalizedCivicEngagement, 
+    normalizedStemInterest, 
+    normalizedStemEfficacy, 
+    normalizedStemOutcome, 
+    normalizedResearchOutcome, 
+    normalizedResearchEfficacy, 
+    JSON.stringify(civicEngagement),  // Serialize arrays as JSON strings
+    JSON.stringify(stemInterest), 
+    JSON.stringify(stemEfficacy), 
+    JSON.stringify(stemOutcome), 
+    JSON.stringify(researchOutcome), 
+    JSON.stringify(researchEfficacy)
+];
+
+// Return the query promise
+return await queryDatabase(sql, surveyData);
+
 
   };
 
