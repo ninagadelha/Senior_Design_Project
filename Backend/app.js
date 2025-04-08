@@ -12,7 +12,7 @@ const userRouter = require('./api/UserNew/User.router')
 const programRouter = require('./api/program/program.router')
 const surveyResultsRouter = require('./api/surveyResults/surveyResults.router');
 const linkRouter = require('./api/links/links.router');
-//const codeRouter = require('./api/codes/codes.router');
+const codeRouter = require('./api/codes/codes.router');
 // Create an Express application
 const app = express();
 app.use(bodyParser.json());
@@ -24,7 +24,7 @@ app.use('/api', userRouter)
 app.use('/api', programRouter)
 app.use('/api', surveyResultsRouter);
 app.use('/api', linkRouter);
-//app.use('/api', codeRouter);
+app.use('/api', codeRouter);
 
 // Set a port for the server to listen on
 const PORT = 3000;

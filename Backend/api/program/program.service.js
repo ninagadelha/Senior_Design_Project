@@ -37,6 +37,46 @@ const queryDatabase = async (query, params = []) => {
     return await queryDatabase(query, [program_userid]);
   };
 
-exports.postnewprogram = async(program_name, owner_userid, code) => {
-  return await queryDatabase('INSERT into Program (name, owner_userid, code) values (?, ?, ?)', [program_name, owner_userid, code]);
+  const generateRandomCode = () => {
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let code = '';
+    for (let i = 0; i < 6; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      code += characters[randomIndex];
+    }
+    return code;
+  };
+
+  const codeExists = async (code) => {
+    const result = await queryDatabase('SELECT * FROM Codes WHERE code = ?', [code]);
+    return result.length > 0; // Returns true if the code already exists
+  }
+
+  const postnewCode = async (role) => {
+  let code;
+  let codeExistsFlag = true;
+
+  // Keep generating random codes until we find one that doesn't already exist
+  while (codeExistsFlag) {
+    code = generateRandomCode();
+    codeExistsFlag = await codeExists(code); // Check if the code already exists
+  }
+
+   await queryDatabase('INSERT into Codes (code, role, created) values (?, ?, now())', [code, role]);
+   return code;
+  }
+
+
+
+exports.postnewprogram = async(program_name, owner_userid) => {
+  try{
+    const code = await postnewCode("Student");
+
+    return await queryDatabase('INSERT into Program (name, owner_userid, code) values (?, ?, ?)', [program_name, owner_userid, code]);
+  }
+  catch (error) {
+    console.error('Error creating new program:', error);
+    throw error; // You can handle or log the error as needed
+  }
+
 }

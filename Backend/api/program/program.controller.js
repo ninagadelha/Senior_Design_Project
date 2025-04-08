@@ -4,19 +4,19 @@ const programService = require('./program.service');
 //controller methods
 
 exports.postnewprogram = async (req, res) => {
-  const { program_name, owner_userid, code } = req.body;
+  const { program_name, owner_userid } = req.body;
 
-  if ( !program_name || !owner_userid || ! code) {
-      return res.status(400).json({ message: 'Missing required fields, program_name, owner_userid, code' });
+  if ( !program_name || !owner_userid ) {
+      return res.status(400).json({ message: 'Missing required fields, program_name, owner_userid' });
   }
 
   try {
-    const programs = await programService.postnewprogram(program_name, owner_userid, code);
+    const programs = await programService.postnewprogram(program_name, owner_userid);
     res.json({message: "successfully created program",
       program : programs});
   } catch (error) {
-    console.error('Error making new program make sure the Join Code is Unique:', error);
-    res.status(500).send('Error making new program make sure the Join Code is Unique');
+    console.error('Error making new program :', error);
+    res.status(500).send('Error making new program');
   }
 }
 
