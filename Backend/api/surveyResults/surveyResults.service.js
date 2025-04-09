@@ -1,5 +1,6 @@
 const pool = require("../../dbconfig");// Ensure pool is correctly imported
 
+
 const queryDatabase = async (query, params = []) => {
     try {
         const [results] = await pool.query(query, params);

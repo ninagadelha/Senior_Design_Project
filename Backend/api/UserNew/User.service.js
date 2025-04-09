@@ -36,50 +36,58 @@ exports.loginUser = async (email) => {
   return await queryDatabase('SELECT * FROM Users WHERE email = ?', [email]);
 };
 
-exports.PostNewUser = async (email, netid, age, gender, ethnicity, credits, stem_interests, institution, code, fullname) => {
-  let role="Student";
-  let programid = null;
-  
-  try {
 
-    if(code==="Admin"){
-      role="Admin";
-    }
-    else if(code==="ProgramCoordinator"){
-      role="ProgramCoordinator";
-    }
-    else{
-      // First, select programid based on the provided code
-    const programResult = await queryDatabase(
-      'SELECT program_id FROM Program WHERE code = ?',
+
+
+exports.PostNewUser = async (email, netid, age, gender, ethnicity, credits, stem_interests, institution, code, fullname) => {
+  let role = "Student"; // Default role
+  let programid = null;
+
+  try {
+    // First, check if the code exists in the Codes table and get the associated role
+    const codeResult = await queryDatabase(
+      'SELECT role FROM Codes WHERE code = ?',
       [code]
     );
 
-    // If no program is found with that code, return an error
-    if (programResult.length === 0) {
-      throw new Error('Program with the given code does not exist.');
+    // If no code is found in the Codes table, return an error
+    if (codeResult.length === 0) {
+      throw new Error('The provided code does not exist.');
     }
 
-    // Get the programid from the result
-    programid = programResult[0].programid;
-    }
-    
+    // Get the role associated with the code from the Codes table
+    role = codeResult[0].role;
 
-    // Now insert the new user with the obtained programid
+    // If the role is "Student", we need to get the program_id from the Program table
+    if (role === "Student") {
+      const programResult = await queryDatabase(
+        'SELECT program_id FROM Program WHERE code = ?',
+        [code]
+      );
+
+      // If no program is found with that code, return an error
+      if (programResult.length === 0) {
+        throw new Error('Program with the given code does not exist.');
+      }
+
+      // Get the program_id from the result
+      programid = programResult[0].program_id;
+    }
+
+    // Now insert the new user with the obtained program_id (if any)
     const result = await queryDatabase(
-      'INSERT INTO Users (role, email, netid, age, gender, ethnicity, credits, stem_interests, institution, programid,fullname, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, NOW())',
+      'INSERT INTO Users (role, email, netid, age, gender, ethnicity, credits, stem_interests, institution, programid, fullname, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())',
       [role, email, netid, age, gender, ethnicity, credits, stem_interests, institution, programid, fullname]
     );
 
-    // Return some success response (you can adjust this as needed)
+    // Return a success response
     return { success: true, message: 'User created successfully.' };
 
   } catch (error) {
-    // Return the error message if anything goes wrong
+    // Return the error message if something goes wrong
     return { success: false, message: error.message };
   }
 };
-
 
 
 exports.UpdateResearcher = async (email) => {
