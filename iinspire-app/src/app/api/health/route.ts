@@ -1,8 +1,8 @@
-import { NextResponse } from 'next/server';
-
 export function GET() {
-
-    return new Response( {
+    return new Response(JSON.stringify({ message: 'OK' }), {
         status: 200,
+        headers: {
+            'Content-Type': 'application/json',
+        },
     });
 }
