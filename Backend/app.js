@@ -26,12 +26,11 @@ app.use('/api', surveyResultsRouter);
 app.use('/api', linkRouter);
 app.use('/api', codeRouter);
 
-// Set a port for the server to listen on
-const PORT = 3000;
+// Set the port from env or default to 5000
+const PORT = 5000;
 
-  // Start the server and listen on the defined port
-  app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-  });
-
+//so ECS ALB can reach it
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Backend is running on port ${PORT}`);
+});
   
