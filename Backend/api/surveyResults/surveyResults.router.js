@@ -4,7 +4,7 @@ const router = express.Router();
 
 
 router.post("/survey-results", srController.postSurveyResult);
-router.get("/survey-results", srController.getUserSurveyResults);
-router.get("/program-survey-results", srController.getProgramSurveyResults);
+router.post("/survey-results-user", srController.getUserSurveyResults);
+router.post("/program-survey-results", srController.getProgramSurveyResults);
 
 module.exports = router;
