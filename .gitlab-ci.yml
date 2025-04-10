@@ -65,16 +65,26 @@ deploy-backend:
   stage: deploy
   image: amazonlinux:2
   before_script:
-    - yum install -y unzip curl
+    - yum install -y unzip curl jq
     - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
     - unzip awscliv2.zip
     - ./aws/install
   script:
-    - "echo Deploying backend..."
-    - "echo Cluster: $ECS_CLUSTER_NAME"
-    - "echo Service: $ECS_SERVICE_BACKEND"
-    - "echo Region: $AWS_REGION"
-    - "/usr/local/bin/aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_BACKEND --force-new-deployment --region $AWS_REGION"
+    - echo "Fetching current task definition for backend..."
+    - >
+      TASK_DEF=$(aws ecs describe-task-definition --task-definition $TASK_DEF_BACKEND --region $AWS_REGION)
+    - echo "Modifying task definition with new image..."
+    - >
+      NEW_TASK_DEF=$(echo $TASK_DEF | jq '.taskDefinition' |
+        jq 'del(.status, .revision, .taskDefinitionArn, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)' |
+        jq --arg IMAGE "$ECR_REPO_BACKEND:$IMAGE_TAG" '.containerDefinitions[0].image = $IMAGE')
+    - echo "$NEW_TASK_DEF" > new-task-def-backend.json
+    - echo "Registering new task definition..."
+    - >
+      aws ecs register-task-definition --cli-input-json file://new-task-def-backend.json --region $AWS_REGION
+    - echo "Updating ECS service to use new task definition..."
+    - >
+      aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_BACKEND --force-new-deployment --region $AWS_REGION
   only:
     changes:
       - Backend/**/*
@@ -90,16 +100,26 @@ deploy-frontend:
   stage: deploy
   image: amazonlinux:2
   before_script:
-    - yum install -y unzip curl
+    - yum install -y unzip curl jq
     - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
     - unzip awscliv2.zip
     - ./aws/install
   script:
-    - "echo Deploying frontend..."
-    - "echo Cluster: $ECS_CLUSTER_NAME"
-    - "echo Service: $ECS_SERVICE_FRONTEND"
-    - "echo Region: $AWS_REGION"
-    - "/usr/local/bin/aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_FRONTEND --force-new-deployment --region $AWS_REGION"
+    - echo "Fetching current task definition for frontend..."
+    - >
+      TASK_DEF=$(aws ecs describe-task-definition --task-definition $TASK_DEF_FRONTEND --region $AWS_REGION)
+    - echo "Modifying task definition with new image..."
+    - >
+      NEW_TASK_DEF=$(echo $TASK_DEF | jq '.taskDefinition' |
+        jq 'del(.status, .revision, .taskDefinitionArn, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)' |
+        jq --arg IMAGE "$ECR_REPO_FRONTEND:$IMAGE_TAG" '.containerDefinitions[0].image = $IMAGE')
+    - echo "$NEW_TASK_DEF" > new-task-def-frontend.json
+    - echo "Registering new task definition..."
+    - >
+      aws ecs register-task-definition --cli-input-json file://new-task-def-frontend.json --region $AWS_REGION
+    - echo "Updating ECS service to use new task definition..."
+    - >
+      aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_FRONTEND --force-new-deployment --region $AWS_REGION
   only:
     changes:
       - iinspire-app/**/*
@@ -107,3 +127,4 @@ deploy-frontend:
   variables:
     AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
     AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+
