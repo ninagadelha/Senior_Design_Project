@@ -116,10 +116,17 @@ deploy-frontend:
     - echo "$NEW_TASK_DEF" > new-task-def-frontend.json
     - echo "Registering new task definition..."
     - >
-      aws ecs register-task-definition --cli-input-json file://new-task-def-frontend.json --region $AWS_REGION
-    - echo "Updating ECS service to use new task definition..."
+      REGISTERED=$(aws ecs register-task-definition --cli-input-json file://new-task-def-frontend.json --region $AWS_REGION)
     - >
-      aws ecs update-service --cluster $ECS_CLUSTER_NAME --service $ECS_SERVICE_FRONTEND --force-new-deployment --region $AWS_REGION
+      NEW_REVISION=$(echo $REGISTERED | jq -r '.taskDefinition.revision')
+    - echo "Updating ECS service to use frontend-task revision $NEW_REVISION"
+    - >
+      aws ecs update-service \
+        --cluster $ECS_CLUSTER_NAME \
+        --service $ECS_SERVICE_FRONTEND \
+        --task-definition frontend-task:$NEW_REVISION \
+        --force-new-deployment \
+        --region $AWS_REGION
   only:
     changes:
       - iinspire-app/**/*
@@ -127,4 +134,5 @@ deploy-frontend:
   variables:
     AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
     AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+
 
