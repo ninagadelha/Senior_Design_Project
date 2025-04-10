@@ -1,21 +1,22 @@
-# Use full Node image (not Alpine) to avoid some build issues with native packages
 FROM node:20
 
-# Create app directory
+# Set working directory
 WORKDIR /app
 
-
-ENV CI=true
-
-# Copy only package files first (for caching layers)
+# Optimize install by copying only the lock and manifest first
 COPY package*.json ./
 
-
-# Clean install without peer issues
+# Install dependencies
 RUN npm install --legacy-peer-deps
+
+# Copy the full app source into container
 COPY . .
 
-# Build Next.js app
+# Build the app (supports /src/app structure automatically)
 RUN npm run build
+
+# Expose Next.js port
 EXPOSE 3000
-CMD ["npm", "start"]
+
+# Start the Next.js server
+CMD ["npx", "next", "start", "-p", "3000"]
