@@ -16,7 +16,7 @@ const LoginBox = () => {
 
     const handleLogin = async () => {
         try {
-            console.log("Sending Request");
+            console.log("Sending Request,April 10");
             const response = await fetch("http://backend-service.backend-namespace:5000/api/login", {
                 method: "POST",
                 headers: {
