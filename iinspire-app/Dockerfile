@@ -5,6 +5,7 @@ WORKDIR /app
 
 # Optimize install by copying only the lock and manifest first
 COPY package*.json ./
+RUN npm install
 
 # Install dependencies
 RUN npm install --legacy-peer-deps
