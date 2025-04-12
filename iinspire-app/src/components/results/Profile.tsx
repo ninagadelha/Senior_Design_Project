@@ -9,6 +9,9 @@ import anychart from "anychart";
 const Profile = () => {
     const chartType = "bubble";
     const [isClient, setIsClient] = useState(false);
+    const[myData,setMyData]=useState<any>(null);
+    const[userID,setUserID]=useState<string|null>(null);
+    const[programID,setProgramID]=useState<string|null>(null);
     const [cardText, setCardText] = useState({
         civicEngagement: "",
         stemInterests: "",
@@ -18,37 +21,66 @@ const Profile = () => {
         researchSelfEfficacy: "",
     });
 
-    const myData = [
-        {
-            groupAverages: {
-                group_1_average: 6.5,
-                group_2_average: 5.2,
-                group_3_average: 4.8,
-                group_4_average: 7.0,
-                group_5_average: 6.0,
-                group_6_average: 5.9,
-            },
-        },
-    ];
 
-    const [userID, setUserID] = useState<string | null>(null);
-    const [programID, setProgramID] = useState<string | null>(null);
 
     useEffect(() => {
         if (typeof window !== "undefined") {
             anychart.licenseKey("lsamp-iinspire-8c03f4be-8ef79ff2");
             setIsClient(true);
 
-            const storedUserID = localStorage.getItem("userID");
-            const storedProgramID = localStorage.getItem("programID");
-            setUserID(storedUserID);
-            setProgramID(storedProgramID);
+            const storedUser=localStorage.getItem('user');
+            if(storedUser){
+                const user=JSON.parse(storedUser);
+                setUserID(user.id);
+                setProgramID(user.programid);
+
+                console.log("userID:",user.id);
+                console.log("programID:",user.programid);
+            }
         }
-    }, []);
+    },[]);
 
     useEffect(() => {
-        if (isClient && myData.length > 0) {
-            const lastEntry = myData[myData.length - 1].groupAverages;
+        if (isClient && userID && programID) {
+            fetch("http://localhost:5000/api/survey-results-user", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    userID: userID,
+                    programID: programID,
+                }),
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    if (data.Results && data.Results.length > 0) {
+                        const result = data.Results[0];
+                        setMyData({
+                            groupAverages: {
+                                group_1_average: result.civicEngagement,
+                                group_2_average: result.stemInterest,
+                                group_3_average: result.stemEfficacy,
+                                group_4_average: result.stemOutcome,
+                                group_5_average: result.researchOutcome,
+                                group_6_average: result.researchEfficacy,
+                            },
+                        });
+                    }
+                })
+                .catch((error) =>
+                    console.error("Error fetching survey results:", error)
+                );
+        }
+    }, [isClient, userID, programID]);
+
+
+    useEffect(() => {
+        if (isClient && myData) {
+            const lastEntry = myData.groupAverages;
+
+            console.log(lastEntry);
+            console.log("civic engagement: ", lastEntry.civicEngagement);
 
             setCardText({
                 civicEngagement: `Your civic engagement scale circle is ${
@@ -88,7 +120,7 @@ const Profile = () => {
                 }`,
             });
         }
-    }, [isClient]);
+    }, [isClient, myData]);
 
     return (
         <div>
@@ -98,7 +130,7 @@ const Profile = () => {
                 <div className="graph-container">
                     {isClient && (
                         <ChartComponent
-                            dataSet={myData[0]}
+                            dataSet={myData}
                             comparisonData={null}
                             chartType={chartType}
                         />
