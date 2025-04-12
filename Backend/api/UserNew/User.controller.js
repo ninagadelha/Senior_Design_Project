@@ -215,4 +215,36 @@ exports.getUsersProgram = async (req,res) => {
     console.error('Error Checking for Programs Users', error);
     res.status(500).send('Error checking for Programs Users');
   }
+  exports.newUser = async (req, res) => {
+    const {
+      fullname,
+      email,
+      netid,
+      stem_interests
+    } = req.body;
+
+    if (!email || !code) {
+      return res.status(400).send('Email and Program code are required');
+    }
+
+    try {
+      const response = await userService.PostNewUser(
+          fullname,
+          email,
+          netid,
+          stem_interests
+      );
+
+      if (response.success) {
+        res.json({ message: 'User Created successfully' });
+      } else {
+        res.status(400).json({ message: response.message });
+      }
+    } catch (error) {
+      console.error('Error Creating New User:', error);
+      res.status(500).send('Error Creating New User');
+    }
+  };
+
+
 }
