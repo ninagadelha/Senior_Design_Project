@@ -109,4 +109,31 @@ exports.checkUser= async ( email, programid) => {
   const sql = `SELECT * from Users WHERE email = ? AND programid = ?`;
   return await queryDatabase(sql, [email, programid]);
 }
+
+// Post a new user with selected fields
+exports.PostNewUser = async (email, name, netid, stem_interests) => {
+  try {
+    // Check if user already exists
+    const [existing] = await pool.promise().query(
+        'SELECT * FROM Users WHERE email = ?',
+        [email]
+    );
+
+    if (existing.length > 0) {
+      return { success: false, message: 'User already exists' };
+    }
+
+    // Insert new user
+    const [result] = await pool.promise().query(
+        `INSERT INTO Users (email, fullname, netid, stem_interests) VALUES (?, ?, ?, ?)`,
+        [email, name, netid, stem_interests]
+    );
+
+    return { success: true, message: 'User created successfully' };
+  } catch (error) {
+    console.error('Error inserting user:', error);
+    return { success: false, message: 'Database error' };
+  }
+};
+
   
