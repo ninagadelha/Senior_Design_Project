@@ -58,3 +58,23 @@
     transform: scale(0.95);
     background-color: #3a6acb;
 }
+
+.export-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #4a86e8;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.export-button:hover {
+    background-color: #3a6dc4;
+}
+
+.export-button:active {
+    background-color: #2f5aa2;
+}
