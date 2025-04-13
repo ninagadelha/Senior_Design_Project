@@ -21,10 +21,11 @@ interface DataSet {
 interface ChartComponentProps {
     dataSet: DataSet;
     comparisonData: DataSet | null;
-    chartType: "bubble"
+    chartType: "bubble";
+    onChartReady?: (chart:any) => void;
 }
 
-const ChartComponent: React.FC<ChartComponentProps> = ({ dataSet, comparisonData, chartType }) => {
+const ChartComponent: React.FC<ChartComponentProps> = ({ dataSet, comparisonData, chartType, onChartReady }) => {
     const chartContainer = useRef<HTMLDivElement>(null);
     const [anychart, setAnyChart] = useState<any>(null);
     const [chartInstance, setChartInstance] = useState<any>(null);
@@ -45,6 +46,10 @@ const ChartComponent: React.FC<ChartComponentProps> = ({ dataSet, comparisonData
         const chart =  anychart.cartesian();
         drawBubbleChart(chart, dataSet, comparisonData, chartContainer.current);
         setChartInstance(chart);
+
+        if (onChartReady) {
+            onChartReady(chart);
+        }
 
     }, [anychart, dataSet, comparisonData, chartType]);
 
@@ -75,8 +80,8 @@ const ChartComponent: React.FC<ChartComponentProps> = ({ dataSet, comparisonData
 
         container.innerHTML = "";
 
-        chart.maxBubbleSize("10%");
-        chart.minBubbleSize("5%");
+        chart.maxBubbleSize(width < 768 ? "6%" : "10%");
+        chart.minBubbleSize(width < 768 ? "3%" : "5%");
 
         const series1 = chart.bubble(data1);
         series1.normal().fill(null);
@@ -109,16 +114,27 @@ const ChartComponent: React.FC<ChartComponentProps> = ({ dataSet, comparisonData
                 </div>
             `);
 
-        configureChart(chart, container);
+        configureChart(chart, container, width);
     };
 
 
-    const configureChart = (chart: any, container: HTMLDivElement) => {
+    const configureChart = (chart: any, container: HTMLDivElement, width: number) => {
         chart.width("100%");
         chart.height("100%");
         chart.container(container);
 
         const xLabels = chart.xAxis().labels();
+        console.log("width: ", width);
+        if (width < 768) {
+
+            xLabels.enabled(false);
+        } else {
+            // For normal screens
+            xLabels.enabled(true);
+            xLabels.fontSize(12);
+            xLabels.width(100);
+            xLabels.rotation(0);
+        }
         xLabels.wordWrap("normal");
         xLabels.wordBreak("normal");
         xLabels.hAlign("center");
@@ -135,6 +151,7 @@ const ChartComponent: React.FC<ChartComponentProps> = ({ dataSet, comparisonData
 
         chart.yAxis().title("Normalized Value (1-10 scale)");
 
+        chart.credits().enabled(false);
         chart.draw();
 
 
