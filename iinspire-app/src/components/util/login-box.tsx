@@ -4,7 +4,8 @@ import { Box, Input, Button, Text, Link } from "@chakra-ui/react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import colors from "../../../public/colors";
-import { useAuth } from "@/context/auth-context";
+import { useAuth } from "@/context/auth-context"
+import { API_ENDPOINTS } from "@/constants/config";
 
 const LoginBox = () => {
     const [username, setUsername] = useState("");
@@ -17,7 +18,7 @@ const LoginBox = () => {
     const handleLogin = async () => {
         try {
             console.log("Sending Request,testing deploy");
-            const response = await fetch("http://backend-service.backend-namespace:5000/api/login", {
+            const response = await fetch(API_ENDPOINTS.login, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
