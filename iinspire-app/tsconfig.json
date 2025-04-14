@@ -38,5 +38,10 @@
   ],
   "exclude": [
     "node_modules"
-  ]
+  ],
+  "types": [
+    "@chakra-ui/react",
+    "@types/react",
+    "@types/react-dom"
+    ],
 }
