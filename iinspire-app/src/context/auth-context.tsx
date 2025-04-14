@@ -16,6 +16,7 @@ type AuthContextType = {
   login: (userData: User) => void;
   logout: () => void;
   setSelectedProgram: (programId: string) => void;
+  removeSelectedProgram: () => void;
   isAuthenticated: boolean;
   getHomePath: () => string;
 };
@@ -92,6 +93,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             login, 
             logout, 
             setSelectedProgram: handleSetProgram,
+            removeSelectedProgram,
             isAuthenticated,
             getHomePath
           }}
