@@ -10,8 +10,8 @@ router.post("/newuser",userController.newUser);
 router.post("/updateProgramDirector", userController.updateProgramDirector);
 router.post("/updateResearcher", userController.UpdateResearcher);
 router.post("/updateStudent", userController.UpdateStudent);
-router.get("/userexist", userController.getExistingUser);
-router.get("/usersprogram", userController.getUsersProgram);
+router.post("/userexist", userController.getExistingUser);
+router.post("/usersprogram", userController.getUsersProgram);
 router.get("/adminUsers",userController.getAdminUsers);
 
 module.exports = router;
