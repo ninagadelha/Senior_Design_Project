@@ -28,8 +28,7 @@ type Program = {
 
 const PCSelectProgramBox = () => {
   const router = useRouter();
-  const { user } = useAuth();
-  const [selectedProgram, setSelectedProgram] = useState<string>("");
+  const { user, selectedProgram, setSelectedProgram } = useAuth();
   const [programs, setPrograms] = useState<Program[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -78,7 +77,9 @@ const PCSelectProgramBox = () => {
   });
 
   const handleValueChange = ({ value }: { value: string[] }) => {
-    setSelectedProgram(value[0] || "");
+    const programId = value[0] || "";
+    setSelectedProgram(programId);
+    console.log("New program selected");
   };
 
   const handleContinue = async () => {

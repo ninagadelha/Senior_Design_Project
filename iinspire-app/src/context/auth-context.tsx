@@ -1,4 +1,3 @@
-// context/auth-context.tsx
 'use client'
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from 'react';
@@ -13,8 +12,10 @@ type User = {
 
 type AuthContextType = {
   user: User | null;
+  selectedProgram: string | null;
   login: (userData: User) => void;
   logout: () => void;
+  setSelectedProgram: (programId: string) => void;
   isAuthenticated: boolean;
   getHomePath: () => string;
 };
@@ -23,11 +24,14 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
+    const [selectedProgram, setSelectedProgram] = useState<string | null>(null);
     const router = useRouter();
   
     useEffect(() => {
       // Initialize from localStorage on mount
       const storedUser = localStorage.getItem('user');
+      const storedProgram = localStorage.getItem('selectedProgram');
+      
       if (storedUser) {
         try {
             setUser(JSON.parse(storedUser));
@@ -36,23 +40,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             localStorage.removeItem('user');
         }
       }
+      
+      if (storedProgram) {
+        setSelectedProgram(storedProgram);
+      }
     }, []);
   
-    //sets user to be stored in local storgae
+    const handleSetProgram = (programId: string) => {
+      setSelectedProgram(programId);
+      localStorage.setItem('selectedProgram', programId);
+    };
+  
     const login = (userData: User) => {
       setUser(userData);
       localStorage.setItem('user', JSON.stringify(userData));
     };
   
-    //removes user from local storage
     const logout = () => {
       setUser(null);
       localStorage.removeItem('user');
+      removeSelectedProgram();
       router.push('/');
     };
 
     const getHomePath = () => {
-        if (!user || !isAuthenticated) return "/"; // Default for logged out users
+        if (!user || !isAuthenticated) return "/";
         switch(user.role.toLowerCase()) {
           case 'student': 
             return '/student-home';
@@ -64,6 +76,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             return '/';
         }
       };
+
+    const removeSelectedProgram = () => {
+      setSelectedProgram(null);
+      localStorage.removeItem('selectedProgram');
+    }
   
     const isAuthenticated = !!user;
   
@@ -71,8 +88,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         <AuthContext.Provider 
           value={{ 
             user, 
+            selectedProgram,
             login, 
             logout, 
+            setSelectedProgram: handleSetProgram,
             isAuthenticated,
             getHomePath
           }}
