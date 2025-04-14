@@ -7,6 +7,7 @@ import "../../../public/styles/profile.css";
 import anychart from "anychart";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import { API_ENDPOINTS } from "@/constants/config";
 
 const Profile = () => {
     const chartType = "bubble";
@@ -49,7 +50,7 @@ const Profile = () => {
 
     useEffect(() => {
         if (isClient && userID && programID) {
-            fetch("http://localhost:5001/api/survey-results-user", {
+            fetch(API_ENDPOINTS.results, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
