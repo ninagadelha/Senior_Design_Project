@@ -14,6 +14,8 @@ RUN npm install --legacy-peer-deps
 COPY . .
 
 # Build the app (supports /src/app structure automatically)
+ARG NODE_ENV=production
+ENV NODE_ENV=${NODE_ENV}
 RUN npm run build
 
 # Expose Next.js port

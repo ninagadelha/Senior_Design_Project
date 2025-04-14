@@ -70,7 +70,7 @@ function StudentDashboardNew() {
                     title="View Resources"
                     description="Explore external resources like tutoring, mental health counseling, and other services"
                     buttonText="View Resources"
-                    buttonLink="/student-survey"
+                    buttonLink="/student-resources"
                     imageSrc="/images/custom/tree_sprout.png"
                     imageAlt="View Resources Hero Image"
                 />
