@@ -44,7 +44,7 @@ const LoginBox = () => {
                         router.push("/student-home");
                         break;
                     case "programcoordinator":
-                        router.push("/pc-home");
+                        router.push("/pc-select-program");
                         break;
                     case "admin":
                         router.push("/admin-home");
