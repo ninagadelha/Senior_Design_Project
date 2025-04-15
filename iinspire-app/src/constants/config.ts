@@ -4,5 +4,7 @@ export const API_ENDPOINTS = {
   getStudentResources: `${API_BASE_URL}/api/getLinks`,
   results: `${API_BASE_URL}/api/survey-results-user`,
   getProgramsByPC: `${API_BASE_URL}/api/getPCprograms`,
+  fetchQuestions: `${API_BASE_URL}/api/questions`,
+  saveResponses: `${API_BASE_URL}/api/survey-results`
   // Add other endpoints here
 };
