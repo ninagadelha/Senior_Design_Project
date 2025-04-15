@@ -1,10 +1,10 @@
 "use client";
 import { useState } from "react";
-import { Box, Input, Button, Text, Link } from "@chakra-ui/react";
+import { Link } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
-import colors from "../../../public/colors";
-import { Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/menu";
 import { API_ENDPOINTS } from "@/constants/config";
+import "../../../public/styles/createAccount.css";
+
 
 const CreateAccountBox = () => {
   const [email, setEmail] = useState("");
@@ -53,187 +53,55 @@ const CreateAccountBox = () => {
   };
 
   return (
-    <Box shadow="lg" rounded="lg" p={6} w="80" bg="gray.50" zIndex={10}>
-      <Text
-        fontSize="xl"
-        fontWeight="semibold"
-        mb={4}
-        textAlign="center"
-        color="gray.800"
-      >
-        Create Account
-      </Text>
+    <div className="create-account-container">
+      <div className="create-account-box">
+        <h2 className="title">Create Account</h2>
 
-      <Input
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        color="black"
-        mb={3}
-      />
-      <Input
-        placeholder="NetID"
-        value={netid}
-        onChange={(e) => setNetid(e.target.value)}
-        color="black"
-        mb={3}
-      />
-      <Input
-        placeholder="Age"
-        type="number"
-        value={age}
-        onChange={(e) => setAge(e.target.value)}
-        color="black"
-        mb={3}
-      />
+        <input className="input" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <input className="input" placeholder="NetID" value={netid} onChange={(e) => setNetid(e.target.value)} />
+        <input className="input" placeholder="Age" type="number" value={age} onChange={(e) => setAge(e.target.value)} />
 
-      <Menu>
-        <MenuButton
-          as={Button}
-          w="100%"
-          mb={3}
-          textAlign="left"
-          bg="white"
-          border="1px solid #ccc"
-          borderRadius="md"
-          _hover={{ bg: "gray.100" }}
-          _expanded={{ bg: "gray.100" }}
-          color={gender ? "black" : "gray.500"}
-        >
-          {gender || "Select Gender"}
-        </MenuButton>
-        <MenuList
-          maxW="100%"
-          whiteSpace="normal"
-          bg="white"
-          zIndex={2}
-          boxShadow="md"
-          color="black"
-        >
-          {[
-            "Woman",
-            "Man",
-            "Transgender",
-            "Non-binary/non-conforming",
-            "Prefer not to respond",
-          ].map((option) => (
-            <MenuItem
-              key={option}
-              onClick={() => setGender(option)}
-              whiteSpace="normal"
-              wordBreak="break-word"
-            >
-              {option}
-            </MenuItem>
-          ))}
-        </MenuList>
-      </Menu>
+        <select className="input" value={gender} onChange={(e) => setGender(e.target.value)}>
+          <option value="">Select Gender</option>
+          <option value="Woman">Woman</option>
+          <option value="Man">Man</option>
+          <option value="Transgender">Transgender</option>
+          <option value="Non-binary/non-conforming">Non-binary/non-conforming</option>
+          <option value="Prefer not to respond">Prefer not to respond</option>
+        </select>
 
-      <Menu>
-        <MenuButton
-          as={Button}
-          w="100%"
-          mb={3}
-          textAlign="left"
-          bg="white"
-          border="1px solid #ccc"
-          borderRadius="md"
-          _hover={{ bg: "gray.100" }}
-          _expanded={{ bg: "gray.100" }}
-          color={ethnicity ? "black" : "gray.500"} 
-        >
-          {ethnicity || "Select Race/Ethnicity"}
-        </MenuButton>
-        <MenuList
-          maxW="100%"
-          whiteSpace="normal"
-          bg="white"
-          zIndex={2}
-          boxShadow="md"
-          color="black"
-        >
-          {[
-            "Black or African American",
-            "White",
-            "Hispanic/Latino(a)",
-            "Asian",
-            "American Indian/Alaska Native",
-            "Native Hawaiian/Other Pacific Islander",
-            "Two or more",
-            "Prefer not to respond",
-          ].map((option) => (
-            <MenuItem
-              key={option}
-              onClick={() => setEthnicity(option)}
-              whiteSpace="normal"
-              wordBreak="break-word"
-            >
-              {option}
-            </MenuItem>
-          ))}
-        </MenuList>
-      </Menu>
-      <Input
-        placeholder="Credits"
-        value={credits}
-        onChange={(e) => setCredits(e.target.value)}
-        mb={3}
-        color="black"
-      />
-      <Input
-        placeholder="STEM Interests"
-        value={stemInterests}
-        onChange={(e) => setStemInterests(e.target.value)}
-        mb={3}
-        color="black"
-      />
-      <Input
-        placeholder="Institution"
-        value={institution}
-        onChange={(e) => setInstitution(e.target.value)}
-        mb={3}
-        color="black"
-      />
-      <Input
-        placeholder="Code"
-        value={code}
-        onChange={(e) => setCode(e.target.value)}
-        mb={4}
-        color="black"
-      />
+        <select className="input" value={ethnicity} onChange={(e) => setEthnicity(e.target.value)}>
+          <option value="">Select Race/Ethnicity</option>
+          <option value="Black or African American">Black or African American</option>
+          <option value="White">White</option>
+          <option value="Hispanic/Latino(a)">Hispanic/Latino(a)</option>
+          <option value="Asian">Asian</option>
+          <option value="American Indian/Alaska Native">American Indian/Alaska Native</option>
+          <option value="Native Hawaiian/Other Pacific Islander">Native Hawaiian/Other Pacific Islander</option>
+          <option value="Two or more">Two or more</option>
+          <option value="Prefer not to respond">Prefer not to respond</option>
+        </select>
 
-      <Button
-        onClick={handleCreateAccount}
-        w="full"
-        colorScheme="blue"
-        bg={colors.secondary_blue_dark}
-        color="white"
-      >
-        Create Account
-      </Button>
+        <input className="input" placeholder="Credits" value={credits} onChange={(e) => setCredits(e.target.value)} />
+        <input className="input" placeholder="STEM Interests" value={stemInterests} onChange={(e) => setStemInterests(e.target.value)} />
+        <input className="input" placeholder="Institution" value={institution} onChange={(e) => setInstitution(e.target.value)} />
+        <input className="input" placeholder="Code" value={code} onChange={(e) => setCode(e.target.value)} />
 
-      {successMessage && (
-        <Text
-          mt={2}
-          color={
-            successMessage.includes("successfully") ? "green.500" : "red.500"
-          }
-        >
-          {successMessage}
-        </Text>
-      )}
+        <button className="submit-button" onClick={handleCreateAccount}>
+          Create Account
+        </button>
 
-      <Text fontSize="sm" color="black" mt={3}>
-        Already have an account?{" "}
-        <Link
-          href="/"
-          color="blue.500"
-          _hover={{ textDecoration: "underline" }}
-        >
-          Login here
-        </Link>
-      </Text>
-    </Box>
+        {successMessage && (
+          <p className={`status-message ${successMessage.includes("successfully") ? "success" : "error"}`}>
+            {successMessage}
+          </p>
+        )}
+
+        <p className="footer">
+          Already have an account? <Link href="/" className="login-link">Login here</Link>
+        </p>
+      </div>
+    </div>
   );
 };
 

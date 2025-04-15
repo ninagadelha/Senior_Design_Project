@@ -5,30 +5,21 @@ import { Box } from "@chakra-ui/react";
 
 
 export default function CreateAccountPage() {
- return (
-   <div>
-     <Navbar />
-     <Box
-       display={"flex"}
-       justifyContent={"center"}
-       alignItems={"center"}
-       minH={"100vh"}
-       suppressHydrationWarning
-       style={{ backgroundColor: colors.primary_blue }}
-     >
-       <Box position="relative" display="flex" justifyContent="center" alignItems="center">
-
-         <Box position="absolute" bottom="-50px" left="-60px" zIndex={0}>
-
-         </Box>
-
-
-         <Box position="relative" zIndex={1} mt="-5rem">
-           <CreateAccountBox />
-         </Box>
-       </Box>
-     </Box>
-   </div>
- );
-}
-
+    return (
+        <div>
+          <Navbar />
+          <div
+            style={{
+              backgroundColor: colors.primary_blue,
+              minHeight: "100vh",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            //   paddingTop: "80px", // to avoid overlap with navbar
+            }}
+          >
+            <CreateAccountBox />
+          </div>
+        </div>
+      );
+    }
