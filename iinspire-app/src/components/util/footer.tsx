@@ -7,7 +7,7 @@ import colors from '../../../public/colors';
 
 function Footer(){
     return(
-        <Box className='navbar' background={colors.secondary_blue_dark}>
+        <Box className='navbar' background={colors.secondary_blue_dark} mt="auto">
             <Image className='logo' 
             src="/images/custom/IINSPIRE_logo_transparent_light.png"
             alt='logo'
