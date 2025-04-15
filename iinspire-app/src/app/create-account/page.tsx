@@ -1,7 +1,6 @@
 import CreateAccountBox from "@/components/util/create-account";
 import colors from "../../../public/colors";
 import Navbar from "@/components/util/navbar";
-import { Box } from "@chakra-ui/react";
 
 
 export default function CreateAccountPage() {
@@ -15,7 +14,6 @@ export default function CreateAccountPage() {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-            //   paddingTop: "80px", // to avoid overlap with navbar
             }}
           >
             <CreateAccountBox />
