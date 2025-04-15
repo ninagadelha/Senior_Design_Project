@@ -40,7 +40,7 @@ const queryDatabase = async (query, params = []) => {
   }
 
   exports.getAllCodes = async () => {
-    return await queryDatabase("SELECT * FROM Codes where role in ('Program Coordinator', 'Admin')");
+    return await queryDatabase("SELECT * FROM Codes where role in ('ProgramCoordinator', 'Admin')");
   };
 
 
