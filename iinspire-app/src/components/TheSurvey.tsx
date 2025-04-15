@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 import ProgressBar from "@/components/util/ProgressBar";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/auth-context";
-import { useColorMode } from "./ui/color-mode";
+import { API_ENDPOINTS } from "@/constants/config";
 interface SurveyAnswer {
     [key: string]: string | string[]; // Question ID as key
 }
@@ -48,7 +48,7 @@ const TheSurvey = () => {
     useEffect(() => {
         async function fetchQuestions() {
             try {
-                const res = await fetch('http://localhost:3000/api/questions', {
+                const res = await fetch(API_ENDPOINTS.fetchQuestions, {
                     method: 'GET',
                     headers: headers
                 });
@@ -155,7 +155,7 @@ const TheSurvey = () => {
             alert('Form submitted successfully!');
 
 
-            fetch('http://backend-service.backend-namespace:5000/api/survey-results', {
+            fetch(API_ENDPOINTS.saveResponses, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
