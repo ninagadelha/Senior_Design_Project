@@ -7,15 +7,26 @@ type User = {
   role: string;
   programid: string;
   fullname: string;
-  // other user fields that we need access to later in project
+};
+
+type ProgramCounts = {
+  surveys: string;
+  students: string;
+  resources: string;
+};
+
+type ProgramSelection = {
+  id: string | null;
+  name: string | null;
+  counts?: ProgramCounts;
 };
 
 type AuthContextType = {
   user: User | null;
-  selectedProgram: string | null;
+  selectedProgram: ProgramSelection;
   login: (userData: User) => void;
   logout: () => void;
-  setSelectedProgram: (programId: string) => void;
+  setSelectedProgram: (programId: string, programName?: string, counts?: ProgramCounts) => void;
   removeSelectedProgram: () => void;
   isAuthenticated: boolean;
   getHomePath: () => string;
@@ -25,31 +36,42 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
-    const [selectedProgram, setSelectedProgram] = useState<string | null>(null);
+    const [selectedProgram, setSelectedProgramState] = useState<ProgramSelection>({
+      id: null,
+      name: null
+    });
     const router = useRouter();
   
     useEffect(() => {
-      // Initialize from localStorage on mount
       const storedUser = localStorage.getItem('user');
-      const storedProgram = localStorage.getItem('selectedProgram');
+      const storedProgramId = localStorage.getItem('selectedProgramID');
+      const storedProgramName = localStorage.getItem('selectedProgramName');
+      const storedCounts = localStorage.getItem('programCounts');
       
-      if (storedUser) {
-        try {
-            setUser(JSON.parse(storedUser));
-        } catch (e) {
-            console.error('Failed to parse user data:', e);
-            localStorage.removeItem('user');
-        }
-      }
-      
-      if (storedProgram) {
-        setSelectedProgram(storedProgram);
+      if (storedUser) setUser(JSON.parse(storedUser));
+      if (storedProgramId) {
+        setSelectedProgramState({
+          id: storedProgramId,
+          name: storedProgramName || null,
+          counts: storedCounts ? JSON.parse(storedCounts) : undefined
+        });
       }
     }, []);
   
-    const handleSetProgram = (programId: string) => {
-      setSelectedProgram(programId);
-      localStorage.setItem('selectedProgram', programId);
+    const setSelectedProgram = (programId: string, programName?: string, counts?: ProgramCounts) => {
+      const newSelection = {
+        id: programId,
+        name: programName || null,
+        counts
+      };
+      setSelectedProgramState(newSelection);
+      localStorage.setItem('selectedProgramID', programId);
+      if (programName) {
+        localStorage.setItem('selectedProgramName', programName);
+      }
+      if (counts) {
+        localStorage.setItem('programCounts', JSON.stringify(counts));
+      }
     };
   
     const login = (userData: User) => {
@@ -79,8 +101,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       };
 
     const removeSelectedProgram = () => {
-      setSelectedProgram(null);
-      localStorage.removeItem('selectedProgram');
+      setSelectedProgramState({ id: null, name: null });
+      localStorage.removeItem('selectedProgramID');
+      localStorage.removeItem('selectedProgramName');
     }
   
     const isAuthenticated = !!user;
@@ -92,7 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             selectedProgram,
             login, 
             logout, 
-            setSelectedProgram: handleSetProgram,
+            setSelectedProgram,
             removeSelectedProgram,
             isAuthenticated,
             getHomePath

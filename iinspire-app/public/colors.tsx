@@ -10,8 +10,11 @@ const colors = {
     light_grey: "#E3E3E3",
     secondary_blue_light: "#4A90E2",
     black: "#000000",
-    white: "#FFFFFF", 
-
+    white: "#FFFFFF",
+    border_teal: "#4C9095",
+    border_red: "#E74C3C",
+    border_sky_blue: "#4A90E2",
+    border_purple: "#8E44AD", 
 };
 
 export default colors;

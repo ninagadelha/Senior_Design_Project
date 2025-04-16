@@ -1,8 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Box, Heading, SimpleGrid, Spinner } from "@chakra-ui/react";
-import { FaLink } from "react-icons/fa";
-import DashboardCard from "@/components/dashboards/dashboard-route-card";
+import { Box, Heading, Spinner } from "@chakra-ui/react";
+//import { FaLink } from "react-icons/fa";
+//import DashboardCard from "@/components/dashboards/dashboard-route-card";
 import { useAuth } from "@/context/auth-context";
 import { API_ENDPOINTS } from "@/constants/config";
 
@@ -62,7 +62,7 @@ export default function ResourcesPage() {
         Program Resources
       </Heading>
 
-      <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={6}>
+      {/* <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} gap={6}>
         {resources.map((resource) => (
           <DashboardCard
             key={resource.linkid}
@@ -75,7 +75,7 @@ export default function ResourcesPage() {
             }}
           />
         ))}
-      </SimpleGrid>
+      </SimpleGrid> */}
     </Box>
   );
 }
