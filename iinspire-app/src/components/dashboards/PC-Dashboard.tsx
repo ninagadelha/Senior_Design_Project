@@ -87,7 +87,7 @@ const bottomRowCards = [
     icon: IoBarChartSharp,
     value: "Help",
     description: "Learn more about using your Program Home Page to its fullest potential!",
-    button: { text: "Learn More", link: "/pc-learn-more" },
+    button: { text: "Learn More", link: "/pc-help-page" },
     borderColor: colors.border_purple
   }
 ];
