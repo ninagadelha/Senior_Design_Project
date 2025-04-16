@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Button, CardHeader, CardBody, CardFooter, Heading, CardRoot, HStack, Icon, Link } from '@chakra-ui/react';
+import { Box, Button, CardHeader, CardBody, Heading, CardRoot, HStack, Icon, Link, VStack, Text } from '@chakra-ui/react';
 import colors from '../../../public/colors';
 import fonts from '../../../public/fonts';
 import { FaBook, FaFileAlt, FaLink, FaGraduationCap, FaVideo, FaChartBar } from 'react-icons/fa';
@@ -41,17 +41,14 @@ const DashboardInfoCard: React.FC<ResourceCardProps> = ({
       background={colors.white}
       width="100%"
       maxWidth="800px"
-      display="flex"
-      overflow="hidden"
-      flexDirection="row"
       _hover={{
         boxShadow: 'md',
         transform: 'translateY(-2px)',
         transition: 'all 0.2s'
       }}
     >
-      <HStack alignItems="flex-start" gap={4} width="100%">
-        {/* Icon container */}
+      <HStack alignItems="center" gap={4} width="100%">
+        {/* Icon container - Left */}
         <Box 
           display="flex" 
           alignItems="center" 
@@ -61,6 +58,7 @@ const DashboardInfoCard: React.FC<ResourceCardProps> = ({
           p={3}
           minWidth="60px"
           height="60px"
+          flexShrink={0}
         >
           <Icon 
             as={randomIcon.type} 
@@ -69,52 +67,60 @@ const DashboardInfoCard: React.FC<ResourceCardProps> = ({
           />
         </Box>
 
-        {/* Text content */}
-        <Box flex="1">
-          <CardHeader 
-            textAlign="left" 
-            color={colors.black} 
-            fontWeight={fonts.bold_weight}
-            p={0}
-            mb={2}
-          >
-            <Heading size="md">
+        {/* Text content - Middle */}
+        <VStack 
+          alignItems="flex-start" 
+          gap={1} 
+          flex="1"
+          minWidth={0} // Prevent overflow
+        >
+          <CardHeader p={0}>
+            <Heading 
+              size="md" 
+              color={colors.black} 
+              fontWeight={fonts.bold_weight}
+              truncate
+              width="100%"
+            >
               {title || 'Untitled Resource'}
             </Heading>
           </CardHeader>
         
-          <CardBody 
-            color="gray.600"
-            fontSize="sm"
-            p={0}
-            mb={3}
-          >
-            {description || 'No description available'}
-          </CardBody>
-          
-          <CardFooter p={0}>
-          <Link 
-              href={URL.link} 
-              target="_blank"
-              rel="noopener noreferrer"
-              _hover={{ textDecoration: 'none' }}
+          <CardBody p={0}>
+            <Text 
+              color="gray.600"
+              fontSize="sm"
+              lineClamp={2}
             >
-              <Button
-                bg="black"
-                color="white"
-                _hover={{ 
-                  bg: "gray.800",
-                  transform: "scale(1.02)"
-                }}
-                borderRadius="md"
-                px={4}
-                size="sm"
-                transition="all 0.2s"
-              >
-                {URL.text}
-              </Button>
-            </Link>
-          </CardFooter>
+              {description || 'No description available'}
+            </Text>
+          </CardBody>
+        </VStack>
+
+        {/* Button - Right */}
+        <Box flexShrink={0}>
+          <Link 
+            href={URL.link} 
+            target="_blank"
+            rel="noopener noreferrer"
+            _hover={{ textDecoration: 'none' }}
+          >
+            <Button
+              bg="black"
+              color="white"
+              _hover={{ 
+                bg: "gray.800",
+                transform: "scale(1.02)"
+              }}
+              borderRadius="md"
+              px={4}
+              size="sm"
+              transition="all 0.2s"
+              whiteSpace="nowrap"
+            >
+              {URL.text}
+            </Button>
+          </Link>
         </Box>
       </HStack>
     </CardRoot>
