@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Button, CardHeader, CardBody, Heading, CardRoot, HStack, Icon, Link, VStack, Text } from '@chakra-ui/react';
 import colors from '../../../public/colors';
 import fonts from '../../../public/fonts';
-import { FaBook, FaFileAlt, FaLink, FaGraduationCap, FaVideo, FaChartBar } from 'react-icons/fa';
+import { FaBook } from 'react-icons/fa';
 
 interface ResourceCardProps {
   title: string | null;
@@ -11,26 +11,15 @@ interface ResourceCardProps {
     text: string;
     link: string;
   };
-  icon?: React.ReactElement;
+  icon?: React.ComponentType;
 }
-
-// Array of possible icons to randomly select from
-const resourceIcons = [
-  <FaBook key="book" />,
-  <FaFileAlt key="file" />,
-  <FaLink key="link" />,
-  <FaGraduationCap key="cap" />,
-  <FaVideo key="video" />,
-  <FaChartBar key="chart" />
-];
 
 const DashboardInfoCard: React.FC<ResourceCardProps> = ({
   title,
   description,
-  URL
+  URL,
+  icon: IconComponent = FaBook
 }) => {
-  // Select a random icon from the pool
-  const randomIcon = resourceIcons[Math.floor(Math.random() * resourceIcons.length)];
 
   return (
     <CardRoot 
@@ -61,7 +50,7 @@ const DashboardInfoCard: React.FC<ResourceCardProps> = ({
           flexShrink={0}
         >
           <Icon 
-            as={randomIcon.type} 
+            as={IconComponent} 
             boxSize={6} 
             color={colors.secondary_blue_dark}
           />

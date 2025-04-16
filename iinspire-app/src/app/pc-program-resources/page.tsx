@@ -1,13 +1,20 @@
 "use client"
 import Footer from "@/components/util/footer";
 import Navbar from "@/components/util/navbar";
-import { Box, Button, Heading, Text, VStack, SimpleGrid, Spinner, Alert, HStack, Grid, GridItem, CardHeader, CardBody, CardRoot, Icon } from "@chakra-ui/react";
+import { 
+  Box, Button, Heading, Text, VStack, SimpleGrid, 
+  Spinner, Grid, GridItem, CardHeader, CardBody, 
+  CardRoot, Icon, Dialog, Portal, Field, 
+  Input, Textarea, HStack
+} from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import colors from "../../../public/colors";
 import { useAuth } from "@/context/auth-context";
 import { API_ENDPOINTS } from "@/constants/config";
 import DashboardInfoCard from "@/components/dashboards/dashboard-info-card";
 import { FaChevronRight } from "react-icons/fa";
+import { toaster } from "@/components/ui/toaster";
+import { FaBook, FaFileAlt, FaLink, FaGraduationCap, FaVideo, FaChartBar } from 'react-icons/fa';
 
 interface Resource {
   linkid: number;
@@ -21,11 +28,16 @@ const PCProgramResources = () => {
   const { selectedProgram } = useAuth();
   const [resources, setResources] = useState<Resource[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [newResource, setNewResource] = useState({
+    title: '',
+    description: '',
+    URL: ''
+  });
+
+  const iconComponents = [FaBook, FaFileAlt, FaLink, FaGraduationCap, FaVideo, FaChartBar];
 
   useEffect(() => {
     const fetchResources = async () => {
-        console.log(selectedProgram.id)
       try {
         const response = await fetch(API_ENDPOINTS.getStudentResources, {
           method: 'POST',
@@ -44,7 +56,12 @@ const PCProgramResources = () => {
         const data = await response.json();
         setResources(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An unknown error occurred');
+        toaster.create({
+          title: "Error Loading Resources",
+          description: err instanceof Error ? err.message : "Failed to load resources",
+          type: "error",
+          duration: 3000,
+        });
       } finally {
         setLoading(false);
       }
@@ -55,7 +72,58 @@ const PCProgramResources = () => {
     }
   }, [selectedProgram]);
 
-  // Example resources to show in the right column
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setNewResource(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleAddResource = async () => {
+    try {
+      const response = await fetch(API_ENDPOINTS.addStudentResource, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          program_id: selectedProgram.id,
+          URL: newResource.URL,
+          description: newResource.description,
+          title: newResource.title
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to add resource');
+      }
+
+      const data = await response.json();
+      setResources(prev => [...prev, data]);
+      
+      toaster.create({
+        title: "Resource Added",
+        description: "Your resource has been successfully added",
+        type: "success",
+        duration: 3000,
+      });
+
+      setNewResource({
+        title: '',
+        description: '',
+        URL: ''
+      });
+    } catch (err) {
+      toaster.create({
+        title: "Error",
+        description: err instanceof Error ? err.message : "Failed to add resource",
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
+
   const exampleResources = [
     "Mental Health Resources",
     "Academic Advising",
@@ -104,41 +172,98 @@ const PCProgramResources = () => {
           </Text>
 
           <HStack>
-            <Button 
-                colorScheme="blue" 
-                size="lg" 
-                px={8}
-                fontWeight="semibold"
-                boxShadow="md"
-                _hover={{
-                transform: "translateY(-2px)",
-                boxShadow: "lg"
-                }}
-                transition="all 0.2s"
-            >
-                Add Resource
-            </Button>
+            <Dialog.Root>
+              <Dialog.Trigger asChild>
+                <Button 
+                  colorScheme="blue" 
+                  size="lg" 
+                  px={8}
+                  fontWeight="semibold"
+                  boxShadow="md"
+                  _hover={{
+                    transform: "translateY(-2px)",
+                    boxShadow: "lg"
+                  }}
+                  transition="all 0.2s"
+                >
+                  Add Resource
+                </Button>
+              </Dialog.Trigger>
+              <Portal>
+                <Dialog.Backdrop />
+                <Dialog.Positioner>
+                  <Dialog.Content>
+                    <Dialog.Header>
+                      <Dialog.Title>Add New Resource</Dialog.Title>
+                    </Dialog.Header>
+                    <Dialog.Body>
+                      <Field.Root mb={4} required>
+                        <Field.Label>Title</Field.Label>
+                        <Input 
+                          name="title"
+                          value={newResource.title}
+                          onChange={handleInputChange}
+                          placeholder="Resource title"
+                        />
+                      </Field.Root>
+                      
+                      <Field.Root mb={4}>
+                        <Field.Label>Description</Field.Label>
+                        <Textarea
+                          name="description"
+                          value={newResource.description}
+                          onChange={handleInputChange}
+                          placeholder="Brief description"
+                        />
+                      </Field.Root>
+                      
+                      <Field.Root required>
+                        <Field.Label>URL</Field.Label>
+                        <Input
+                          name="URL"
+                          type="url"
+                          value={newResource.URL}
+                          onChange={handleInputChange}
+                          placeholder="https://example.com"
+                        />
+                      </Field.Root>
+                    </Dialog.Body>
+                    <Dialog.Footer gap={3}>
+                      <Button 
+                        colorScheme="blue"
+                        onClick={handleAddResource}
+                        disabled={!newResource.title || !newResource.URL}
+                      >
+                        Save
+                      </Button>
+                      <Dialog.CloseTrigger asChild>
+                        <Button variant="outline">Cancel</Button>
+                      </Dialog.CloseTrigger>
+                    </Dialog.Footer>
+                  </Dialog.Content>
+                </Dialog.Positioner>
+              </Portal>
+            </Dialog.Root>
 
             <Button 
-                colorScheme="blue" 
-                size="lg" 
-                px={8}
-                fontWeight="semibold"
-                boxShadow="md"
-                _hover={{
+              colorScheme="blue" 
+              size="lg" 
+              px={8}
+              fontWeight="semibold"
+              boxShadow="md"
+              _hover={{
                 transform: "translateY(-2px)",
                 boxShadow: "lg"
-                }}
-                transition="all 0.2s"
+              }}
+              transition="all 0.2s"
             >
-                Edit Resources
+              Edit Resources
             </Button>
           </HStack>          
         </VStack>
 
-        {/* Current Resources Section - Now with two columns */}
+        {/* Current Resources Section */}
         <Grid templateColumns={{ base: "1fr", md: "2fr 1fr" }} gap={8} width="100%" maxW="1200px">
-          {/* Left Column - Existing Resources */}
           <GridItem>
             <Heading 
               as="h2" 
@@ -155,87 +280,76 @@ const PCProgramResources = () => {
               <Box textAlign="center" py={10}>
                 <Spinner size="xl" color="blue.500" />
               </Box>
-            ) : error ? (
-              <Alert.Root status="error" mb={6}>
-                <Alert.Indicator />
-                <Alert.Content>
-                  <Alert.Title>Error Loading Resources</Alert.Title>
-                  <Alert.Description>
-                    {error}
-                  </Alert.Description>
-                </Alert.Content>
-              </Alert.Root>
             ) : resources.length === 0 ? (
-              <Alert.Root status="info" mb={6}>
-                <Alert.Indicator />
-                <Alert.Content>
-                  <Alert.Title>No Resources Found</Alert.Title>
-                  <Alert.Description>
-                    There are currently no resources available for this program.
-                  </Alert.Description>
-                </Alert.Content>
-              </Alert.Root>
+              toaster.create({
+                title: "No Resources Found",
+                description: "There are currently no resources available",
+                type: "info",
+                duration: 3000,
+              })
             ) : (
               <SimpleGrid columns={1} gap={6}>
-                {resources.map((resource) => (
-                  <DashboardInfoCard
-                    key={resource.linkid}
-                    title={resource.title}
-                    description={resource.description || "No description available"}
-                    URL={{
-                      text: "Visit Resource",
-                      link: resource.URL
-                    }}
-                  />
-                ))}
+                {resources.map((resource) => {
+                    // Get a random icon based on resource.linkid for consistency
+                    const IconComponent = iconComponents[resource.linkid % iconComponents.length];
+                    
+                    return (
+                        <DashboardInfoCard
+                        key={resource.linkid}
+                        title={resource.title}
+                        description={resource.description || "No description available"}
+                        URL={{
+                            text: "Visit Resource",
+                            link: resource.URL
+                        }}
+                        icon={IconComponent}
+                        />
+                    );
+                    })}
               </SimpleGrid>
             )}
           </GridItem>
 
-          {/* Right Column - Example Resources */}
           <GridItem>
-  <CardRoot 
-    border="1px solid" 
-    borderColor="gray.200" 
-    borderRadius="lg" 
-    bg={colors.white}
-    boxShadow="sm"
-    _hover={{
-      boxShadow: "md",
-      transform: "translateY(-2px)",
-      transition: "all 0.2s ease-in-out"
-    }}
-  >
-    <CardHeader 
-      bg={colors.secondary_blue_light} 
-      borderTopRadius="lg"
-      px={6}
-      py={4}
-    >
-      <Heading size="lg" color="#2D3748" fontWeight="semibold">
-        Resource Ideas
-      </Heading>
-    </CardHeader>
-    <CardBody p={6}>
-      <Text mb={4} color="gray.600" fontSize="md">
-        Here are some examples of resources you could add:
-      </Text>
-      <VStack 
-        align="start" 
-        gap={3}
-      >
-        {exampleResources.map((example, index) => (
-          <HStack key={index} gap={3}>
-            <Icon as={FaChevronRight} color={colors.secondary_blue_dark} boxSize={4} />
-            <Text color="gray.700" fontSize="sm">
-              {example}
-            </Text>
-          </HStack>
-        ))}
-      </VStack>
-    </CardBody>
-  </CardRoot>
-</GridItem>
+            <CardRoot 
+              border="1px solid" 
+              borderColor="gray.200" 
+              borderRadius="lg" 
+              bg={colors.white}
+              boxShadow="sm"
+              _hover={{
+                boxShadow: "md",
+                transform: "translateY(-2px)",
+                transition: "all 0.2s ease-in-out"
+              }}
+            >
+              <CardHeader 
+                bg={colors.secondary_blue_light} 
+                borderTopRadius="lg"
+                px={6}
+                py={4}
+              >
+                <Heading size="lg" color="#2D3748" fontWeight="semibold">
+                  Resource Ideas
+                </Heading>
+              </CardHeader>
+              <CardBody p={6}>
+                <Text mb={4} color="gray.600" fontSize="md">
+                  Here are some examples of resources you could add:
+                </Text>
+                <VStack align="start" gap={3}>
+                  {exampleResources.map((example, index) => (
+                    <HStack key={index} gap={3}>
+                      <Icon as={FaChevronRight} color={colors.secondary_blue_dark} boxSize={4} />
+                      <Text color="gray.700" fontSize="sm">
+                        {example}
+                      </Text>
+                    </HStack>
+                  ))}
+                </VStack>
+              </CardBody>
+            </CardRoot>
+          </GridItem>
         </Grid>
       </Box>
       <Footer />
