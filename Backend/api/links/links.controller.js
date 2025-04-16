@@ -4,7 +4,7 @@ const linkService = require('./links.service');
 //controller methods
 
 exports.postnewlink = async (req, res) => {
-  const { program_id, URL, description, title } = req.body;
+  const { program_id, URL } = req.body;
 
 
   if ( !program_id || !URL) {
@@ -12,7 +12,7 @@ exports.postnewlink = async (req, res) => {
   }
 
   try {
-    const link = await linkService.postnewlink(URL, program_id, description, title);
+    const link = await linkService.postnewlink(URL, program_id);
     res.json({
       message: 'Link Added Successfully',
       link
@@ -29,6 +29,7 @@ exports.getAllLinks = async (req, res) => {
 
   try {
     const links = await linkService.getAllLinks(program_id);
+    console.log('links Table Results:', links);
     res.json(links);
   } catch (error) {
     console.error('Error fetching links:', error);
