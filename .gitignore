@@ -3,3 +3,5 @@ Backend/node_modules/
 Backend/.env
 
 Archive/
+iinspire-app/package.json
+iinspire-app/package-lock.json
