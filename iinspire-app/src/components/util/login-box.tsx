@@ -1,10 +1,11 @@
 "use client";
 import React, { useState } from "react";
 import { Box, Input, Button, Text, Link } from "@chakra-ui/react";
+import { toaster } from "@/components/ui/toaster";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import colors from "../../../public/colors";
-import { useAuth } from "@/context/auth-context"
+import { useAuth } from "@/context/auth-context";
 import { API_ENDPOINTS } from "@/constants/config";
 
 const LoginBox = () => {
@@ -17,7 +18,6 @@ const LoginBox = () => {
 
     const handleLogin = async () => {
         try {
-            console.log("Sending Request,testing deploy");
             const response = await fetch(API_ENDPOINTS.login, {
                 method: "POST",
                 headers: {
@@ -28,38 +28,53 @@ const LoginBox = () => {
                     password: password,
                 }),
             });
-            console.log("Login API status:", response.status);
-            console.log("Login API headers:", response.headers);
+
             const data = await response.json();
 
             if (response.ok) {
                 login(data.user);
-
-                // Normalize role to lowercase for consistent comparison
                 const normalizedRole = data.user.role.toLowerCase();
 
-                // Go to dashboard based on user role
-                switch(normalizedRole) {
-                    case "student":
-                        router.push("/student-home");
-                        break;
-                    case "programcoordinator":
-                        router.push("/pc-select-program");
-                        break;
-                    case "admin":
-                        router.push("/admin-home");
-                        break;
-                    default:
-                        break;
-                }
+                // Show success toast before navigation
+                toaster.create({
+                    title: "Success",
+                    description: "Login successful!",
+                    type: "success",
+                    duration: 3000,
+                });
 
-                alert("Logged in successfully");
+                // Slight delay for toast to be visible before navigation
+                setTimeout(() => {
+                    switch(normalizedRole) {
+                        case "student":
+                            router.push("/student-home");
+                            break;
+                        case "programcoordinator":
+                            router.push("/pc-select-program");
+                            break;
+                        case "admin":
+                            router.push("/admin-home");
+                            break;
+                        default:
+                            break;
+                    }
+                }, 500);
             } else {
-                alert(data.message || "Login failed");
+                toaster.create({
+                    title: "Login Failed",
+                    description: data.message || "Invalid credentials",
+                    type: "error",
+                    duration: 3000,
+                });
             }
         } catch (error) {
             console.error("Error during login:", error);
-            alert("An error occurred during login");
+            toaster.create({
+                title: "Error",
+                description: "Incorrect Email/Username or Password",
+                type: "error",
+                duration: 3000,
+            });
         }
     };
 
@@ -146,5 +161,3 @@ const LoginBox = () => {
 };
 
 export default LoginBox;
-
-
