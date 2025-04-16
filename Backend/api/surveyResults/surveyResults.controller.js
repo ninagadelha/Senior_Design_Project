@@ -2,14 +2,14 @@ const srService = require("./surveyResults.service");
 const { parse } = require('json2csv')
 
 exports.postSurveyResult = async (req, res) => {
-    const { userID, programID, civicEngagement, stemInterest,stemEfficacy,stemOutcome, researchOutcome, researchEfficacy } = req.body;
+    const { userID, programID, civicEngagement, stemInterest,stemEfficacy,stemOutcome, researchOutcome, researchEfficacy, group0 } = req.body;
 
-    if (!userID || !programID || !civicEngagement || !stemInterest|| !stemEfficacy|| !stemOutcome|| !researchOutcome || !researchEfficacy) {
-        return res.status(400).json({ message: "Missing required fields" });
+    if (!userID || !programID || !civicEngagement || !stemInterest|| !stemEfficacy|| !stemOutcome|| !researchOutcome || !researchEfficacy || group0) {
+        return res.status(400).json({ message: "Missing required fields: userID, programID, civicEngagement, stemInterest,stemEfficacy,stemOutcome, researchOutcome, researchEfficacy, group0" });
     }
     try {
         // Query the Users table to find a user by the provided email
-        const results = await srService.createSurveyResult(userID, programID, civicEngagement, stemInterest,stemEfficacy,stemOutcome, researchOutcome, researchEfficacy);
+        const results = await srService.createSurveyResult(userID, programID, civicEngagement, stemInterest,stemEfficacy,stemOutcome, researchOutcome, researchEfficacy, group0);
           // User found with the provided email
           res.json({
             message: 'Results Saved Succesfully:',
@@ -65,6 +65,7 @@ exports.getProgramSurveyResults = async (req, res) => {
 
 
     const questionArrays = [
+      'group0array',
       'civicEngagementArray',
       'stemInterestArray',
       'stemEfficacyArray',
@@ -74,7 +75,7 @@ exports.getProgramSurveyResults = async (req, res) => {
     ];
 
  // Specify the header names (fields you want)
- const questionHeaders = Array.from({ length: 113 }, (_, index) => ({
+ const questionHeaders = Array.from({ length: 100 }, (_, index) => ({
   label: `Q${index + 1}`,
   value: `Q${index + 1}`
 }));
@@ -114,6 +115,7 @@ const headers = [...mainHeaders, ...questionHeaders];
 
  // Combine the 7 arrays into one (representing answers to Q1, Q2, ..., Q113)
   const allAnswers = [
+  ...(Array.isArray(result.group0array) ? result.group0array : []),
   ...(Array.isArray(result.civicEngagementArray) ? result.civicEngagementArray : []),
   ...(Array.isArray(result.stemInterestArray) ? result.stemInterestArray : []),
   ...(Array.isArray(result.stemEfficacyArray) ? result.stemEfficacyArray : []),

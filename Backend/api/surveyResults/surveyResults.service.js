@@ -37,7 +37,7 @@ const queryDatabase = async (query, params = []) => {
 
 
 
-exports.createSurveyResult = async (userID, programID, civicEngagement, stemInterest,stemEfficacy,stemOutcome, researchOutcome, researchEfficacy) => {
+exports.createSurveyResult = async (userID, programID, civicEngagement, stemInterest,stemEfficacy,stemOutcome, researchOutcome, researchEfficacy, group0) => {
     maxScores = [5,6,4,9,4,100];
     const calculateNormalizedScore = (scores, maxScore) => {
         const avgScore = scores.reduce((sum, score) => sum + score, 0) / scores.length; // Calculate the average
@@ -55,8 +55,8 @@ exports.createSurveyResult = async (userID, programID, civicEngagement, stemInte
     // SQL query to insert the data
     const sql = `
     INSERT INTO SurveyResults 
-    (userID, programID, dataCreated, civicEngagement, stemInterest, stemEfficacy, stemOutcome, researchOutcome, researchEfficacy, civicEngagementArray, stemInterestArray, stemEfficacyArray, stemOutcomeArray, researchOutcomeArray, researchEfficacyArray)
-    VALUES (?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    (userID, programID, dataCreated, civicEngagement, stemInterest, stemEfficacy, stemOutcome, researchOutcome, researchEfficacy, civicEngagementArray, stemInterestArray, stemEfficacyArray, stemOutcomeArray, researchOutcomeArray, researchEfficacyArray, group0Array)
+    VALUES (?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
 `;
 
 // Serialize the array data before passing it to the query
@@ -74,7 +74,8 @@ const surveyData = [
     JSON.stringify(stemEfficacy), 
     JSON.stringify(stemOutcome), 
     JSON.stringify(researchOutcome), 
-    JSON.stringify(researchEfficacy)
+    JSON.stringify(researchEfficacy),
+    JSON.stringify(group0)
 ];
 
 // Return the query promise
