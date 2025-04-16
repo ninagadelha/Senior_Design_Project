@@ -28,10 +28,11 @@ type Program = {
 
 const PCSelectProgramBox = () => {
   const router = useRouter();
-  const { user, selectedProgram, setSelectedProgram } = useAuth();
+  const { user, setSelectedProgram } = useAuth();
   const [programs, setPrograms] = useState<Program[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [tempSelectedProgram, setTempSelectedProgram] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchPrograms = async () => {
@@ -72,23 +73,70 @@ const PCSelectProgramBox = () => {
   const programCollection = createListCollection({
     items: programs.map(program => ({
       label: `${program.name} (${program.student_count} students)`,
-      value: program.program_id.toString()
+      value: program.program_id.toString(),
+      name: program.name
     }))
   });
 
   const handleValueChange = ({ value }: { value: string[] }) => {
     const programId = value[0] || "";
-    setSelectedProgram(programId);
-    console.log("New program selected");
+    setTempSelectedProgram(programId);
   };
 
   const handleContinue = async () => {
-    if (!selectedProgram) return;
+    if (!tempSelectedProgram || !user?.id) return;
+    
     setIsSubmitting(true);
+    let selectedProgramData: Program | undefined;
+  
     try {
+      selectedProgramData = programs.find(
+        program => program.program_id.toString() === tempSelectedProgram
+      );
+      
+      if (selectedProgramData) {
+        const resourcesRes = await fetch(API_ENDPOINTS.getStudentResources, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            owner_userid: parseInt(user.id)
+          })
+        });
+  
+        if (!resourcesRes.ok) {
+          throw new Error('Failed to fetch resources');
+        }
+  
+        const resourcesData = await resourcesRes.json();
+        
+        setSelectedProgram(
+          tempSelectedProgram,
+          selectedProgramData.name,
+          {
+            surveys: "1",
+            students: selectedProgramData.student_count.toString(),
+            resources: resourcesData.length.toString()
+          }
+        );
+      }
+      
       router.push('/pc-home');
     } catch (error) {
       console.error('Error:', error);
+      // Fallback with default counts if API fails
+      if (selectedProgramData) {
+        setSelectedProgram(
+          tempSelectedProgram,
+          selectedProgramData.name,
+          {
+            surveys: "1",
+            students: selectedProgramData.student_count.toString(),
+            resources: "0"
+          }
+        );
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -131,17 +179,17 @@ const PCSelectProgramBox = () => {
               size="md"
               width="100%"
               maxWidth="400px"
-              value={selectedProgram ? [selectedProgram] : []}
+              value={tempSelectedProgram ? [tempSelectedProgram] : []}
               onValueChange={handleValueChange}
             >
               <Select.HiddenSelect />
               <Select.Control>
-              <Select.Trigger>
-                <Select.ValueText 
+                <Select.Trigger>
+                  <Select.ValueText 
                     placeholder="Select program"
-                    color={selectedProgram ? colors.black : undefined} // Add this line
-                />
-               </Select.Trigger>
+                    color={tempSelectedProgram ? colors.black : undefined}
+                  />
+                </Select.Trigger>
                 <Select.IndicatorGroup>
                   <Select.Indicator />
                 </Select.IndicatorGroup>
@@ -151,14 +199,14 @@ const PCSelectProgramBox = () => {
                   <Select.Content bg={colors.white}>
                     {programCollection.items.map((program) => (
                       <Select.Item 
-                      item={program} 
-                      key={program.value} 
-                      color={colors.black}
-                      _selected={{ color: colors.black, bg: colors.light_grey }}
-                    >
-                      {program.label}
-                      <Select.ItemIndicator />
-                    </Select.Item>
+                        item={program} 
+                        key={program.value} 
+                        color={colors.black}
+                        _selected={{ color: colors.black, bg: colors.light_grey }}
+                      >
+                        {program.label}
+                        <Select.ItemIndicator />
+                      </Select.Item>
                     ))}
                   </Select.Content>
                 </Select.Positioner>
@@ -173,12 +221,11 @@ const PCSelectProgramBox = () => {
           </Text>
         )}
         
-        {/* Continue to Dashboard Button - Always visible */}
         <Button 
           size="lg"
           onClick={handleContinue}
           loading={isSubmitting}
-          disabled={!selectedProgram}
+          disabled={!tempSelectedProgram}
           bg={colors.black}
           color={colors.white}
           _hover={{ bg: colors.dark_grey }}

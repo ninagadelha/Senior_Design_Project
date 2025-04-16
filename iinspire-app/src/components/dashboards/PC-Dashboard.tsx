@@ -1,16 +1,17 @@
 "use client"
 import React from 'react';
-import { Box, Flex, Heading, useBreakpointValue } from '@chakra-ui/react';
-import DashboardCard from './dashboard-route-card';
+import { Box, Button, Flex, Heading, useBreakpointValue } from '@chakra-ui/react';
+import DashboardRouteCard from './dashboard-route-card';
 import { IoBarChartSharp } from 'react-icons/io5';
 import { HiUsers } from "react-icons/hi";
 import { CgNotes } from "react-icons/cg";
 import { GrResources } from "react-icons/gr";
 import { useAuth } from '@/context/auth-context';
 import colors from '../../../public/colors';
+import router from 'next/router';
 
 const PCDashboard = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated, selectedProgram } = useAuth();
 
   // Responsive configuration
   const responsiveConfig = useBreakpointValue({
@@ -40,39 +41,56 @@ const PCDashboard = () => {
     }
   });
 
-  const cardSpacing = 6;
+  const cardSpacing = 20;
   const cardMinWidth = '280px'; // Minimum width before wrapping
 
-  // Card data
   const topRowCards = [
     {
       icon: CgNotes,
-      header: "Program",
-      value: "2",
-      button: { text: "View Programs", link: "/view-results" }
+      value: selectedProgram?.counts?.surveys || "1",
+      description: "View, edit, or add Surveys",
+      button: { text: "Surveys", link: "/pc-surveys-home" },
+      borderColor: colors.border_teal
     },
     {
       icon: HiUsers,
-      header: "Students",
-      value: "21",
-      button: { text: "View Students", link: "/program-students" }
+      value: selectedProgram?.counts?.students || "0",
+      description: `View students in ${selectedProgram?.name || 'your program'}`,
+      button: { text: "Students", link: "/pc-view-students" },
+      borderColor: colors.border_red
     },
     {
       icon: GrResources,
-      header: "Resources",
-      value: "3",
-      button: { text: "View Resources", link: "/program-resources" }
+      value: selectedProgram?.counts?.resources || "0",
+      description: "View, edit, or add program resources",
+      button: { text: "Resources", link: "/pc-program-resources" },
+      borderColor: colors.border_sky_blue
     }
   ];
 
-  const bottomRowCards = [
-    {
-      icon: IoBarChartSharp,
-      header: "Temp",
-      text: "Coming Soon",
-      button: { text: "Go to Settings", link: "/pc-dashboard" }
-    },
-  ];
+const bottomRowCards = [
+  {
+    icon: IoBarChartSharp,
+    value: "Coming Soon",
+    description: "Additional features coming soon",
+    button: { text: "Go to Settings", link: "/pc-home" },
+    borderColor: colors.black
+  },
+  {
+    icon: IoBarChartSharp,
+    value: "Coming Soon",
+    description: "Additional features coming soon",
+    button: { text: "Go to Settings", link: "/pc-home" },
+    borderColor: colors.black
+  },
+  {
+    icon: IoBarChartSharp,
+    value: "Help",
+    description: "Learn more about using your Program Home Page to its fullest potential!",
+    button: { text: "Learn More", link: "/pc-learn-more" },
+    borderColor: colors.border_purple
+  }
+];
 
   if (!isAuthenticated) {
     return (
@@ -95,17 +113,47 @@ const PCDashboard = () => {
       <Box 
         width="100%"
         maxWidth={responsiveConfig?.maxWidth}
-        textAlign="center"
-        mb={4} // Adds space below the header
+        mb={4}
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
       >
+        {/* Left Button */}
+        <Button 
+          variant="outline"
+          size="md"
+          onClick={() => {router.push("/pc-select-program")}}
+          color={colors.black}
+          _hover={{ bg: colors.light_grey }}
+          minWidth="120px"
+        >
+          Change Selected Program
+        </Button>
+
+        {/* Heading */}
         <Heading 
           as="h1" 
           size="xl" 
           color="black"
           fontWeight="bold"
+          textAlign="center"
+          flex="1"
+          px={4}
         >
-          Welcome, {user?.fullname}!
+          Viewing Program: {selectedProgram.name}
         </Heading>
+
+        {/* Create Program Button */}
+        <Button 
+          variant="outline"
+          size="md"
+          onClick={() => {router.push("/pc-create-program")}}
+          color={colors.black}
+          _hover={{ bg: colors.light_grey }}
+          minWidth="120px"
+        >
+          Create Program
+        </Button>
       </Box>
 
       {/* Top Row */}
@@ -123,11 +171,12 @@ const PCDashboard = () => {
             minWidth={cardMinWidth}
             maxWidth={{ base: '100%', sm: '400px' }}
           >
-            <DashboardCard
+            <DashboardRouteCard
               icon={card.icon}
-              dashboardCardHeader={card.header}
-              dashboardCardValue={card.value}
-              dashboardButton={card.button}
+              value={card.value}
+              description={card.description}
+              button={card.button}
+              borderColor={card.borderColor}
             />
           </Box>
         ))}
@@ -147,11 +196,12 @@ const PCDashboard = () => {
             minWidth={cardMinWidth}
             maxWidth={{ base: '100%', sm: '400px' }}
           >
-            <DashboardCard
+            <DashboardRouteCard
               icon={card.icon}
-              dashboardCardHeader={card.header}
-              dashboardCardValue={card.text}
-              dashboardButton={card.button}
+              value={card.value}
+              description={card.description}
+              button={card.button}
+              borderColor={card.borderColor}
             />
           </Box>
         ))}
