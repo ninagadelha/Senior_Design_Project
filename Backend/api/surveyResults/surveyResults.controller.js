@@ -2,14 +2,14 @@ const srService = require("./surveyResults.service");
 const { parse } = require('json2csv')
 
 exports.postSurveyResult = async (req, res) => {
-    const { userID, programID, civicEngagement, stemInterest,stemEfficacy,stemOutcome, researchOutcome, researchEfficacy, group0 } = req.body;
+    const { userID, programID, civicEngagement, stemInterest,stemEfficacy,stemOutcome, researchOutcome, researchEfficacy, civicParticipation } = req.body;
 
-    if (!userID || !programID || !civicEngagement || !stemInterest|| !stemEfficacy|| !stemOutcome|| !researchOutcome || !researchEfficacy || group0) {
-        return res.status(400).json({ message: "Missing required fields: userID, programID, civicEngagement, stemInterest,stemEfficacy,stemOutcome, researchOutcome, researchEfficacy, group0" });
+    if (!userID || !programID || !civicEngagement || !stemInterest|| !stemEfficacy|| !stemOutcome|| !researchOutcome || !researchEfficacy || !civicParticipation) {
+        return res.status(400).json({ message: "Missing required fields: userID, programID, civicEngagement, stemInterest,stemEfficacy,stemOutcome, researchOutcome, researchEfficacy, civicParticipation" });
     }
     try {
         // Query the Users table to find a user by the provided email
-        const results = await srService.createSurveyResult(userID, programID, civicEngagement, stemInterest,stemEfficacy,stemOutcome, researchOutcome, researchEfficacy, group0);
+        const results = await srService.createSurveyResult(userID, programID, civicEngagement, stemInterest,stemEfficacy,stemOutcome, researchOutcome, researchEfficacy, civicParticipation);
           // User found with the provided email
           res.json({
             message: 'Results Saved Succesfully:',
@@ -65,8 +65,8 @@ exports.getProgramSurveyResults = async (req, res) => {
 
 
     const questionArrays = [
-      'group0array',
       'civicEngagementArray',
+      'civicParticipationArray',
       'stemInterestArray',
       'stemEfficacyArray',
       'stemOutcomeArray',
@@ -115,8 +115,8 @@ const headers = [...mainHeaders, ...questionHeaders];
 
  // Combine the 7 arrays into one (representing answers to Q1, Q2, ..., Q113)
   const allAnswers = [
-  ...(Array.isArray(result.group0array) ? result.group0array : []),
   ...(Array.isArray(result.civicEngagementArray) ? result.civicEngagementArray : []),
+  ...(Array.isArray(result.civicParticipationArray) ? result.civicParticipationArray : []),
   ...(Array.isArray(result.stemInterestArray) ? result.stemInterestArray : []),
   ...(Array.isArray(result.stemEfficacyArray) ? result.stemEfficacyArray : []),
   ...(Array.isArray(result.stemOutcomeArray) ? result.stemOutcomeArray : []),
