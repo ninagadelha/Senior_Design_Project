@@ -23,6 +23,7 @@ const LoginBox = () => {
                 headers: {
                     "Content-Type": "application/json",
                 },
+		credentials: "include",
                 body: JSON.stringify({
                     email: username,
                     password: password,
