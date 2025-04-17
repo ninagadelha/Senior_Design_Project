@@ -1,15 +1,16 @@
 const srService = require("./surveyResults.service");
 const { parse } = require('json2csv')
 
+//this puts a new survey result into the database
 exports.postSurveyResult = async (req, res) => {
-    const { userID, programID, civicEngagement, stemInterest,stemEfficacy,stemOutcome, researchOutcome, researchEfficacy } = req.body;
+    const { userID, programID, civicEngagement, stemInterest,stemEfficacy,stemOutcome, researchOutcome, researchEfficacy, civicParticipation, taken_survey} = req.body;
 
-    if (!userID || !programID || !civicEngagement || !stemInterest|| !stemEfficacy|| !stemOutcome|| !researchOutcome || !researchEfficacy) {
+    if (!userID || !programID || !civicEngagement || !stemInterest|| !stemEfficacy|| !stemOutcome|| !researchOutcome || !researchEfficacy || !civicParticipation || !taken_survey) {
         return res.status(400).json({ message: "Missing required fields" });
     }
     try {
         // Query the Users table to find a user by the provided email
-        const results = await srService.createSurveyResult(userID, programID, civicEngagement, stemInterest,stemEfficacy,stemOutcome, researchOutcome, researchEfficacy);
+        const results = await srService.createSurveyResult(userID, programID, civicEngagement, stemInterest,stemEfficacy,stemOutcome, researchOutcome, researchEfficacy, civicParticipation, taken_survey);
           // User found with the provided email
           res.json({
             message: 'Results Saved Succesfully:',
@@ -23,6 +24,7 @@ exports.postSurveyResult = async (req, res) => {
     };
 
 
+    //this gets all of the user's survey results given a userid and programid
 exports.getUserSurveyResults = async (req, res) => {
     const { userID, programID } = req.body;
 
@@ -47,6 +49,7 @@ try {
 
 
 
+//This creates the excel export for admin user type
 exports.getProgramSurveyResults = async (req, res) => {
   const { programID } = req.body;
 
@@ -66,6 +69,7 @@ exports.getProgramSurveyResults = async (req, res) => {
 
     const questionArrays = [
       'civicEngagementArray',
+      'civicParticipationArray',
       'stemInterestArray',
       'stemEfficacyArray',
       'stemOutcomeArray',
@@ -74,7 +78,7 @@ exports.getProgramSurveyResults = async (req, res) => {
     ];
 
  // Specify the header names (fields you want)
- const questionHeaders = Array.from({ length: 113 }, (_, index) => ({
+ const questionHeaders = Array.from({ length: 114 }, (_, index) => ({
   label: `Q${index + 1}`,
   value: `Q${index + 1}`
 }));
@@ -115,6 +119,7 @@ const headers = [...mainHeaders, ...questionHeaders];
  // Combine the 7 arrays into one (representing answers to Q1, Q2, ..., Q113)
   const allAnswers = [
   ...(Array.isArray(result.civicEngagementArray) ? result.civicEngagementArray : []),
+  ...(Array.isArray(result.civicParticipationArray) ? result.civicParticipationArray : []),
   ...(Array.isArray(result.stemInterestArray) ? result.stemInterestArray : []),
   ...(Array.isArray(result.stemEfficacyArray) ? result.stemEfficacyArray : []),
   ...(Array.isArray(result.stemOutcomeArray) ? result.stemOutcomeArray : []),
@@ -126,9 +131,10 @@ const headers = [...mainHeaders, ...questionHeaders];
       allAnswers.forEach((answer, index) => {
         mappedData[`Q${index + 1}`] = answer; // Map the answer to Q1, Q2, ..., Q113
       });
-
+      mappedData[`Q114`] = result.taken_survey || '';
       return mappedData;
   });
+  
 
 // Convert the mapped results to CSV with custom headers
 const csv = parse(mappedResults, { fields: headers });
