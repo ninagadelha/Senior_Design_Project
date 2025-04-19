@@ -9,22 +9,32 @@ const queryDatabase = async (query, params = []) => {
         throw err;
       }
   };
+
+
   
-  exports.getSurveyResultsByUser = async (userID, programID) => {
-    const sql = `SELECT * from SurveyResults WHERE userID = ? AND programID = ?`;
-    return await queryDatabase(sql, [userID, programID]);
-  };
+exports.getSurveyResultsByUser = async (userID, programID) => {
+  const sql = `SELECT resultId, 
+                      userID, 
+                      programID, 
+                      dataCreated, 
+                      civicEngagement, 
+                      stemInterest, 
+                      stemEfficacy, 
+                      stemOutcome, 
+                      researchOutcome, 
+                      researchEfficacy 
+               FROM SurveyResults 
+               WHERE userID = ? AND programID = ? ORDER BY dataCreated DESC`;
+
+  return await queryDatabase(sql, [userID, programID]);
+};
+
 
   exports.getSurveyResultsByProgram = async (programID) => {
     const sql = `
       SELECT 
         Users.email,
-        Users.netid,
-        Users.age,
-        Users.gender,
-        Users.ethnicity,
-        Users.credits,
-        Users.stem_interests,
+        Users.fullname,
         Users.institution,
         SurveyResults.*
       FROM SurveyResults
