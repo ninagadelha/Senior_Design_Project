@@ -29,8 +29,6 @@ build-backend:
       --insecure-pull
       --skip-tls-verify
   only:
-    variables:
-      - $DEPLOY_ENV == "production"
     changes:
       - Backend/**/*
       - .gitlab-ci.yml
@@ -56,8 +54,6 @@ build-frontend:
       --insecure-pull
       --skip-tls-verify
   only:
-    variables:
-      - $DEPLOY_ENV == "production"
     changes:
       - iinspire-app/**/*
       - .gitlab-ci.yml
@@ -99,8 +95,6 @@ deploy-backend:
         --force-new-deployment \
         --region $AWS_REGION
   only:
-    variables:
-      - $DEPLOY_ENV == "production"
     changes:
       - Backend/**/*
       - .gitlab-ci.yml
@@ -146,8 +140,6 @@ deploy-frontend:
         --force-new-deployment \
         --region $AWS_REGION
   only: 
-    variables:
-      - $DEPLOY_ENV == "production"
     changes:
       - iinspire-app/**/*
       - .gitlab-ci.yml
