@@ -1,15 +1,16 @@
 const srService = require("./surveyResults.service");
 const { parse } = require('json2csv')
 
+//this puts a new survey result into the database
 exports.postSurveyResult = async (req, res) => {
-    const { userID, programID, civicEngagement, stemInterest,stemEfficacy,stemOutcome, researchOutcome, researchEfficacy } = req.body;
+    const { userID, programID, civicEngagement, stemInterest,stemEfficacy,stemOutcome, researchOutcome, researchEfficacy, civicParticipation, taken_survey} = req.body;
 
-    if (!userID || !programID || !civicEngagement || !stemInterest|| !stemEfficacy|| !stemOutcome|| !researchOutcome || !researchEfficacy) {
+    if (!userID || !programID || !civicEngagement || !stemInterest|| !stemEfficacy|| !stemOutcome|| !researchOutcome || !researchEfficacy || !civicParticipation || !taken_survey) {
         return res.status(400).json({ message: "Missing required fields" });
     }
     try {
         // Query the Users table to find a user by the provided email
-        const results = await srService.createSurveyResult(userID, programID, civicEngagement, stemInterest,stemEfficacy,stemOutcome, researchOutcome, researchEfficacy);
+        const results = await srService.createSurveyResult(userID, programID, civicEngagement, stemInterest,stemEfficacy,stemOutcome, researchOutcome, researchEfficacy, civicParticipation, taken_survey);
           // User found with the provided email
           res.json({
             message: 'Results Saved Succesfully:',
@@ -23,6 +24,7 @@ exports.postSurveyResult = async (req, res) => {
     };
 
 
+    //this gets all of the user's survey results given a userid and programid
 exports.getUserSurveyResults = async (req, res) => {
     const { userID, programID } = req.body;
 
@@ -47,6 +49,7 @@ try {
 
 
 
+//This creates the excel export for admin user type
 exports.getProgramSurveyResults = async (req, res) => {
   const { programID } = req.body;
 
@@ -55,94 +58,164 @@ exports.getProgramSurveyResults = async (req, res) => {
   }
 
   try {
-    // Fetch the survey results
     const results = await srService.getSurveyResultsByProgram(programID);
 
-    // If no results are found, return a message
-    if (results.length === 0) {
+    if (!results.length) {
       return res.status(404).json({ message: 'No survey results found for this program' });
     }
 
+    const headers = generateCSVHeaders();
+    const mappedResults = results.map(mapSurveyResultToCSVRow);
 
-    const questionArrays = [
-      'civicEngagementArray',
-      'stemInterestArray',
-      'stemEfficacyArray',
-      'stemOutcomeArray',
-      'researchOutcomeArray',
-      'researchEfficacyArray'
-    ];
+    const csv = parse(mappedResults, { fields: headers });
 
- // Specify the header names (fields you want)
- const questionHeaders = Array.from({ length: 113 }, (_, index) => ({
-  label: `Q${index + 1}`,
-  value: `Q${index + 1}`
-}));
-
- const mainHeaders = [
-  { label: 'Email', value: 'email' },
-  { label: 'Age', value: 'age' },
-  { label: 'Gender', value: 'gender' },
-  { label: 'Ethnicity', value: 'ethnicity' },
-  { label: 'civicEngagement', value: 'civicEngagement' },
-  { label: 'stemInterest', value: 'stemInterest' },
-  { label: 'stemEfficacy', value: 'stemEfficacy' },
-  { label: 'stemOutcome', value: 'stemOutcome' },
-  { label: 'researchOutcome', value: 'researchOutcome' },
-  { label: 'researchEfficacy', value: 'researchEfficacy' }
-
-];
-
-const headers = [...mainHeaders, ...questionHeaders];
-
-
-
-  const mappedResults = results.map(result => {
-    // Create an array with main columns
-    const mappedData = {
-      email: result.email,
-      age: result.age,
-      gender: result.gender,
-      ethnicity: result.ethnicity,
-      civicEngagement: result.civicEngagement,
-      stemInterest: result.stemInterest,
-      stemEfficacy: result.stemEfficacy,
-      stemOutcome: result.stemOutcome,
-      researchOutcome: result.researchOutcome,
-      researchEfficacy: result.researchEfficacy
-    };
-
- // Combine the 7 arrays into one (representing answers to Q1, Q2, ..., Q113)
-  const allAnswers = [
-  ...(Array.isArray(result.civicEngagementArray) ? result.civicEngagementArray : []),
-  ...(Array.isArray(result.stemInterestArray) ? result.stemInterestArray : []),
-  ...(Array.isArray(result.stemEfficacyArray) ? result.stemEfficacyArray : []),
-  ...(Array.isArray(result.stemOutcomeArray) ? result.stemOutcomeArray : []),
-  ...(Array.isArray(result.researchOutcomeArray) ? result.researchOutcomeArray : []),
-  ...(Array.isArray(result.researchEfficacyArray) ? result.researchEfficacyArray : [])
-];
-
-      // Map each answer to the correct question (Q1, Q2, ..., Q113)
-      allAnswers.forEach((answer, index) => {
-        mappedData[`Q${index + 1}`] = answer; // Map the answer to Q1, Q2, ..., Q113
-      });
-
-      return mappedData;
-  });
-
-// Convert the mapped results to CSV with custom headers
-const csv = parse(mappedResults, { fields: headers });
-
-// Set headers to trigger a file download in the browser
-res.header('Content-Type', 'text/csv');
-res.attachment('survey_results.csv'); // This will be the filename of the CSV file
-
-// Send the CSV data as the response
-return res.send(csv);
+    res.header('Content-Type', 'text/csv');
+    res.attachment('survey_results.csv');
+    return res.send(csv);
 
   } catch (error) {
     console.error('Error fetching Program Survey Results for admin:', error);
-    res.status(500).send('Error fetching Program Survey Results for Admin');
+    return res.status(500).send('Error fetching Program Survey Results for Admin');
   }
+};
+
+function generateCSVHeaders() {
+  const baseHeaders = [
+    { label: 'Email', value: 'email' },
+    { label: 'Fullname', value: 'fullname' },
+    { label: 'Institution', value: 'institution' },
+    { label: 'Date', value: 'Date' },
+    { label: 'civicEngagement', value: 'civicEngagement' },
+    { label: 'stemInterest', value: 'stemInterest' },
+    { label: 'stemEfficacy', value: 'stemEfficacy' },
+    { label: 'stemOutcome', value: 'stemOutcome' },
+    { label: 'researchOutcome', value: 'researchOutcome' },
+    { label: 'researchEfficacy', value: 'researchEfficacy' }
+  ];
+
+  const questionHeaders = Array.from({ length: 114 }, (_, i) => ({
+    label: `Q${i + 1}`,
+    value: `Q${i + 1}`
+  }));
+
+  return [...baseHeaders, ...questionHeaders];
 }
 
+function mapSurveyResultToCSVRow(result) {
+  const baseData = {
+    email: result.email,
+    fullname: result.fullname,
+    institution: result.institution,
+    Date: new Date(result.dataCreated).toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: '2-digit',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    }),
+    civicEngagement: result.civicEngagement,
+    stemInterest: result.stemInterest,
+    stemEfficacy: result.stemEfficacy,
+    stemOutcome: result.stemOutcome,
+    researchOutcome: result.researchOutcome,
+    researchEfficacy: result.researchEfficacy
+  };
+
+  const questionArrays = [
+    result.civicEngagementArray,
+    result.civicParticipationArray,
+    result.stemInterestArray,
+    result.stemEfficacyArray,
+    result.stemOutcomeArray,
+    result.researchOutcomeArray,
+    result.researchEfficacyArray
+  ];
+
+  const allAnswers = questionArrays.flatMap(arr => (Array.isArray(arr) ? arr : []));
+
+  allAnswers.forEach((answer, index) => {
+    baseData[`Q${index + 1}`] = answer;
+  });
+
+  baseData[`Q114`] = result.taken_survey || '';
+
+  return baseData;
+}
+
+
+
+
+
+exports.getPCSurveyResults = async (req, res) => {
+  const { programID } = req.body;
+
+  if (!programID) {
+    return res.status(400).json({ message: "Missing programID" });
+  }
+
+  try {
+    const results = await srService.getSurveyResultsByProgram(programID);
+
+    if (!results.length) {
+      return res.status(404).json({ message: 'No survey results found for this program' });
+    }
+
+    const headers = generatePCCSVHeaders();
+    const mappedResults = results.map(mapPCSurveyResultToCSVRow);
+
+    const csv = parse(mappedResults, { fields: headers });
+
+    res.header('Content-Type', 'text/csv');
+    res.attachment(`survey_results_${Date.now()}.csv`);
+    return res.send(csv);
+
+  } catch (error) {
+    console.error('Error fetching Program Survey Results for admin:', error);
+    return res.status(500).send('Error fetching Program Survey Results for Admin');
+  }
+};
+
+
+function generatePCCSVHeaders() {
+  const baseHeaders = [
+    { label: 'Fullname', value: 'fullname' },
+    { label: 'Email', value: 'email' },
+    { label: 'Institution', value: 'institution' },
+    { label: 'Date', value: 'Date' },
+    { label: 'civicEngagement', value: 'civicEngagement' },
+    { label: 'stemInterest', value: 'stemInterest' },
+    { label: 'stemEfficacy', value: 'stemEfficacy' },
+    { label: 'stemOutcome', value: 'stemOutcome' },
+    { label: 'researchOutcome', value: 'researchOutcome' },
+    { label: 'researchEfficacy', value: 'researchEfficacy' }
+  ];
+
+
+  return [...baseHeaders];
+}
+
+
+function mapPCSurveyResultToCSVRow(result) {
+  const baseData = {
+    email: result.email,
+    fullname: result.fullname,
+    institution: result.institution,
+    Date: new Date(result.dataCreated).toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: '2-digit',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    }),
+    civicEngagement: result.civicEngagement,
+    stemInterest: result.stemInterest,
+    stemEfficacy: result.stemEfficacy,
+    stemOutcome: result.stemOutcome,
+    researchOutcome: result.researchOutcome,
+    researchEfficacy: result.researchEfficacy
+  };
+
+  return baseData;
+}

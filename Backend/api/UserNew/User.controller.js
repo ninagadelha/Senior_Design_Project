@@ -1,4 +1,5 @@
 const userService = require('./User.service');
+//const authService = require('../auth/auth.service)
 
 //controller methods
 exports.getTimestamp = async (req,res) => {
@@ -44,6 +45,13 @@ exports.loginUser = async (req, res) => {
   }
 
   try {
+
+    /* const auth = await authService.validateUser(email)
+    if(!auth){
+    return res.status(400).send('Email was not authenticated');
+    }
+
+    */
     // Query the Users table to find a user by the provided email
     const results = await userService.loginUser(email);
 
@@ -75,6 +83,14 @@ exports.newUser = async (req, res) => {
   }
 
   try {
+    
+    /* const auth = await authService.validateUser(email)
+    if(!auth){
+    return res.status(400).send('Email was not authenticated');
+    }
+
+    */
+
     // Query the Users table to find a user by the provided email
     const response = await userService.PostNewUser(email, netid, age, gender, ethnicity, credits, stem_interests, institution, code, fullname);
 

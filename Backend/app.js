@@ -1,49 +1,46 @@
 const express = require('express');
-const cors = require('cors')
-const mysql = require('mysql2');
-require('dotenv').config();
 const bodyParser = require('body-parser');
+
+const env = process.env.NODE_ENV || 'development';
+require('dotenv').config({
+  path: env === 'production' ? '.env.production' : '.env',
+});
 
 const app = express();
 
-const corsOptions = {
-  origin: "https://mystemgrowth.com",
-  credentials: true,
-};
-
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
-
-app.use(bodyParser.json());
-
 app.use((req, res, next) => {
-  console.log(`--> ${req.method} ${req.url}`);
+  const origin = req.headers.origin;
+  console.log("🔥 CORS request from:", origin);
+  console.log("🔥 NODE_ENV:", env);
+
+  if (env === 'development' && origin === 'http://localhost:3000') {
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+  } else if (env === 'production' && origin === 'https://mystemgrowth.com') {
+    res.setHeader('Access-Control-Allow-Origin', 'https://mystemgrowth.com');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+  }
+
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+
   next();
 });
 
+app.use(bodyParser.json());
 
-
-//importing routes
-const questionsRouter = require('./api/questions/questions.router')
-const userRouter = require('./api/UserNew/User.router')
-const programRouter = require('./api/program/program.router')
-const surveyResultsRouter = require('./api/surveyResults/surveyResults.router');
-const linkRouter = require('./api/links/links.router');
-const codeRouter = require('./api/codes/codes.router');
-
-
-app.use('/api',questionsRouter)
-app.use('/api', userRouter)
-app.use('/api', programRouter)
-app.use('/api', surveyResultsRouter);
-app.use('/api', linkRouter);
-app.use('/api', codeRouter);
-
-// Set the port from env or default to 5000
-const PORT = 5000;
-
-//so ECS ALB can reach it
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Backend is running on port ${PORT}`);
+// Dummy login route
+app.post('/api/login', (req, res) => {
+  res.json({ success: true });
 });
-  
+
+// Set port
+const PORT = process.env.PORT || (env === 'production' ? 5000 : 5001);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Backend running on port ${PORT}`);
+});

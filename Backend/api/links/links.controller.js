@@ -4,15 +4,15 @@ const linkService = require('./links.service');
 //controller methods
 
 exports.postnewlink = async (req, res) => {
-  const { program_id, URL } = req.body;
+  const { program_id, URL, title, description  } = req.body;
 
 
-  if ( !program_id || !URL) {
-      return res.status(400).json({ message: 'Missing required fields, program_id, URL' });
+  if ( !program_id || !URL || !title || !description) {
+      return res.status(400).json({ message: 'Missing required fields, program_id, URL, title, description' });
   }
 
   try {
-    const link = await linkService.postnewlink(URL, program_id);
+    const link = await linkService.postnewlink(URL, program_id, title, description);
     res.json({
       message: 'Link Added Successfully',
       link

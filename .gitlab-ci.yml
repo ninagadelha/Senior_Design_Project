@@ -85,12 +85,12 @@ deploy-backend:
       REGISTERED=$(aws ecs register-task-definition --cli-input-json file://new-task-def-backend.json --region $AWS_REGION)
     - >
       NEW_REVISION=$(echo $REGISTERED | jq -r '.taskDefinition.revision')
-    - echo "Updating ECS service to use backend-task revision $NEW_REVISION"
+    - echo "Updating ECS service to use task revision $NEW_REVISION"
     - >
       aws ecs update-service \
         --cluster $ECS_CLUSTER_NAME \
         --service $ECS_SERVICE_BACKEND \
-        --task-definition backend-task:$NEW_REVISION \
+        --task-definition $TASK_DEF_BACKEND:$NEW_REVISION \
         --health-check-grace-period-seconds 60 \
         --force-new-deployment \
         --region $AWS_REGION
@@ -101,6 +101,7 @@ deploy-backend:
   variables:
     AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
     AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+
 
 
 # ===============================
@@ -138,7 +139,7 @@ deploy-frontend:
         --health-check-grace-period-seconds 60 \
         --force-new-deployment \
         --region $AWS_REGION
-  only:
+  only: 
     changes:
       - iinspire-app/**/*
       - .gitlab-ci.yml
