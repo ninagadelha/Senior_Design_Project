@@ -1,6 +1,16 @@
 const express = require('express');
-const userController = require('./User.controller')
+const cors = require('cors');
+const userController = require('./User.controller');
+
 const router = express.Router();
+
+// CORS middleware applied only to this router
+const corsOptions = {
+  origin: "https://mystemgrowth.com",
+  credentials: true,
+};
+
+router.use(cors(corsOptions));
 
 //define routes and map them to controller methods
 router.get("/timestamp", userController.getTimestamp);

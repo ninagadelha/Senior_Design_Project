@@ -12,7 +12,7 @@ RUN npm install --legacy-peer-deps
 
 # Copy the full app source into container
 COPY . .
-
+COPY .env.production .env.production
 # Build the app (supports /src/app structure automatically)
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}

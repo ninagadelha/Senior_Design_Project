@@ -4,6 +4,23 @@ const mysql = require('mysql2');
 require('dotenv').config();
 const bodyParser = require('body-parser');
 
+const app = express();
+
+const corsOptions = {
+  origin: "https://mystemgrowth.com",
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
+app.use(bodyParser.json());
+
+app.use((req, res, next) => {
+  console.log(`--> ${req.method} ${req.url}`);
+  next();
+});
+
 
 
 //importing routes
@@ -13,12 +30,8 @@ const programRouter = require('./api/program/program.router')
 const surveyResultsRouter = require('./api/surveyResults/surveyResults.router');
 const linkRouter = require('./api/links/links.router');
 const codeRouter = require('./api/codes/codes.router');
-// Create an Express application
-const app = express();
-app.use(bodyParser.json());
-app.use(cors());
 
-//imports for api routers
+
 app.use('/api',questionsRouter)
 app.use('/api', userRouter)
 app.use('/api', programRouter)
