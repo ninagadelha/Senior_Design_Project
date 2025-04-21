@@ -6,13 +6,24 @@ const bodyParser = require('body-parser');
 
 const app = express();
 
+const allowedOrigins = [
+  "http://localhost:3000", // local 
+  "https://mystemgrowth.com", // prod
+];
+
 const corsOptions = {
-  origin: "https://mystemgrowth.com",
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("CORS not allowed for: " + origin));
+    }
+  },
   credentials: true,
 };
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 app.use(bodyParser.json());
 
