@@ -18,18 +18,14 @@ import Navbar from "@/components/util/navbar";
 import Footer from "@/components/util/footer";
 
 type Program = {
-    program_id: number;
-    name: string;
+    program_name: string;
     owner_userid: number;
-    code: string;
-    student_count: number;
 };
 
 const PCCreateProgram = () => {
     const router = useRouter();
     const { user, setSelectedProgram } = useAuth();
     const [programName, setProgramName] = useState("");
-    const [programCode, setProgramCode] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -40,33 +36,30 @@ const PCCreateProgram = () => {
         setIsLoading(true);
         setErrorMessage("");
 
+        const newProgram: Program = {
+            program_name: programName,
+            owner_userid: parseInt(user.id),
+        };        
+        console.log(newProgram);
+        
         try {
             const response = await fetch(API_ENDPOINTS.newProgram, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    owner_userid: parseInt(user.id),
-                    program_name: programName,
-                    code: programCode
+                    owner_userid: newProgram.owner_userid,
+                    program_name: newProgram.program_name,
                 })
             });
-
+            
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Failed to create program');
             }
 
-            const newProgram: Program = await response.json();
-
-            setSelectedProgram(
-                newProgram.program_id.toString(),
-                newProgram.name,
-                {
-                    surveys: "1",
-                    students: newProgram.student_count.toString(),
-                    resources: "0"
-                }
-            );
+            //const newProgram: Program = await response.json();
+            console.log(response);
+            
 
             router.push('/pc-home');
         } catch (error) {
@@ -117,19 +110,6 @@ const PCCreateProgram = () => {
                             color={colors.black}
                             bg={colors.white}
                         />
-
-                        <Text width="100%" textAlign="left" fontSize="md" color={colors.black}>
-                            Program Code
-                        </Text>
-                        <Input
-                            value={programCode}
-                            onChange={(e) => setProgramCode(e.target.value)}
-                            placeholder="Enter unique program code"
-                            required
-                            color={colors.black}
-                            bg={colors.white}
-                        />
-
                         <Button
                             type="submit"
                             size="lg"
@@ -162,11 +142,11 @@ const PCCreateProgram = () => {
                     </Button>
 
                     <Box mt={8}>
-                        <Image
+                        {/* <Image
                             src="/images/program-creation.svg"
                             alt="Program creation illustration"
                             maxH="300px"
-                        />
+                        /> */}
                     </Box>
                 </VStack>
             </Box>
