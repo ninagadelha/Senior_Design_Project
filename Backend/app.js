@@ -1,6 +1,6 @@
 const express = require('express');
+const cors = require('cors');
 const bodyParser = require('body-parser');
-
 const env = process.env.NODE_ENV || 'development';
 require('dotenv').config({
   path: env === 'production' ? '.env.production' : '.env',
@@ -8,38 +8,50 @@ require('dotenv').config({
 
 const app = express();
 
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  console.log("🔥 CORS request from:", origin);
-  console.log("🔥 NODE_ENV:", env);
 
-  if (env === 'development' && origin === 'http://localhost:3000') {
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
-  } else if (env === 'production' && origin === 'https://mystemgrowth.com') {
-    res.setHeader('Access-Control-Allow-Origin', 'https://mystemgrowth.com');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
-  }
+const allowedOrigins = env === 'production'
+    ? ['https://mystemgrowth.com']
+    : ['http://localhost:3000'];
 
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(204);
-  }
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+};
 
-  next();
-});
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Preflight
+
 
 app.use(bodyParser.json());
 
-// Dummy login route
-app.post('/api/login', (req, res) => {
-  res.json({ success: true });
+
+app.use((req, res, next) => {
+  console.log(`--> ${req.method} ${req.url}`);
+  next();
 });
 
-// Set port
+
+const questionsRouter = require('./api/questions/questions.router');
+const userRouter = require('./api/UserNew/User.router');
+const programRouter = require('./api/program/program.router');
+const surveyResultsRouter = require('./api/surveyResults/surveyResults.router');
+const linkRouter = require('./api/links/links.router');
+const codeRouter = require('./api/codes/codes.router');
+
+app.use('/api', questionsRouter);
+app.use('/api', userRouter);
+app.use('/api', programRouter);
+app.use('/api', surveyResultsRouter);
+app.use('/api', linkRouter);
+app.use('/api', codeRouter);
+
+
 const PORT = process.env.PORT || (env === 'production' ? 5000 : 5001);
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Backend running on port ${PORT}`);
