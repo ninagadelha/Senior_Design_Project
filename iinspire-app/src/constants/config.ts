@@ -1,7 +1,7 @@
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 export const API_ENDPOINTS = {
   login: `${API_BASE_URL}/api/login`,
-  getStudentResources: `${API_BASE_URL}/api/getLinks`,
+  getStudentResources: `${API_BASE_URL}/api/getlinks`,
   addStudentResource: `${API_BASE_URL}/api/newLink`,
   deleteStudentResource: `${API_BASE_URL}/api/deletelink`,
   results: `${API_BASE_URL}/api/survey-results-user`,

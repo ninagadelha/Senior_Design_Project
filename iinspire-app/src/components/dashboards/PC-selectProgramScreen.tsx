@@ -26,6 +26,10 @@ type Program = {
   student_count: number;
 };
 
+/**
+ * Component for program coordinators to select a program to manage
+ * Displays a list of programs and allows navigation to program dashboard
+ */
 const PCSelectProgramBox = () => {
   const router = useRouter();
   const { user, setSelectedProgram } = useAuth();
@@ -34,6 +38,12 @@ const PCSelectProgramBox = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tempSelectedProgram, setTempSelectedProgram] = useState<string | null>(null);
 
+  const NUM_SURVEYS = "1";
+
+  /**
+   * Fetches programs associated with the current user
+   * Runs when user data changes
+   */
   useEffect(() => {
     const fetchPrograms = async () => {
       if (!user?.id) {
@@ -70,6 +80,10 @@ const PCSelectProgramBox = () => {
     fetchPrograms();
   }, [user]);
 
+  /**
+   * Creates a collection of programs for the select dropdown
+   * Formats each program with name and student count
+   */
   const programCollection = createListCollection({
     items: programs.map(program => ({
       label: `${program.name} (${program.student_count} students)`,
@@ -78,11 +92,20 @@ const PCSelectProgramBox = () => {
     }))
   });
 
+  /**
+   * Handles program selection change in dropdown
+   * @param value - Array containing the selected program ID
+   */
   const handleValueChange = ({ value }: { value: string[] }) => {
     const programId = value[0] || "";
     setTempSelectedProgram(programId);
   };
 
+  /**
+   * Handles continuation to program dashboard
+   * Fetches resources for selected program and sets global state
+   * Navigates to program dashboard on success
+   */
   const handleContinue = async () => {
     if (!tempSelectedProgram || !user?.id) return;
     
@@ -101,7 +124,7 @@ const PCSelectProgramBox = () => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            owner_userid: parseInt(user.id)
+            program_id: parseInt(selectedProgramData.program_id.toString())
           })
         });
   
@@ -110,12 +133,13 @@ const PCSelectProgramBox = () => {
         }
   
         const resourcesData = await resourcesRes.json();
+        console.log(resourcesData)
         
         setSelectedProgram(
           tempSelectedProgram,
           selectedProgramData.name,
           {
-            surveys: "1",
+            surveys: NUM_SURVEYS,
             students: selectedProgramData.student_count.toString(),
             resources: resourcesData.length.toString()
           }
@@ -131,7 +155,7 @@ const PCSelectProgramBox = () => {
           tempSelectedProgram,
           selectedProgramData.name,
           {
-            surveys: "1",
+            surveys: NUM_SURVEYS,
             students: selectedProgramData.student_count.toString(),
             resources: "0"
           }
@@ -142,6 +166,9 @@ const PCSelectProgramBox = () => {
     }
   };
 
+  /**
+   * Container styling props for the main content
+   */
   const containerProps: StackProps = {
     maxW: "xl",
     mx: "auto",
