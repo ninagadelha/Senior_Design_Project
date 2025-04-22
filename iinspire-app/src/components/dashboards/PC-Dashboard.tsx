@@ -8,10 +8,11 @@ import { CgNotes } from "react-icons/cg";
 import { GrResources } from "react-icons/gr";
 import { useAuth } from '@/context/auth-context';
 import colors from '../../../public/colors';
-import router from 'next/router';
+import { useRouter } from "next/navigation";
 
 const PCDashboard = () => {
   const { isAuthenticated, selectedProgram } = useAuth();
+  const router = useRouter();
 
   // Responsive configuration
   const responsiveConfig = useBreakpointValue({
