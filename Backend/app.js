@@ -8,28 +8,27 @@ require('dotenv').config({
 
 const app = express();
 
-
-const allowedOrigins = env === 'production'
-    ? ['https://mystemgrowth.com']
-    : ['http://localhost:3000'];
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://mystemgrowth.com',
+  'https://api.mystemgrowth.com',
+];
 
 const corsOptions = {
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      return callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
 };
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Preflight
-
-
 app.use(bodyParser.json());
-
 
 app.use((req, res, next) => {
   console.log(`--> ${req.method} ${req.url}`);
@@ -51,8 +50,7 @@ app.use('/api', surveyResultsRouter);
 app.use('/api', linkRouter);
 app.use('/api', codeRouter);
 
-
-const PORT = process.env.PORT || (env === 'production' ? 5000 : 5001);
-app.listen(PORT, '0.0.0.0', () => {
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
   console.log(`🚀 Backend running on port ${PORT}`);
 });

@@ -3,23 +3,27 @@ FROM node:20
 # Set working directory
 WORKDIR /app
 
-# Optimize install by copying only the lock and manifest first
+# Copy dependency info and install
 COPY package*.json ./
-RUN npm install
-
-# Install dependencies
 RUN npm install --legacy-peer-deps
 
-# Copy the full app source into container
+# Copy the entire app
 COPY . .
-COPY .env.production .env.production
-# Build the app (supports /src/app structure automatically)
+
+# Set the production environment
 ARG NODE_ENV=production
-ENV NODE_ENV=${NODE_ENV}
+ENV NODE_ENV=production
+
+# Set the API base URL at build time for Next.js to embed it into the app
+ARG NEXT_PUBLIC_API_URL=https://api.mystemgrowth.com
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+
+# Copy env file as a backup (not used if we already set env above)
+COPY .env.production .env
+
+# Build the app
 RUN npm run build
 
-# Expose Next.js port
+# Expose port and start app
 EXPOSE 3000
-
-# Start the Next.js server
 CMD ["npx", "next", "start", "-p", "3000"]
