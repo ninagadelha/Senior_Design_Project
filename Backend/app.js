@@ -50,7 +50,6 @@ app.use('/api', programRouter);
 app.use('/api', surveyResultsRouter);
 app.use('/api', linkRouter);
 app.use('/api', codeRouter);
-app.use('/api', userRouter);
 
 
 const PORT = process.env.PORT || (env === 'production' ? 5000 : 5001);

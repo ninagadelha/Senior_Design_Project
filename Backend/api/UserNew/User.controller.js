@@ -231,57 +231,28 @@ exports.getUsersProgram = async (req,res) => {
     console.error('Error Checking for Programs Users', error);
     res.status(500).send('Error checking for Programs Users');
   }
-  exports.newUser = async (req, res) => {
-    const {
-      fullname,
-      email,
-      netid,
-      stem_interests
-    } = req.body;
 
-    if (!email || !code) {
-      return res.status(400).send('Email and Program code are required');
-    }
 
-    try {
-      const response = await userService.PostNewUser(
-          fullname,
-          email,
-          netid,
-          stem_interests
-      );
-
-      if (response.success) {
-        res.json({ message: 'User Created successfully' });
-      } else {
-        res.status(400).json({ message: response.message });
-      }
-    } catch (error) {
-      console.error('Error Creating New User:', error);
-      res.status(500).send('Error Creating New User');
-    }
-  };
-
-  exports.createAccount = async (req, res) => {
-    const { email, netid, age, gender, ethnicity, credits, stem_interests, institution, code } = req.body;
-
-    try {
-      const [existingUser] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
-
-      if (existingUser.length > 0) {
-        return res.status(400).json({ message: 'User already exists' });
-      }
-
-      await db.query(
-          `INSERT INTO users (email, netid, age, gender, ethnicity, credits, stem_interests, institution, code)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-          [email, netid, age, gender, ethnicity, credits, stem_interests, institution, code]
-      );
-
-      res.status(201).json({ message: 'Account created successfully' });
-    } catch (error) {
-      console.error('Error creating account:', error);
-      res.status(500).json({ message: 'Internal server error' });
-    }
-  };
 }
+exports.createAccount = async (req, res) => {
+  const { email, netid, age, gender, ethnicity, credits, stem_interests, institution, code } = req.body;
+
+  try {
+    const [existingUser] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
+
+    if (existingUser.length > 0) {
+      return res.status(400).json({ message: 'User already exists' });
+    }
+
+    await db.query(
+        `INSERT INTO users (email, netid, age, gender, ethnicity, credits, stem_interests, institution, code)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [email, netid, age, gender, ethnicity, credits, stem_interests, institution, code]
+    );
+
+    res.status(201).json({ message: 'Account created successfully' });
+  } catch (error) {
+    console.error('Error creating account:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
