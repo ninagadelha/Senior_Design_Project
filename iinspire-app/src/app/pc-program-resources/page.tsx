@@ -172,93 +172,109 @@ const PCProgramResources = () => {
           </Text>
 
           <HStack>
-            <Dialog.Root>
-              <Dialog.Trigger asChild>
-                <Button 
-                  colorScheme="blue" 
-                  size="lg" 
-                  px={8}
-                  fontWeight="semibold"
-                  boxShadow="md"
-                  _hover={{
-                    transform: "translateY(-2px)",
-                    boxShadow: "lg"
-                  }}
-                  transition="all 0.2s"
+          <Dialog.Root>
+            <Dialog.Trigger asChild>
+              <Button 
+                colorScheme="blue" 
+                size="lg" 
+                px={8}
+                fontWeight="semibold"
+                boxShadow="md"
+                _hover={{
+                  transform: "translateY(-2px)",
+                  boxShadow: "lg"
+                }}
+                transition="all 0.2s"
+              >
+                Add Resource
+              </Button>
+            </Dialog.Trigger>
+            <Portal>
+              {/* Dark backdrop */}
+              <Dialog.Backdrop 
+                bg="blackAlpha.600" 
+                backdropFilter="blur(4px)"
+              />
+              
+              <Dialog.Positioner>
+                <Dialog.Content 
+                  bg={colors.white} // Keep content white
+                  borderRadius="lg"
+                  boxShadow="xl"
                 >
-                  Add Resource
-                </Button>
-              </Dialog.Trigger>
-              <Portal>
-                <Dialog.Backdrop />
-                <Dialog.Positioner>
-                  <Dialog.Content>
-                    <Dialog.Header>
-                      <Dialog.Title>Add New Resource</Dialog.Title>
-                    </Dialog.Header>
-                    <Dialog.Body>
-                      <Field.Root mb={4} required>
-                        <Field.Label>Title</Field.Label>
-                        <Input 
-                          name="title"
-                          value={newResource.title}
-                          onChange={handleInputChange}
-                          placeholder="Resource title"
-                        />
-                      </Field.Root>
-                      
-                      <Field.Root mb={4}>
-                        <Field.Label>Description</Field.Label>
-                        <Textarea
-                          name="description"
-                          value={newResource.description}
-                          onChange={handleInputChange}
-                          placeholder="Brief description"
-                        />
-                      </Field.Root>
-                      
-                      <Field.Root required>
-                        <Field.Label>URL</Field.Label>
-                        <Input
-                          name="URL"
-                          type="url"
-                          value={newResource.URL}
-                          onChange={handleInputChange}
-                          placeholder="https://example.com"
-                        />
-                      </Field.Root>
-                    </Dialog.Body>
-                    <Dialog.Footer gap={3}>
-                      <Button 
-                        colorScheme="blue"
-                        onClick={handleAddResource}
-                        disabled={!newResource.title || !newResource.URL}
-                      >
-                        Save
-                      </Button>
-                      <Dialog.CloseTrigger asChild>
-                        <Button variant="outline">Cancel</Button>
-                      </Dialog.CloseTrigger>
-                    </Dialog.Footer>
-                  </Dialog.Content>
-                </Dialog.Positioner>
-              </Portal>
-            </Dialog.Root>
-
-            <Button 
-              colorScheme="blue" 
-              size="lg" 
-              px={8}
-              fontWeight="semibold"
-              boxShadow="md"
-              _hover={{
-                transform: "translateY(-2px)",
-                boxShadow: "lg"
-              }}
-              transition="all 0.2s"
-            >
-              Edit Resources
-            </Button>
+                  {/* Header with dark background */}
+                  <Dialog.Header 
+                    borderTopRadius="lg"
+                    color="white"
+                    py={4}
+                    px={6}
+                  >
+                    <Dialog.Title fontSize="xl" fontWeight="semibold" color={colors.primary_blue}>
+                      Add New Resource
+                    </Dialog.Title>
+                  </Dialog.Header>
+                  
+                  <Dialog.Body p={6}>
+                    <Field.Root mb={4} required>
+                      <Field.Label color={colors.primary_blue}>Title</Field.Label>
+                      <Input 
+                        name="title"
+                        value={newResource.title}
+                        onChange={handleInputChange}
+                        placeholder="Resource title"
+                        bg="white"
+                        color={colors.black}
+                      />
+                    </Field.Root>
+                    
+                    <Field.Root mb={4}>
+                      <Field.Label color={colors.primary_blue}>Description</Field.Label>
+                      <Textarea
+                        name="description"
+                        value={newResource.description}
+                        onChange={handleInputChange}
+                        placeholder="Brief description"
+                        bg="white"
+                        color={colors.black}
+                      />
+                    </Field.Root>
+                    
+                    <Field.Root required>
+                      <Field.Label color={colors.primary_blue}>URL</Field.Label>
+                      <Input
+                        name="URL"
+                        type="url"
+                        value={newResource.URL}
+                        onChange={handleInputChange}
+                        placeholder="https://example.com"
+                        bg="white"
+                        color={colors.black}
+                      />
+                    </Field.Root>
+                  </Dialog.Body>
+                  
+                  <Dialog.Footer 
+                    gap={3} 
+                    px={6} 
+                    py={4}
+                    borderTop="1px solid"
+                    borderColor="gray.200"
+                  >
+                    <Button 
+                      colorScheme="blue"
+                      onClick={handleAddResource}
+                      disabled={!newResource.title || !newResource.URL}
+                    >
+                      Save
+                    </Button>
+                    <Dialog.CloseTrigger asChild>
+                      <Button variant="outline">Cancel</Button>
+                    </Dialog.CloseTrigger>
+                  </Dialog.Footer>
+                </Dialog.Content>
+              </Dialog.Positioner>
+            </Portal>
+          </Dialog.Root>
           </HStack>          
         </VStack>
 
@@ -290,20 +306,23 @@ const PCProgramResources = () => {
             ) : (
               <SimpleGrid columns={1} gap={6}>
                 {resources.map((resource) => {
-                    // Get a random icon based on resource.linkid for consistency
                     const IconComponent = iconComponents[resource.linkid % iconComponents.length];
                     
                     return (
-                        <DashboardInfoCard
-                        key={resource.linkid}
-                        title={resource.title}
-                        description={resource.description || "No description available"}
-                        URL={{
-                            text: "Visit Resource",
-                            link: resource.URL
-                        }}
-                        icon={IconComponent}
-                        />
+                      <DashboardInfoCard
+                      key={resource.linkid}
+                      linkid={resource.linkid}
+                      title={resource.title}
+                      description={resource.description || "No description available"}
+                      URL={{
+                        text: "Visit Resource",
+                        link: resource.URL
+                      }}
+                      icon={IconComponent}
+                      onDeleteSuccess={() => {
+                        setResources(prev => prev.filter(r => r.linkid !== resource.linkid));
+                      }}
+                    />
                     );
                     })}
               </SimpleGrid>

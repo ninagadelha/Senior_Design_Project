@@ -2,7 +2,9 @@ import React from 'react';
 import { Box, Button, CardHeader, CardBody, Heading, CardRoot, HStack, Icon, Link, VStack, Text } from '@chakra-ui/react';
 import colors from '../../../public/colors';
 import fonts from '../../../public/fonts';
-import { FaBook } from 'react-icons/fa';
+import { FaBook, FaTrash } from 'react-icons/fa';
+import { toaster } from '../ui/toaster';
+import { API_ENDPOINTS } from '@/constants/config';
 
 interface ResourceCardProps {
   title: string | null;
@@ -11,15 +13,55 @@ interface ResourceCardProps {
     text: string;
     link: string;
   };
+  linkid: number;
   icon?: React.ComponentType;
+  onDeleteSuccess?: () => void; // Add callback for successful deletion
 }
 
 const DashboardInfoCard: React.FC<ResourceCardProps> = ({
   title,
   description,
   URL,
-  icon: IconComponent = FaBook
+  linkid,
+  icon: IconComponent = FaBook,
+  onDeleteSuccess
 }) => {
+
+  const handleDelete = async () => {
+    try {
+      const confirmDelete = window.confirm("Are you sure you want to delete this resource?");
+      if (!confirmDelete) return;
+
+      const response = await fetch(API_ENDPOINTS.deleteStudentResource, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ linkid }) // Use the actual linkid from props
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete resource');
+      }
+
+      toaster.create({
+        title: "Resource Deleted",
+        description: "The resource has been successfully removed",
+        type: "success",
+        duration: 3000,
+      });
+
+      if (onDeleteSuccess) onDeleteSuccess();
+
+    } catch (err) {
+      toaster.create({
+        title: "Error",
+        description: err instanceof Error ? err.message : "Failed to delete resource",
+        type: "error",
+        duration: 3000,
+      });
+    }
+  };
 
   return (
     <CardRoot 
@@ -87,7 +129,7 @@ const DashboardInfoCard: React.FC<ResourceCardProps> = ({
         </VStack>
 
         {/* Button - Right */}
-        <Box flexShrink={0}>
+        <HStack flexShrink={0} gap={3}>
           <Link 
             href={URL.link} 
             target="_blank"
@@ -110,7 +152,25 @@ const DashboardInfoCard: React.FC<ResourceCardProps> = ({
               {URL.text}
             </Button>
           </Link>
-        </Box>
+
+          {/* Delete Button */}
+          <Button
+            variant="ghost"
+            colorScheme="red"
+            _hover={{ 
+              bg: "red.300",
+              transform: "scale(1.02)"
+            }}
+            size="sm"
+            p={2}
+            minW="auto"
+            onClick={handleDelete}
+            aria-label="Delete resource"
+          >
+            <Icon as={FaTrash} boxSize={4} />
+          </Button>
+        </HStack>
+        
       </HStack>
     </CardRoot>
   );

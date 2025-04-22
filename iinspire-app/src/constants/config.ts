@@ -3,6 +3,7 @@ export const API_ENDPOINTS = {
   login: `${API_BASE_URL}/api/login`,
   getStudentResources: `${API_BASE_URL}/api/getLinks`,
   addStudentResource: `${API_BASE_URL}/api/newLink`,
+  deleteStudentResource: `${API_BASE_URL}/api/deletelink`,
   results: `${API_BASE_URL}/api/survey-results-user`,
   getProgramsByPC: `${API_BASE_URL}/api/getPCprograms`,
   fetchQuestions: `${API_BASE_URL}/api/questions`,
