@@ -22,7 +22,7 @@ const queryDatabase = async (query, params = []) => {
   return await queryDatabase('SELECT * FROM Program');
 };*/
 
-exports.postnewlink = async(URL, program_id, description, title) => {
+exports.postnewlink = async(URL, program_id, title, description) => {
   return await queryDatabase('INSERT into links (URL, program_id, description, title) values (?, ?, ?, ?)', [URL, program_id, description, title]);
 }
 
