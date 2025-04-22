@@ -1,15 +1,14 @@
-import AdminDashboard from "@/components/dashboards/Admin-Dashboard";
 import Footer from "@/components/util/footer";
 import Navbar from "@/components/util/navbar";
 import React from "react";
 
-const AdminHome = () => {
+const DownloadCSV = () => {
     return (
         <div>
             <Navbar />
-            <AdminDashboard />
+            "Download CSV!"
             <Footer />
         </div>
     );
 };
-export default AdminHome;
+export default DownloadCSV;

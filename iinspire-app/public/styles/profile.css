@@ -4,13 +4,11 @@
     align-items: center;
     padding: 20px;
 }
-
 .header-profile {
     font-size: 28px;
     font-weight: bold;
     margin-bottom: 20px;
 }
-
 .graph-container {
     width: 100%;
     max-width: 100%;
@@ -19,13 +17,11 @@
     justify-content: center;
     align-items: center;
 }
-
 .button-container {
     display: flex;
     justify-content: center;
     margin-top: 20px;
 }
-
 .card-container {
     display: flex;
     flex-wrap: wrap;
@@ -48,17 +44,14 @@
     display: inline-block;
     text-align: center;
 }
-
 .toggleChart:hover {
     background-color: #4a86e8;
     transform: scale(1.05);
 }
-
 .toggleChart:active {
     transform: scale(0.95);
     background-color: #3a6acb;
 }
-
 .export-button {
     padding: 10px 20px;
     font-size: 16px;
@@ -70,11 +63,17 @@
     transition: background-color 0.3s ease;
     margin-bottom: 20px;
 }
-
 .export-button:hover {
     background-color: #3a6dc4;
 }
-
 .export-button:active {
     background-color: #2f5aa2;
+}
+.comparison-dropdown {
+    margin: 1rem 0;
+    font-size: 14px;
+}
+.comparison-dropdown select {
+    margin-left: 0.5rem;
+    padding: 0.3rem;
 }

@@ -4,7 +4,7 @@ import colors from '../../../public/colors';
 
 interface DashboardCardProps {
   icon: React.ElementType;
-  value: string;
+  value: string | null;
   description: string;
   button: {
     text: string;
