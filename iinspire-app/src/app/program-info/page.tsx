@@ -1,15 +1,14 @@
-import AdminDashboard from "@/components/dashboards/Admin-Dashboard";
 import Footer from "@/components/util/footer";
 import Navbar from "@/components/util/navbar";
 import React from "react";
 
-const AdminHome = () => {
+const ProgramInfo = () => {
     return (
         <div>
             <Navbar />
-            <AdminDashboard />
+            "Hello, Program Info!"
             <Footer />
         </div>
     );
 };
-export default AdminHome;
+export default ProgramInfo;
