@@ -38,8 +38,6 @@ const PCSelectProgramBox = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [tempSelectedProgram, setTempSelectedProgram] = useState<string | null>(null);
 
-  const NUM_SURVEYS = "1";
-
   /**
    * Fetches programs associated with the current user
    * Runs when user data changes
@@ -139,7 +137,7 @@ const PCSelectProgramBox = () => {
           tempSelectedProgram,
           selectedProgramData.name,
           {
-            surveys: NUM_SURVEYS,
+            programs: programs.length.toString(), // Add program count here
             students: selectedProgramData.student_count.toString(),
             resources: resourcesData.length.toString()
           }
@@ -155,7 +153,7 @@ const PCSelectProgramBox = () => {
           tempSelectedProgram,
           selectedProgramData.name,
           {
-            surveys: NUM_SURVEYS,
+            programs: programs.length.toString(), // Add program count here
             students: selectedProgramData.student_count.toString(),
             resources: "0"
           }

@@ -48,15 +48,15 @@ const PCDashboard = () => {
   const topRowCards = [
     {
       icon: CgNotes,
-      value: selectedProgram?.counts?.surveys || "1",
-      description: "View, edit, or add Surveys",
-      button: { text: "Surveys", link: "/pc-surveys-home" },
+      value: selectedProgram?.counts?.programs || "1",
+      description: "View, create, or delete programs",
+      button: { text: "Programs", link: "/pc-progams-home" },
       borderColor: colors.border_teal
     },
     {
       icon: HiUsers,
       value: selectedProgram?.counts?.students || "0",
-      description: `View students in ${selectedProgram?.name || 'your program'}`,
+      description: `View students in "${selectedProgram?.name || 'your program'}"`,
       button: { text: "Students", link: "/pc-view-students" },
       borderColor: colors.border_red
     },
