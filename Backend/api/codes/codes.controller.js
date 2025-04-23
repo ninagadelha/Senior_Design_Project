@@ -47,3 +47,19 @@ exports.deleteCode = async (req, res) => {
     res.status(500).send('Error deleting Code');
   }
 }
+
+exports.joinNewProgram = async (req, res) => {
+  const { code, id} = req.body;
+
+  if ( !code || !id) {
+    return res.status(400).json({ message: 'Missing required field code or id' });
+}
+
+  try {
+    const result = await codeService.joinNewProgram(code, id);
+    res.json({message:"Successfully Changed Students Program", result: result});
+  } catch (error) {
+    console.error('Error Changing Students Program Through Join Code:', error);
+    res.status(500).send('Error Changing Students Program Through Join Code');
+  }
+}
