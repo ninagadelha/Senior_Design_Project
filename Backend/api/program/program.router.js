@@ -9,4 +9,6 @@ router.get("/getprograms", programController.getPrograms)
 
 router.post("/getPCprograms", programController.getPCPrograms)
 
+router.delete("/deleteProgram", programController.deleteProgram)
+
 module.exports = router;

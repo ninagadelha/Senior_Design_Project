@@ -80,3 +80,16 @@ exports.postnewprogram = async(program_name, owner_userid) => {
   }
 
 }
+
+
+exports.deleteProgram = async(program_id) => {
+  try{
+
+    return await queryDatabase('DELETE FROM Program WHERE program_id = ?', [program_id]);
+  }
+  catch (error) {
+    console.error('Error Deleting program:', error);
+    throw error; 
+  }
+
+}

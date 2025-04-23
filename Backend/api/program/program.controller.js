@@ -43,3 +43,19 @@ exports.getPCPrograms = async (req, res) => {
 }
 
 
+exports.deleteProgram = async (req, res) => {
+  const {program_id} = req.body;
+  try {
+    const result = await programService.deleteProgram(program_id);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Program not found' });
+    }
+
+    res.status(200).json({ message: 'Program deleted successfully' });
+  } catch (error) {
+    console.error('Error Deleting Program:', error);
+    res.status(500).send('Error Deleting Program');
+  }
+}
+
+
