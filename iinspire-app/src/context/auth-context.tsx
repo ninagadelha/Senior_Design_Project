@@ -10,7 +10,7 @@ type User = {
 };
 
 type ProgramCounts = {
-  surveys: string;
+  programs: string;
   students: string;
   resources: string;
 };

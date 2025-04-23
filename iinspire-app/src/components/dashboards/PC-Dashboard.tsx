@@ -1,6 +1,6 @@
 "use client"
 import React from 'react';
-import { Box, Button, Flex, Heading, useBreakpointValue } from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, useBreakpointValue, VStack } from '@chakra-ui/react';
 import DashboardRouteCard from './dashboard-route-card';
 import { IoBarChartSharp } from 'react-icons/io5';
 import { HiUsers } from "react-icons/hi";
@@ -48,15 +48,15 @@ const PCDashboard = () => {
   const topRowCards = [
     {
       icon: CgNotes,
-      value: selectedProgram?.counts?.surveys || "1",
-      description: "View, edit, or add Surveys",
-      button: { text: "Surveys", link: "/pc-surveys-home" },
+      value: selectedProgram?.counts?.programs || "1",
+      description: "View, create, or delete programs",
+      button: { text: "Programs", link: "/pc-programs-home" },
       borderColor: colors.border_teal
     },
     {
       icon: HiUsers,
       value: selectedProgram?.counts?.students || "0",
-      description: `View students in ${selectedProgram?.name || 'your program'}`,
+      description: `View students in "${selectedProgram?.name || 'your program'}"`,
       button: { text: "Students", link: "/pc-view-students" },
       borderColor: colors.border_red
     },
@@ -111,30 +111,19 @@ const bottomRowCards = [
       width="100%"
     >
       {/* Welcome Header */}
-      <Box 
+      <VStack 
         width="100%"
         maxWidth={responsiveConfig?.maxWidth}
-        mb={4}
+        mb={6}
         display="flex"
         alignItems="center"
         justifyContent="space-between"
       >
-        {/* Left Button */}
-        <Button 
-          variant="outline"
-          size="md"
-          onClick={() => {router.push("/pc-select-program")}}
-          color={colors.black}
-          _hover={{ bg: colors.light_grey }}
-          minWidth="120px"
-        >
-          Change Selected Program
-        </Button>
 
         {/* Heading */}
         <Heading 
           as="h1" 
-          size="xl" 
+          size="2xl" 
           color="black"
           fontWeight="bold"
           textAlign="center"
@@ -143,19 +132,23 @@ const bottomRowCards = [
         >
           Viewing Program: {selectedProgram.name}
         </Heading>
-
-        {/* Create Program Button */}
-        <Button 
-          variant="outline"
-          size="md"
-          onClick={() => {router.push("/pc-create-program")}}
-          color={colors.black}
-          _hover={{ bg: colors.light_grey }}
-          minWidth="120px"
-        >
-          Create Program
+          <Button 
+            colorScheme="blue" 
+            size="md" 
+            px={8}
+            mt={2}
+            fontWeight="semibold"
+            boxShadow="sm"
+            _hover={{
+                transform: "translateY(-2px)",
+                boxShadow: "lg"
+            }}
+            transition="all 0.2s"
+            onClick={() => {router.push("/pc-select-program")}}
+          >
+          Change Selected Program
         </Button>
-      </Box>
+      </VStack>
 
       {/* Top Row */}
       <Flex

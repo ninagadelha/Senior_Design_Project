@@ -62,11 +62,15 @@ const DashboardRouteCard: React.FC<DashboardCardProps> = ({
         asChild
         bg="black"
         color="white"
-        _hover={{ bg: "gray.800" }}
+        _hover={{
+          transform: "translateY(-2px)",
+          boxShadow: "lg"
+        }}
         borderRadius="md"
         px={3}
         py={2}
         width="full"
+        fontWeight="semibold"
       >
         <a href={button.link}>{button.text}</a>
       </Button>
