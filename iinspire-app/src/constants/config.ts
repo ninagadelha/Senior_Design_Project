@@ -9,6 +9,7 @@ export const API_ENDPOINTS = {
   fetchQuestions: `${API_BASE_URL}/api/questions`,
   saveResponses: `${API_BASE_URL}/api/survey-results`,
   createAccount: `${API_BASE_URL}/api/newuser`,
+  deleteProgram: `${API_BASE_URL}/api/deleteProgram`,
   newProgram: `${API_BASE_URL}/api/newprogram`,
   // Add other endpoints here
 };
