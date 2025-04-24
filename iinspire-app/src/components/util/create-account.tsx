@@ -41,7 +41,7 @@ const CreateAccountBox = () => {
       });
 
       const data = await response.json();
-      console.log("Create Account API status:", response.status);
+      //console.log("Create Account Data:", response.status);
       if (response.ok) {
         setSuccessMessage("Account created successfully!");
         setTimeout(() => router.push("/"), 2000);
@@ -49,7 +49,7 @@ const CreateAccountBox = () => {
         setSuccessMessage("Error: " + data.message);
       }
     } catch (err) {
-      console.error(err);
+        //console.error(err);
       setSuccessMessage("An error occurred while creating the account.");
     }
   };
