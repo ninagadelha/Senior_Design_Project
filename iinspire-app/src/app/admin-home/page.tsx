@@ -1,14 +1,13 @@
 "use client"
 import Footer from "@/components/util/footer";
 import Navbar from "@/components/util/navbar";
-import { Box, Button, Heading, Text, VStack, Table, Icon, Spinner, Flex } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import {Box, Button, Heading, Text, Table, Icon, Spinner, Flex} from "@chakra-ui/react";
+import React, {useEffect, useState} from "react";
 import colors from "../../../public/colors";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/auth-context";
-import { API_ENDPOINTS } from "@/constants/config";
-import { toaster } from "@/components/ui/toaster";
-import { FaTrash } from "react-icons/fa";
+import {useAuth} from "@/context/auth-context";
+import {API_ENDPOINTS} from "@/constants/config";
+import {toaster} from "@/components/ui/toaster";
+import {FaTrash} from "react-icons/fa";
 import styles from "./AdminHome.module.css"
 
 type Program = {
@@ -17,19 +16,16 @@ type Program = {
     owner_userid: number;
     owner_fullname: string;
     code: string;
-    student_count?: number;
-    resource_count?: number; // We'll fetch this separately
+    submission_count?: number;
 };
 
 const AdminHome = () => {
-    const router = useRouter();
-    const {selectedProgram, user} = useAuth();
+    const {selectedProgram} = useAuth();
     const [programs, setPrograms] = useState<Program[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [role, setRole] = useState("admin");
     const [code, setCode] = useState("");
 
-    // Fetch programs when component mounts
     useEffect(() => {
         const fetchPrograms = async () => {
             try {
@@ -37,39 +33,51 @@ const AdminHome = () => {
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
 
-                // For each program, fetch number of students
-                const programsWithStudents = await Promise.all(
+                //fetch number of students who have taken the survey
+                const programsWithCounts = await Promise.all(
                     data.map(async (program: Program) => {
+
+                        let submissionCount = 0;
                         try {
-                            const studentRes = await fetch(API_ENDPOINTS.getUsersInProgram, {
+                            const submissionRes = await fetch(API_ENDPOINTS.adminProgramResultsCSV, {
                                 method: "POST",
                                 headers: {
                                     "Content-Type": "application/json"
                                 },
-                                body: JSON.stringify({ programid: program.program_id }) // ✅ fixed key
+                                body: JSON.stringify({programID: program.program_id})
                             });
 
-                            if (!studentRes.ok) throw new Error("Student fetch failed");
+                            if (submissionRes.ok) {
+                                const blob = await submissionRes.blob();
+                                const csvText = await blob.text();
 
-                            const result = await studentRes.json();
+                                const rows = csvText.trim().split("\n");
+                                const emailSet = new Set<string>();
 
+                                for (const row of rows) {
+                                    const email = row.split(",")[0].replace(/"/g, "");
+                                    if (email.includes("@")) {
+                                        emailSet.add(email);
+                                    }
+                                }
 
-                            const students = result.Users || [];
-                            return {
-                                ...program,
-                                student_count: students.length
-                            };
+                                submissionCount = emailSet.size;
+                            } else if (submissionRes.status !== 404) {
+                                console.error(`Failed to fetch submissions for program ${program.program_id}`);
+                            }
                         } catch (err) {
-                            console.error(`Failed to fetch students for program ${program.program_id}`, err);
-                            return {
-                                ...program,
-                                student_count: 0
-                            };
+                            console.error(`Error fetching submissions for program ${program.program_id}:`, err);
                         }
+
+                        return {
+                            ...program,
+                            submission_count: submissionCount
+                        };
                     })
                 );
 
-                setPrograms(programsWithStudents);
+                setPrograms(programsWithCounts);
+
             } catch (error) {
                 console.error("Error fetching programs:", error);
             } finally {
@@ -80,6 +88,7 @@ const AdminHome = () => {
         fetchPrograms();
     }, []);
 
+
     //download survey results
     const downloadCSV = async (programID: number) => {
         try {
@@ -88,7 +97,7 @@ const AdminHome = () => {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ programID })
+                body: JSON.stringify({programID})
             });
 
             if (response.status === 404) {
@@ -125,7 +134,7 @@ const AdminHome = () => {
             const blob = await response.blob();
             const text = await blob.text();
 
-            const fileBlob = new Blob([text], { type: "text/csv" });
+            const fileBlob = new Blob([text], {type: "text/csv"});
             const url = window.URL.createObjectURL(fileBlob);
             const link = document.createElement("a");
             link.href = url;
@@ -138,6 +147,7 @@ const AdminHome = () => {
         }
     };
 
+    //delete a program
     const handleDeleteProgram = async (programId: number) => {
         if (!window.confirm("Are you sure you want to delete this program?")) return;
 
@@ -182,15 +192,14 @@ const AdminHome = () => {
         }
     };
 
+    //generate PC code or admin code
     const generateCode = async () => {
         try {
             const response = await fetch(API_ENDPOINTS.getAdminCodes);
             const data = await response.json();
 
-            // Capitalize role to match the API response format
             const targetRole = role === "admin" ? "Admin" : "ProgramCoordinator";
 
-            // Find the first matching code for the selected role
             const match = data.find((item: any) => item.role === targetRole);
 
             if (match) {
@@ -232,10 +241,10 @@ const AdminHome = () => {
     const columns = [
         {header: "Program Name", align: "left"},
         {header: "PC", align: "left"},
-        {header: "# Students", align: "center"},
-        { header: "Download Results", align: "center" },
-        { header: "Download Questions", align: "center" },
-        { header: "Action", align: "center" }
+        {header: "# Submissions", align: "center"},
+        {header: "Download Results", align: "center"},
+        {header: "Download Questions", align: "center"},
+        {header: "Action", align: "center"}
     ];
 
     return (
@@ -325,7 +334,7 @@ const AdminHome = () => {
                             {programs.map((program) => (
                                 <Table.Row
                                     key={program.program_id}
-                                    _hover={{ bg: colors.light_grey }}
+                                    _hover={{bg: colors.light_grey}}
                                     transition="background-color 0.2s ease"
                                     borderBottomWidth="1px"
                                     borderColor={colors.light_grey}
@@ -336,8 +345,8 @@ const AdminHome = () => {
                                     <Table.Cell color={colors.dark_grey} py={3}>
                                         {program.owner_fullname}
                                     </Table.Cell>
-                                    <Table.Cell textAlign="center" color={colors.black} fontWeight="medium" py={3}>
-                                        {program.student_count ?? 0}
+                                    <Table.Cell textAlign="center" py={3}>
+                                        {program.submission_count ?? 0}
                                     </Table.Cell>
                                     <Table.Cell textAlign="center" py={3}>
                                         <Button
@@ -376,7 +385,7 @@ const AdminHome = () => {
                                             aria-label="Delete program"
                                             transition="all 0.2s cubic-bezier(.08,.52,.52,1)"
                                         >
-                                            <Icon as={FaTrash} boxSize={4} />
+                                            <Icon as={FaTrash} boxSize={4}/>
                                         </Button>
                                     </Table.Cell>
                                 </Table.Row>
@@ -393,4 +402,4 @@ const AdminHome = () => {
         </div>
     );
 };
-    export default AdminHome;
+export default AdminHome;
