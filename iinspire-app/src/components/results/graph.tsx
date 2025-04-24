@@ -106,6 +106,7 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
           size: 10,
         }))
       );
+
       comparisonOutlineSeries.normal().fill(null);
       comparisonOutlineSeries.normal().stroke("#808080", 1, "5 3", "round");
       comparisonOutlineSeries.zIndex(1);
@@ -125,9 +126,17 @@ const ChartComponent: React.FC<ChartComponentProps> = ({
           stroke: null,
         }))
       );
+      comparisonSeries.tooltip().useHtml(true).format(`
+                <div style="white-space: nowrap;">
+                    <span>{%x}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <span><strong>Score: {%y}</strong></span>
+                </div>
+            `);
+
       comparisonSeries.normal().fill("#808080", 0.8);
       comparisonSeries.hovered().fill("#808080", 0.6);
       comparisonSeries.zIndex(1);
+
     }
     const series2 = chart.bubble(
       data2.map((point, i) => ({
