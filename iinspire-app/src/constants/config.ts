@@ -8,7 +8,7 @@ export const API_ENDPOINTS = {
   getProgramsByPC: `${API_BASE_URL}/api/getPCprograms`,
   fetchQuestions: `${API_BASE_URL}/api/questions`,
   saveResponses: `${API_BASE_URL}/api/survey-results`,
-  createAccount: `${API_BASE_URL}/api/newuser`,
+  createAccount: `${API_BASE_URL}/api/create-account`,
   deleteProgram: `${API_BASE_URL}/api/deleteProgram`,
   newProgram: `${API_BASE_URL}/api/newprogram`,
   getProgramsAdmin: `${API_BASE_URL}/api/getprograms`,
@@ -16,6 +16,5 @@ export const API_ENDPOINTS = {
   adminProgramResultsCSV: `${API_BASE_URL}/api/program-survey-results`,
   getQuestionsCSV: `${API_BASE_URL}/api/questionsCSV`,
   getAdminCodes: `${API_BASE_URL}/api/getAdminCodes`
-
   // Add other endpoints here
 };

@@ -16,6 +16,7 @@ const CreateAccountBox = () => {
   const [stemInterests, setStemInterests] = useState("");
   const [institution, setInstitution] = useState("");
   const [code, setCode] = useState("");
+  const [fullname, setFullname] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
   const router = useRouter();
@@ -35,6 +36,7 @@ const CreateAccountBox = () => {
           stem_interests: stemInterests,
           institution,
           code,
+          fullname,
         }),
       });
 
@@ -86,6 +88,13 @@ const CreateAccountBox = () => {
         <input className="input" placeholder="STEM Interests" value={stemInterests} onChange={(e) => setStemInterests(e.target.value)} />
         <input className="input" placeholder="Institution" value={institution} onChange={(e) => setInstitution(e.target.value)} />
         <input className="input" placeholder="Code" value={code} onChange={(e) => setCode(e.target.value)} />
+        <input
+            className="input"
+            placeholder="Full Name"
+            value={fullname}
+            onChange={(e) => setFullname(e.target.value)}
+        />
+
 
         <button className="submit-button" onClick={handleCreateAccount}>
           Create Account
