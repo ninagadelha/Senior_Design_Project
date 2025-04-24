@@ -98,13 +98,17 @@ exports.PostNewUser = async (email, netid, age, gender, ethnicity, credits, stem
 
     // Now insert the new user with the obtained program_id (if any)
     const result = await queryDatabase(
-      'INSERT INTO Users (role, email, netid, age, gender, ethnicity, credits, stem_interests, institution, programid, fullname, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())',
-      [role, email, netid, age, gender, ethnicity, credits, stem_interests, institution, programid, fullname]
+        'INSERT INTO Users (role, email, netid, age, gender, ethnicity, credits, stem_interests, institution, programid, fullname, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())',
+        [role, email, netid, age, gender, ethnicity, credits, stem_interests, institution, programid, fullname]
     );
 
-    // Return a success response
-    return { success: true, message: 'User created successfully.' };
-
+    if (result.affectedRows > 0) {
+      return {
+        success: true,
+        message: 'User created successfully.',
+        userId: result.insertId // Optional: return the newly created user's ID
+      };
+    }
   } catch (error) {
     // Return the error message if something goes wrong
     return { success: false, message: error.message };

@@ -16,6 +16,7 @@ const CreateAccountBox = () => {
   const [stemInterests, setStemInterests] = useState("");
   const [institution, setInstitution] = useState("");
   const [code, setCode] = useState("");
+  const [fullname, setFullname] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
   const router = useRouter();
@@ -35,11 +36,12 @@ const CreateAccountBox = () => {
           stem_interests: stemInterests,
           institution,
           code,
+          fullname,
         }),
       });
 
       const data = await response.json();
-      console.log("Create Account API status:", response.status);
+      //console.log("Create Account Data:", response.status);
       if (response.ok) {
         setSuccessMessage("Account created successfully!");
         setTimeout(() => router.push("/"), 2000);
@@ -47,7 +49,7 @@ const CreateAccountBox = () => {
         setSuccessMessage("Error: " + data.message);
       }
     } catch (err) {
-      console.error(err);
+        //console.error(err);
       setSuccessMessage("An error occurred while creating the account.");
     }
   };
@@ -86,6 +88,13 @@ const CreateAccountBox = () => {
         <input className="input" placeholder="STEM Interests" value={stemInterests} onChange={(e) => setStemInterests(e.target.value)} />
         <input className="input" placeholder="Institution" value={institution} onChange={(e) => setInstitution(e.target.value)} />
         <input className="input" placeholder="Code" value={code} onChange={(e) => setCode(e.target.value)} />
+        <input
+            className="input"
+            placeholder="Full Name"
+            value={fullname}
+            onChange={(e) => setFullname(e.target.value)}
+        />
+
 
         <button className="submit-button" onClick={handleCreateAccount}>
           Create Account

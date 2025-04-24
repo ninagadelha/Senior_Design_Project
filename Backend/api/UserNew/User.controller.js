@@ -236,23 +236,14 @@ exports.getUsersProgram = async (req,res) => {
 }
 exports.createAccount = async (req, res) => {
   const { email, netid, age, gender, ethnicity, credits, stem_interests, institution, code } = req.body;
-
   try {
-    const [existingUser] = await db.query('SELECT * FROM users WHERE email = ?', [email]);
-
-    if (existingUser.length > 0) {
-      return res.status(400).json({ message: 'User already exists' });
+    const result = await userService.PostNewUser(email, netid, age, gender, ethnicity, credits, stem_interests, institution, code, fullname);
+    if (result.success) {
+      res.status(201).json(result);
+    } else {
+      res.status(400).json(result);
     }
-
-    await db.query(
-        `INSERT INTO users (email, netid, age, gender, ethnicity, credits, stem_interests, institution, code)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [email, netid, age, gender, ethnicity, credits, stem_interests, institution, code]
-    );
-
-    res.status(201).json({ message: 'Account created successfully' });
-  } catch (error) {
-    console.error('Error creating account:', error);
-    res.status(500).json({ message: 'Internal server error' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
 };
