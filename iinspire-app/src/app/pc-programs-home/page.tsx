@@ -120,13 +120,20 @@ const PCProgramsHome = () => {
             
             // If the deleted program was the currently selected one, clear selection
             if (selectedProgram?.id === programId.toString()) {
-                // You might want to add a function in your auth context to clear selected program
-                // Or handle this differently based on your app's requirements
+
+                toaster.create({
+                    title: "Selected Program Deleted",
+                    description: "You deleted your selected program. Taking you back to Program Selection",
+                    type: "warning",
+                    duration: 5000,
+                });
+
+                router.push("/pc-select-program");
             }
 
             toaster.create({
                 title: "Success",
-                description: "Successfully deleted program. Please refresh the page.",
+                description: "Successfully deleted program.",
                 type: "success",
                 duration: 3000,
             });

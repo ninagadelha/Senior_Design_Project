@@ -4,10 +4,8 @@ import {
     Heading,
     Button,
     Text,
-    Image,
     VStack,
     Input,
-    Spinner,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import colors from "../../../public/colors";
@@ -24,7 +22,7 @@ type Program = {
 
 const PCCreateProgram = () => {
     const router = useRouter();
-    const { user, setSelectedProgram } = useAuth();
+    const { user } = useAuth();
     const [programName, setProgramName] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
@@ -98,14 +96,15 @@ const PCCreateProgram = () => {
                         Create New Program
                     </Heading>
 
+                    <Text color={colors.black}>
+                        Enter the desired name of your new program. For example, &quot;ISU2025&quot;
+                    </Text>
+
                     <VStack width="100%" maxWidth="400px" gap={4}>
-                        <Text width="100%" textAlign="left" fontSize="md" color={colors.black}>
-                            Program Name
-                        </Text>
                         <Input
                             value={programName}
                             onChange={(e) => setProgramName(e.target.value)}
-                            placeholder="Enter program name"
+                            placeholder="Program Name"
                             required
                             color={colors.black}
                             bg={colors.white}
