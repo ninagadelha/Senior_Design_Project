@@ -11,5 +11,11 @@ export const API_ENDPOINTS = {
   createAccount: `${API_BASE_URL}/api/newuser`,
   deleteProgram: `${API_BASE_URL}/api/deleteProgram`,
   newProgram: `${API_BASE_URL}/api/newprogram`,
+  getProgramsAdmin: `${API_BASE_URL}/api/getprograms`,
+  getUsersInProgram: `${API_BASE_URL}/api/usersprogram`,
+  adminProgramResultsCSV: `${API_BASE_URL}/api/program-survey-results`,
+  getQuestionsCSV: `${API_BASE_URL}/api/questionsCSV`,
+  getAdminCodes: `${API_BASE_URL}/api/getAdminCodes`
+
   // Add other endpoints here
 };

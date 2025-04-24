@@ -33,7 +33,7 @@ const AdminHome = () => {
     useEffect(() => {
         const fetchPrograms = async () => {
             try {
-                const response = await fetch("http://localhost:5001/api/getprograms");
+                const response = await fetch(API_ENDPOINTS.getProgramsAdmin);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
 
@@ -41,7 +41,7 @@ const AdminHome = () => {
                 const programsWithStudents = await Promise.all(
                     data.map(async (program: Program) => {
                         try {
-                            const studentRes = await fetch("http://localhost:5001/api/usersprogram", {
+                            const studentRes = await fetch(API_ENDPOINTS.getUsersInProgram, {
                                 method: "POST",
                                 headers: {
                                     "Content-Type": "application/json"
@@ -80,9 +80,10 @@ const AdminHome = () => {
         fetchPrograms();
     }, []);
 
+    //download survey results
     const downloadCSV = async (programID: number) => {
         try {
-            const response = await fetch("http://localhost:5001/api/program-survey-results", {
+            const response = await fetch(API_ENDPOINTS.adminProgramResultsCSV, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -109,9 +110,10 @@ const AdminHome = () => {
         }
     };
 
+    //download survey questions
     const downloadQuestionsCSV = async () => {
         try {
-            const response = await fetch("http://localhost:5001/api/questionsCSV");
+            const response = await fetch(API_ENDPOINTS.getQuestionsCSV);
 
             if (response.status === 404) {
                 alert("No questions data found.");
@@ -182,7 +184,7 @@ const AdminHome = () => {
 
     const generateCode = async () => {
         try {
-            const response = await fetch("http://localhost:5001/api/getAdminCodes");
+            const response = await fetch(API_ENDPOINTS.getAdminCodes);
             const data = await response.json();
 
             // Capitalize role to match the API response format
