@@ -48,9 +48,9 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                                     value={value?.toString() || ''}
                                     onValueChange={(details) => {
                                         if (details.value) {  // Add null check
-                                          onAnswerChange(question.question_id, details.value);
+                                            onAnswerChange(question.question_id, details.value);
                                         }
-                                      }}
+                                    }}
                                     size={'lg'}
                                     width="50%"
                                     marginRight={"10vh"}
@@ -107,9 +107,9 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                                     value={value?.toString() || ''}
                                     onValueChange={(details) => {
                                         if (details.value) {
-                                          onAnswerChange(question.question_id, details.value);
+                                            onAnswerChange(question.question_id, details.value);
                                         }
-                                      }}
+                                    }}
                                     size={'lg'}
                                     width="50%"
                                     marginRight={"10vh"}
@@ -122,7 +122,10 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                                                 label = "Never";
                                             } else if (option == "6") {
                                                 label = "Always";
-                                            } else {
+                                            } else if (option == "3") {
+                                                label = "Neutral";
+                                            }
+                                            else {
                                                 label = " ";
                                             }
                                             return (
@@ -164,9 +167,9 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                                     value={value?.toString() || ''}
                                     onValueChange={(details) => {
                                         if (details.value) {  // Add null check
-                                          onAnswerChange(question.question_id, details.value);
+                                            onAnswerChange(question.question_id, details.value);
                                         }
-                                      }}
+                                    }}
                                     size={'lg'}
                                     width="50%"
                                     marginRight={"10vh"}
@@ -179,7 +182,10 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                                                 label = "Strongly Dislike";
                                             } else if (option == "4") {
                                                 label = "Strongly Like";
-                                            } else {
+                                            } else if (option == "2") {
+                                                label = "Neutral";
+                                            }
+                                            else {
                                                 label = " ";
                                             }
                                             return (
@@ -201,66 +207,48 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                     </ >
                 );
             case 'NC/CC - 0-9': //No confidence - Complete confidence
+                value = typeof value === 'string' ? value : '0';
                 return (
                     <>
-                        <Box width="100%" p={4}>
-                            <Flex align="center" justify="space-between" gap={8} position="relative" zIndex={1} suppressHydrationWarning>
-                                {/* Question text - Add minWidth to prevent squishing */}
-                                <Box flex="1" minWidth="300px" maxWidth="400px" pr={8}>
-                                    <Text fontSize="md" fontWeight="medium">
-                                        {question.question_text}
-                                    </Text>
+                        <Box display={'flex'} alignItems={'start'} width="100%" maxWidth="100vw" suppressHydrationWarning>
+                            <HStack
+                                width="100%"
+                                align="center"
+                                justify="space-between"
+                                marginTop="2vh"
+                                px={4}
+                                suppressHydrationWarning
+                            >
+                                {/* Question text */}
+                                <Box width="40%" maxWidth="400px" marginLeft={"10vh"} suppressHydrationWarning>
+                                    <Text>{question.question_text}</Text>
                                 </Box>
 
-                                <RadioGroup
-                                    value={value?.toString() || ''}
-                                    onValueChange={(details) => {
-                                        if (details.value) {  // Add null check
-                                          onAnswerChange(question.question_id, details.value);
+                                <HStack width="50%" justify="center" align="center" marginLeft={'2vw'} suppressHydrationWarning>
+                                <Slider
+                                        width={'full'}
+                                        min={0}
+                                        max={9}
+                                        thumbAlignment="contain"
+                                        thumbSize={{ width: 16, height: 16 }}
+                                        value={typeof value === 'string' ? value.split(',').map(Number) : [0]}
+                                        onValueChange={(details) =>
+                                            onAnswerChange(question.question_id, details.value.join(','))
                                         }
-                                      }}
-                                    flex="2"
-                                    variant={"subtle"}
-                                >
-                                    <Flex justify="space-between" width="100%" gap={4} position="relative">
-                                    {question.options?.map((option) => {
-                                            let label;
-                                            if (option == "0") {
-                                                label = "No Confidence";
-                                            } else if (option == "9") {
-                                                label = "Complete Confidence";
-                                            } else {
-                                                label = " ";
-                                            }
-                                            return (
-                                                <Box key={option} textAlign="center" flex="1">
-                                                    <VStack gap={4}>
-                                                        <Radio
-                                                            value={option.toString()}
-                                                            transform="scale(2)"  // Scale individual radios
-                                                            _hover={{ transform: 'scale(2.25)' }}
-                                                            transition="transform 0.2s"
-                                                            px={2}  // Add horizontal padding
-                                                            py={1}  // Add vertical padding
-                                                            whiteSpace="nowrap"
-                                                        />
-                                                        <Text
-                                                            fontSize="sm"
-                                                            bg="white"
-                                                        >
-                                                            {label}
-                                                        </Text>
-                                                    </VStack>
-                                                </Box>
-                                            );
-                                        })}
-                                    </Flex>
-                                </RadioGroup>
-                            </Flex>
+                                        step={1}
+                                        marks={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]}
+                                        variant={'solid'}
+                                        colorScheme={'grey'}
+                                        suppressHydrationWarning
+                                    />
+                                    <Text suppressHydrationWarning>{value}</Text>
+                                </HStack>
+                            </HStack>
                         </Box>
+                        <br />
                         <hr />
                     </>
-                );
+                )
             case 'SD/SA - 0-4': //Strongly Disagree - Strongly Agree
                 return (
                     <>
@@ -282,9 +270,9 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                                     value={value?.toString() || ''}
                                     onValueChange={(details) => {
                                         if (details.value) {  // Add null check
-                                          onAnswerChange(question.question_id, details.value);
+                                            onAnswerChange(question.question_id, details.value);
                                         }
-                                      }}
+                                    }}
                                     size={'lg'}
                                     width="50%"
                                     marginRight={"10vh"}
@@ -297,7 +285,10 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                                                 label = "Strongly Disagree";
                                             } else if (option == "4") {
                                                 label = "Strongly Agree";
-                                            } else {
+                                            } else if (option == "2") {
+                                                label = "Neutral";
+                                            }
+                                            else {
                                                 label = " ";
                                             }
                                             return (
@@ -319,8 +310,8 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                     </ >
                 );
             case '% / 0-100': //Percentage
-            //const sliderValue = 50;
-            value = typeof value === 'string' ? value : '0';
+                //const sliderValue = 50;
+                value = typeof value === 'string' ? value : '0';
                 return (
                     <>
                         <Box display={'flex'} alignItems={'start'} width="100%" maxWidth="100vw" suppressHydrationWarning>
@@ -347,6 +338,7 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                                             onAnswerChange(question.question_id, details.value.join(','))
                                         }
                                         step={10}
+                                        marks={[0, 10, 20, 30, 40, 50, 60, 70, 80, 90]}
                                         variant={'solid'}
                                         colorScheme={'grey'}
                                         suppressHydrationWarning
@@ -358,6 +350,59 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                         <br />
                         <hr />
                     </>
+                )
+            case 'Y/N/':
+                return (
+                    <>
+                        <Box display={'flex'} alignItems={'start'} width="100%" maxWidth="100vw" suppressHydrationWarning>
+                            <HStack
+                                width="100%"
+                                align="center"
+                                justify="space-between"
+                                marginTop="2vh"
+                                px={4}
+                            >
+                                {/* Question text */}
+                                <Box width="40%" maxWidth="400px" marginLeft={"10vh"}>
+                                    <Text>{question.question_text}</Text>
+                                </Box>
+
+                                {/* Radio buttons */}
+                                <RadioGroup
+                                    value={value?.toString() || ''}
+                                    onValueChange={(details) => {
+                                        if (details.value) {  // Add null check
+                                            onAnswerChange(question.question_id, details.value);
+                                        }
+                                    }}
+                                    size={'lg'}
+                                    width="50%"
+                                    marginRight={"10vh"}
+                                    variant={'subtle'}
+                                >
+                                    <HStack width="100%" justify="space-between" align="start">
+                                        {question.options?.map((option) => {
+                                            const label = option === "Y" ? "Yes" : option === "N" ? "No" : " ";
+                                            return (
+                                                <VStack key={option} gap={2} align="center">
+                                                    <Radio
+                                                        value={label}  // Store the full text in the value
+                                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                                            onAnswerChange(question.question_id, e.target.value)
+                                                        }
+                                                        style={{ transform: 'scale(1.5)' }}
+                                                    />
+                                                    <Text fontSize="sm">{label}</Text>
+                                                </VStack>
+                                            );
+                                        })}
+                                    </HStack>
+                                </RadioGroup>
+                            </HStack>
+                        </Box>
+                        <br />
+                        <hr />
+                    </ >
                 )
             default:
                 return null;
