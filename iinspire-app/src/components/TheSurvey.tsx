@@ -26,17 +26,18 @@ const TheSurvey = () => {
         '3': 'For each task listed below, please indicate how confident you are that you could successfully complete it - assuming you were motivated to make your best effort',
         '4': 'Using the scale below, please indicate the extent to which you agree or disagree with each of the following statements.',
         '5': 'Please indicate the level to which you agree or disagree with each statement ',
-        '6': 'Please indicate your degree of confidence you have in your ability to successfully perform each behavior. Your strength will be rated on a 100-point scale ranging from 0 (no confidence) to 100 (complete confidence) for each of the following items.'
-        // Add more groups as needed
+        '6': 'Please indicate your degree of confidence you have in your ability to successfully perform each behavior. Your strength will be rated on a 100-point scale ranging from 0 (no confidence) to 100 (complete confidence) for each of the following items.',
+        '7': 'Please choose an option'
     };
     const GROUP_KEYS: { [key: string]: string } = {
         '0': 'civicEngagement',
-        //'1': 'civicParticipation',
+        '1': 'civicParticipation',
         '2': 'stemInterest',
         '3': 'stemEfficacy',
         '4': 'stemOutcome',
         '5': 'researchOutcome',
-        '6': 'researchEfficacy'
+        '6': 'researchEfficacy',
+        '7': 'researchInterest'
     };
 
 

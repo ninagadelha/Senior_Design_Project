@@ -1,5 +1,5 @@
 type InputType = 'D/A - 0-5' | 'N/A - 0-6' | 'SD/SL - 0-4' | 
-                  'NC/CC - 0-9' | 'SD/SA - 0-4' | '% / 0-100';
+                  'NC/CC - 0-9' | 'SD/SA - 0-4' | '% / 0-100' | 'Y/N/';
 
 
 interface SurveyQuestionInterface {
