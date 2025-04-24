@@ -37,7 +37,7 @@ const TheSurvey = () => {
         '4': 'stemOutcome',
         '5': 'researchOutcome',
         '6': 'researchEfficacy',
-        '7': 'researchInterest'
+        '7': 'taken_survey'
     };
 
 

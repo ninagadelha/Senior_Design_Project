@@ -122,10 +122,10 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                                                 label = "Never";
                                             } else if (option == "6") {
                                                 label = "Always";
-                                            } else if (option == "3"){
+                                            } else if (option == "3") {
                                                 label = "Neutral";
                                             }
-                                            else{
+                                            else {
                                                 label = " ";
                                             }
                                             return (
@@ -182,10 +182,10 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                                                 label = "Strongly Dislike";
                                             } else if (option == "4") {
                                                 label = "Strongly Like";
-                                            } else if (option == "2"){
+                                            } else if (option == "2") {
                                                 label = "Neutral";
                                             }
-                                            else{
+                                            else {
                                                 label = " ";
                                             }
                                             return (
@@ -303,10 +303,10 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                                                 label = "Strongly Disagree";
                                             } else if (option == "4") {
                                                 label = "Strongly Agree";
-                                            } else if (option == "2"){
+                                            } else if (option == "2") {
                                                 label = "Neutral";
                                             }
-                                            else{
+                                            else {
                                                 label = " ";
                                             }
                                             return (
@@ -398,19 +398,15 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                                     variant={'subtle'}
                                 >
                                     <HStack width="100%" justify="space-between" align="start">
-                                        {question.options?.map((option, index) => {
-                                            let label;
-                                            if (option == "Y") {
-                                                label = "Yes";
-                                            } else if (option == "N") {
-                                                label = "No";
-                                            } else {
-                                                label = " ";
-                                            }
+                                        {question.options?.map((option) => {
+                                            const label = option === "Y" ? "Yes" : option === "N" ? "No" : " ";
                                             return (
                                                 <VStack key={option} gap={2} align="center">
                                                     <Radio
-                                                        value={option.toString()}
+                                                        value={label}  // Store the full text in the value
+                                                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => 
+                                                            onAnswerChange(question.question_id, e.target.value)
+                                                          }
                                                         style={{ transform: 'scale(1.5)' }}
                                                     />
                                                     <Text fontSize="sm">{label}</Text>
