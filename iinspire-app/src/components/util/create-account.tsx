@@ -18,6 +18,7 @@ const CreateAccountBox = () => {
   const [code, setCode] = useState("");
   const [fullname, setFullname] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [password, setPassword] = useState("");
 
   const router = useRouter();
 
@@ -37,6 +38,7 @@ const CreateAccountBox = () => {
           institution,
           code,
           fullname,
+          password,
         }),
       });
 
@@ -94,6 +96,14 @@ const CreateAccountBox = () => {
             value={fullname}
             onChange={(e) => setFullname(e.target.value)}
         />
+        <input
+            className="input"
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+        />
+
 
 
         <button className="submit-button" onClick={handleCreateAccount}>
