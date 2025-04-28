@@ -72,7 +72,7 @@ exports.postnewprogram = async(program_name, owner_userid) => {
   try{
     const code = await postnewCode("Student");
 
-    return await queryDatabase('INSERT into Program (name, owner_userid, code) values (?, ?, ?)', [program_name, owner_userid, code]);
+    return await queryDatabase('INSERT into Program (name, owner_userid, code, when_created) values (?, ?, ?, now())', [program_name, owner_userid, code]);
   }
   catch (error) {
     console.error('Error creating new program:', error);

@@ -61,7 +61,7 @@ exports.checkUser= async ( email, programid) => {
 }
 
 // Post a new user with selected fields
-exports.PostNewUser = async (email, netid, age, gender, ethnicity, credits, stem_interests, institution, code, fullname, password,) => {
+exports.PostNewUser = async (email, netid, age, gender, ethnicity, credits, stem_interests, institution, code, fullname, password) => {
   let role = "Student"; // Default role
   let programid = null;
 
@@ -115,4 +115,21 @@ exports.PostNewUser = async (email, netid, age, gender, ethnicity, credits, stem
   }
 };
 
+
+exports.deleteStudent = async (id) => {
+
+  try {
+    const sql = `DELETE from Users where id=?`;
+    const result = await queryDatabase(sql, [id]);
+    if (result.affectedRows > 0) {
+      return {
+        success: true,
+        message: 'User deleted successfully.'
+      };
+    }
+  } catch (error) {
+    // Return the error message if something goes wrong
+    return { success: false, message: error.message };
+  }
+};
   

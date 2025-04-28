@@ -3,14 +3,14 @@ const { parse } = require('json2csv')
 
 //this puts a new survey result into the database
 exports.postSurveyResult = async (req, res) => {
-    const { userID, programID, civicEngagement, stemInterest,stemEfficacy,stemOutcome, researchOutcome, researchEfficacy, civicParticipation, taken_survey} = req.body;
+    const { userID, programID, civicEngagement, stemInterest,stemEfficacy,stemOutcome, researchOutcome, researchEfficacy, civicParticipation, taken_survey, when} = req.body;
 
     if (!userID || !programID || !civicEngagement || !stemInterest|| !stemEfficacy|| !stemOutcome|| !researchOutcome || !researchEfficacy || !civicParticipation || !taken_survey) {
         return res.status(400).json({ message: "Missing required fields" });
     }
     try {
         // Query the Users table to find a user by the provided email
-        const results = await srService.createSurveyResult(userID, programID, civicEngagement, stemInterest,stemEfficacy,stemOutcome, researchOutcome, researchEfficacy, civicParticipation, taken_survey);
+        const results = await srService.createSurveyResult(userID, programID, civicEngagement, stemInterest,stemEfficacy,stemOutcome, researchOutcome, researchEfficacy, civicParticipation, taken_survey, when);
           // User found with the provided email
           res.json({
             message: 'Results Saved Succesfully:',
@@ -107,12 +107,9 @@ function mapSurveyResultToCSVRow(result) {
     fullname: result.fullname,
     institution: result.institution,
     Date: new Date(result.dataCreated).toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: '2-digit',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
+      year: '2-digit',
+      month: 'numeric',
+      day: 'numeric'
     }),
     civicEngagement: result.civicEngagement,
     stemInterest: result.stemInterest,
@@ -202,12 +199,9 @@ function mapPCSurveyResultToCSVRow(result) {
     fullname: result.fullname,
     institution: result.institution,
     Date: new Date(result.dataCreated).toLocaleString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: '2-digit',
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
+      year: '2-digit',
+      month: 'numeric',
+      day: 'numeric'
     }),
     civicEngagement: result.civicEngagement,
     stemInterest: result.stemInterest,

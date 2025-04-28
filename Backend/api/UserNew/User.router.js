@@ -16,5 +16,6 @@ router.post("/userexist", userController.getExistingUser);
 router.post("/usersprogram", userController.getUsersProgram);
 router.get("/adminUsers",userController.getAdminUsers);
 router.post('/create-account', userController.createAccount);
+router.delete('/deletestudent', userController.deleteStudent);
 
 module.exports = router;

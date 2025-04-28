@@ -238,3 +238,18 @@ exports.loginUser = async (req, res) => {
       res.status(500).json({success: false, message: err.message});
     }
   };
+
+
+  exports.deleteStudent = async (req, res) => {
+    const {id} = req.body;
+    try {
+      const result = await userService.deleteStudent(id);
+      if (result.success) {
+        res.status(201).json(result);
+      } else {
+        res.status(400).json(result);
+      }
+    } catch (err) {
+      res.status(500).json({success: false, message: err.message});
+    }
+  };
