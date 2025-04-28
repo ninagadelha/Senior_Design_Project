@@ -61,7 +61,7 @@ exports.checkUser= async ( email, programid) => {
 }
 
 // Post a new user with selected fields
-exports.PostNewUser = async (email, netid, age, gender, ethnicity, credits, stem_interests, institution, code, fullname) => {
+exports.PostNewUser = async (email, netid, age, gender, ethnicity, credits, stem_interests, institution, code, fullname, password,) => {
   let role = "Student"; // Default role
   let programid = null;
 
@@ -98,8 +98,8 @@ exports.PostNewUser = async (email, netid, age, gender, ethnicity, credits, stem
 
     // Now insert the new user with the obtained program_id (if any)
     const result = await queryDatabase(
-        'INSERT INTO Users (role, email, netid, age, gender, ethnicity, credits, stem_interests, institution, programid, fullname, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())',
-        [role, email, netid, age, gender, ethnicity, credits, stem_interests, institution, programid, fullname]
+        'INSERT INTO Users (role, email, netid, age, gender, ethnicity, credits, stem_interests, institution, programid, fullname, password, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())',
+        [role, email, netid, age, gender, ethnicity, credits, stem_interests, institution, programid, fullname, password]
     );
 
     if (result.affectedRows > 0) {

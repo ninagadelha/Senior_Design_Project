@@ -1,4 +1,5 @@
 const userService = require('./User.service');
+const bcrypt = require('bcryptjs');
 //const authService = require('../auth/auth.service)
 
 //controller methods
@@ -38,212 +39,202 @@ exports.getUsers = async (req,res) => {
 
 
 exports.loginUser = async (req, res) => {
-  const { email } = req.body; // Get the email from the request body
-    
-  if (!email) {
-    return res.status(400).send('Email is required');
+  const {email, password} = req.body; // make sure to grab password too
+
+  const users = await userService.loginUser(email);
+
+  if (users.length === 0) {
+    return res.status(400).json({success: false, message: "Invalid email or password."});
   }
 
-  try {
+  const user = users[0];
 
-    /* const auth = await authService.validateUser(email)
-    if(!auth){
-    return res.status(400).send('Email was not authenticated');
-    }
+// Compare password with hashed password
+  const isMatch = await bcrypt.compare(password, user.password);
 
-    */
-    // Query the Users table to find a user by the provided email
-    const results = await userService.loginUser(email);
-
-    if (results.length > 0) {
-      // User found with the provided email
-      res.json({
-        message: 'Login successful',
-        user: results[0] // Return the user data (you can exclude password for security reasons)
-      });
-    } else {
-      // No user found with that email
-      res.status(401).send('Invalid email');
-    }
+  if (!isMatch) {
+    return res.status(400).json({success: false, message: "Invalid email or password."});
   }
-  catch (error) {
-    console.error('Error querying the Users table for login:', error);
-    res.status(500).send('Error logging in');
-  }
+
+// If password matches:
+  res.status(200).json({success: true, message: "Login successful!", user});
 }
 
-exports.newUser = async (req, res) => {
-  const { email, netid, age, gender, ethnicity, credits, stem_interests, institution, code, fullname } = req.body;
-  
-  if (!email) {
-    return res.status(400).send('Email is required');
-  } 
-  if (!code) {
-    return res.status(400).send('Program code is required');
-  }
+  exports.newUser = async (req, res) => {
+    const {email, netid, age, gender, ethnicity, credits, stem_interests, institution, code, fullname} = req.body;
 
-  try {
-    
-    /* const auth = await authService.validateUser(email)
-    if(!auth){
-    return res.status(400).send('Email was not authenticated');
+    if (!email) {
+      return res.status(400).send('Email is required');
+    }
+    if (!code) {
+      return res.status(400).send('Program code is required');
     }
 
-    */
+    try {
 
-    // Query the Users table to find a user by the provided email
-    const response = await userService.PostNewUser(email, netid, age, gender, ethnicity, credits, stem_interests, institution, code, fullname);
+      /* const auth = await authService.validateUser(email)
+      if(!auth){
+      return res.status(400).send('Email was not authenticated');
+      }
 
-   
-     // Check if the user was created successfully
-  if (response.success) {
-    // If successful, send a success message in the response
-    res.json({
-      message: 'User Created successfully'
-    });
-  } else {
-    // If there was an error (e.g., program doesn't exist), send an error message
-    res.status(400).json({
-      message: response.message  // The message will come from the error or validation
-    });
+      */
+
+      // Query the Users table to find a user by the provided email
+      const response = await userService.PostNewUser(email, netid, age, gender, ethnicity, credits, stem_interests, institution, code, fullname);
+
+
+      // Check if the user was created successfully
+      if (response.success) {
+        // If successful, send a success message in the response
+        res.json({
+          message: 'User Created successfully'
+        });
+      } else {
+        // If there was an error (e.g., program doesn't exist), send an error message
+        res.status(400).json({
+          message: response.message  // The message will come from the error or validation
+        });
+      }
+    } catch (error) {
+      console.error('Error Creating New User:', error);
+      res.status(500).send('Error Creating New User');
+    }
   }
-}
-  catch (error) {
-    console.error('Error Creating New User:', error);
-    res.status(500).send('Error Creating New User');
-  }
-}
 
 
+  exports.updateProgramDirector = async (req, res) => {
+    const {email} = req.body;
 
-
-exports.updateProgramDirector = async (req, res) => {
-  const { email } = req.body;
-  
-  if (!email) {
-    return res.status(400).send('Email is required');
-  }
-  try {
-    // Query the Users table to find a user by the provided email
-    const results = await userService.UpdateProgramDirector( email);
+    if (!email) {
+      return res.status(400).send('Email is required');
+    }
+    try {
+      // Query the Users table to find a user by the provided email
+      const results = await userService.UpdateProgramDirector(email);
       // User found with the provided email
       res.json({
         message: 'User Role Updated',
         User: results
       });
+    } catch (error) {
+      console.error('Error Updating User Role:', error);
+      res.status(500).send('Error Creating New User');
+    }
   }
-  catch (error) {
-    console.error('Error Updating User Role:', error);
-    res.status(500).send('Error Creating New User');
-  }
-}
 
-exports.UpdateResearcher = async (req, res) => {
-  const { email } = req.body;
-  
-  if (!email) {
-    return res.status(400).send('Email is required');
-  }
-  try {
-    // Query the Users table to find a user by the provided email
-    const results = await userService.UpdateResearcher( email);
+  exports.UpdateResearcher = async (req, res) => {
+    const {email} = req.body;
+
+    if (!email) {
+      return res.status(400).send('Email is required');
+    }
+    try {
+      // Query the Users table to find a user by the provided email
+      const results = await userService.UpdateResearcher(email);
       // User found with the provided email
       res.json({
         message: 'User Role Updated',
         User: results
       });
+    } catch (error) {
+      console.error('Error Updating User Role:', error);
+      res.status(500).send('Error Creating New User');
+    }
   }
-  catch (error) {
-    console.error('Error Updating User Role:', error);
-    res.status(500).send('Error Creating New User');
-  }
-}
 
 
-exports.UpdateStudent = async (req, res) => {
-  const { email } = req.body;
-  
-  if (!email) {
-    return res.status(400).send('Email is required');
-  }
-  try {
-    // Query the Users table to find a user by the provided email
-    const results = await userService.UpdateStudent( email);
+  exports.UpdateStudent = async (req, res) => {
+    const {email} = req.body;
+
+    if (!email) {
+      return res.status(400).send('Email is required');
+    }
+    try {
+      // Query the Users table to find a user by the provided email
+      const results = await userService.UpdateStudent(email);
       // User found with the provided email
       res.json({
         message: 'User Role Updated',
         User: results
       });
+    } catch (error) {
+      console.error('Error Updating User Role:', error);
+      res.status(500).send('Error Creating New User');
+    }
   }
-  catch (error) {
-    console.error('Error Updating User Role:', error);
-    res.status(500).send('Error Creating New User');
-  }
-}
 
 
-exports.getExistingUser = async (req, res) => {
-  const { email, programid } = req.body;
-  
-  if (!email) {
-    return res.status(400).send('Email is required');
-  }
-  if (!programid) {
-    return res.status(400).send('Program is required');
-  }
-  try {
-    // Query the Users table to find a user by the provided email
-    const results = await userService.checkUser( email, programid);
+  exports.getExistingUser = async (req, res) => {
+    const {email, programid} = req.body;
+
+    if (!email) {
+      return res.status(400).send('Email is required');
+    }
+    if (!programid) {
+      return res.status(400).send('Program is required');
+    }
+    try {
+      // Query the Users table to find a user by the provided email
+      const results = await userService.checkUser(email, programid);
       // User found with the provided email
-      if(results.length>0){
+      if (results.length > 0) {
         res.json({
           message: 'User Exists',
           User: results
         });
+      } else {
+        res.json({message: 'No User'});
       }
-      else{
-        res.json({message:'No User'});
-      }
-  }
-  catch (error) {
-    console.error('Error Checking if User exists:', error);
-    res.status(500).send('Error checking if user exists');
-  }
-}
-
-
-exports.getUsersProgram = async (req,res) => {
-  const { programid } = req.body;
-  
-  if (!programid) {
-    return res.status(400).send('Program ID is required');
-  }
-  try {
-    // Query the Users table to find a user by the provided email
-    const results = await userService.getprogramusers(programid);
-      // User found with the provided email
-        res.json({
-          message: 'Fetched Programs users successfully',
-          Users: results
-        });
-  }
-  catch (error) {
-    console.error('Error Checking for Programs Users', error);
-    res.status(500).send('Error checking for Programs Users');
-  }
-
-
-}
-exports.createAccount = async (req, res) => {
-  const { email, netid, age, gender, ethnicity, credits, stem_interests, institution, code } = req.body;
-  try {
-    const result = await userService.PostNewUser(email, netid, age, gender, ethnicity, credits, stem_interests, institution, code, fullname);
-    if (result.success) {
-      res.status(201).json(result);
-    } else {
-      res.status(400).json(result);
+    } catch (error) {
+      console.error('Error Checking if User exists:', error);
+      res.status(500).send('Error checking if user exists');
     }
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
   }
-};
+
+
+  exports.getUsersProgram = async (req, res) => {
+    const {programid} = req.body;
+
+    if (!programid) {
+      return res.status(400).send('Program ID is required');
+    }
+    try {
+      // Query the Users table to find a user by the provided email
+      const results = await userService.getprogramusers(programid);
+      // User found with the provided email
+      res.json({
+        message: 'Fetched Programs users successfully',
+        Users: results
+      });
+    } catch (error) {
+      console.error('Error Checking for Programs Users', error);
+      res.status(500).send('Error checking for Programs Users');
+    }
+
+
+  }
+  exports.createAccount = async (req, res) => {
+    const {
+      email,
+      netid,
+      age,
+      gender,
+      ethnicity,
+      credits,
+      stem_interests,
+      institution,
+      code,
+      fullname,
+      password
+    } = req.body;
+    try {
+      const result = await userService.PostNewUser(email, netid, age, gender, ethnicity, credits, stem_interests, institution, code, fullname, password);
+      if (result.success) {
+        res.status(201).json(result);
+      } else {
+        res.status(400).json(result);
+      }
+    } catch (err) {
+      res.status(500).json({success: false, message: err.message});
+    }
+  };
