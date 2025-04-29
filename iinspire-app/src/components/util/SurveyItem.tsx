@@ -1,4 +1,4 @@
-import { Box, CheckboxGroup, Fieldset, Flex, HStack, Stack, Text, VStack } from '@chakra-ui/react';
+import { Box, CheckboxGroup, Field, Fieldset, Flex, HStack, Stack, Text, Textarea, VStack } from '@chakra-ui/react';
 import { Radio, RadioGroup } from "@/components/ui/radio"
 import { Checkbox } from "@/components/ui/checkbox"
 import SurveyQuestionInterface from '../../app/student-survey/SurveyQuestionInterface';
@@ -494,6 +494,30 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                         <hr />
                     </ >
                 )
+            case "Short Answer":
+                return (
+                    <>
+                        <Box display={'flex'} alignItems={'start'} width="100%" maxWidth="100vw" suppressHydrationWarning>
+                            <HStack
+                                width="100%"
+                                align="center"
+                                justify="space-between"
+                                marginTop="2vh"
+                                px={4}
+                            >
+                                <Box width="40%" maxWidth="400px" marginLeft={"10vh"}>
+                                    <Text>{question.question_text}</Text>
+                                </Box>
+                                <Field.Root>
+                                    <Field.Label>
+                                    </Field.Label>
+                                    <Textarea placeholder="Start typing..." variant="subtle" />
+                                    <Field.HelperText>Max 500 characters.</Field.HelperText>
+                                </Field.Root>
+                            </HStack>
+                        </Box>
+                    </>
+                );
             default:
                 return null;
         }
