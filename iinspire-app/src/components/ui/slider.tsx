@@ -1,4 +1,5 @@
 import { Slider as ChakraSlider, For, HStack } from "@chakra-ui/react"
+import { Root } from "postcss";
 import * as React from "react"
 
 export interface SliderProps extends ChakraSlider.RootProps {
@@ -7,40 +8,56 @@ export interface SliderProps extends ChakraSlider.RootProps {
   showValue?: boolean
 }
 
-export const Slider = React.forwardRef<HTMLDivElement, SliderProps>(
-  function Slider(props, ref) {
-    const { marks: marksProp, label, showValue, ...rest } = props
-    const value = props.defaultValue ?? props.value
+export const Slider = Object.assign(
+  React.forwardRef<HTMLDivElement, SliderProps>(
+    function Slider(props, ref) {
+      const { marks: marksProp, label, showValue, ...rest } = props
+      const value = props.defaultValue ?? props.value
 
-    const marks = marksProp?.map((mark) => {
-      if (typeof mark === "number") return { value: mark, label: undefined }
-      return mark
-    })
+      const marks = marksProp?.map((mark) => {
+        if (typeof mark === "number") return { value: mark, label: undefined }
+        return mark
+      })
 
-    const hasMarkLabel = !!marks?.some((mark) => mark.label)
-
-    return (
-      <ChakraSlider.Root ref={ref} thumbAlignment="center" {...rest}>
-        {label && !showValue && (
-          <ChakraSlider.Label>{label}</ChakraSlider.Label>
-        )}
-        {label && showValue && (
-          <HStack justify="space-between">
+      const hasMarkLabel = !!marks?.some((mark) => mark.label)
+      return (
+        <ChakraSlider.Root ref={ref} thumbAlignment="center" {...rest}>
+          {label && !showValue && (
             <ChakraSlider.Label>{label}</ChakraSlider.Label>
-            <ChakraSlider.ValueText />
-          </HStack>
-        )}
-        <ChakraSlider.Control data-has-mark-label={hasMarkLabel || undefined}>
-          <ChakraSlider.Track>
-            <ChakraSlider.Range />
-          </ChakraSlider.Track>
-          <SliderThumbs value={value} />
-          <SliderMarks marks={marks} />
-        </ChakraSlider.Control>
-      </ChakraSlider.Root>
-    )
-  },
+          )}
+          {label && showValue && (
+            <HStack justify="space-between">
+              <ChakraSlider.Label>{label}</ChakraSlider.Label>
+              <ChakraSlider.ValueText />
+            </HStack>
+          )}
+          <ChakraSlider.Control data-has-mark-label={hasMarkLabel || undefined}>
+            <ChakraSlider.Track>
+              <ChakraSlider.Range />
+            </ChakraSlider.Track>
+            <SliderThumbs value={value} />
+            <SliderMarks marks={marks} />
+          </ChakraSlider.Control>
+        </ChakraSlider.Root>
+      )
+    }
+  ),
+  {
+    // Expose Chakra sub-components
+    Root: ChakraSlider.Root,
+    Thumb: ChakraSlider.Thumb,
+    Control: ChakraSlider.Control,
+    Track: ChakraSlider.Track,
+    Range: ChakraSlider.Range,
+    Thumbs: ChakraSlider.Thumbs,
+    Marks: ChakraSlider.Marks,
+    Label: ChakraSlider.Label,
+    ValueText: ChakraSlider.ValueText,
+    DraggingIndicator: ChakraSlider.DraggingIndicator // Add this line
+  }
 )
+
+
 
 function SliderThumbs(props: { value?: number[] }) {
   const { value } = props
@@ -80,3 +97,5 @@ const SliderMarks = React.forwardRef<HTMLDivElement, SliderMarksProps>(
     )
   },
 )
+
+export { ChakraSlider };
