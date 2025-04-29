@@ -1,5 +1,4 @@
 const userService = require('./User.service');
-const bcrypt = require('bcryptjs');
 //const authService = require('../auth/auth.service)
 
 //controller methods
@@ -49,19 +48,13 @@ exports.loginUser = async (req, res) => {
 
   const user = users[0];
 
-// Compare password with hashed password
-  const isMatch = await bcrypt.compare(password, user.password);
-
-  if (!isMatch) {
-    return res.status(400).json({success: false, message: "Invalid email or password."});
-  }
 
 // If password matches:
   res.status(200).json({success: true, message: "Login successful!", user});
 }
 
   exports.newUser = async (req, res) => {
-    const {email, netid, age, gender, ethnicity, credits, stem_interests, institution, code, fullname} = req.body;
+    const {email, netid, age, gender, ethnicity, credits, stem_interests, institution, code, fullname, password} = req.body;
 
     if (!email) {
       return res.status(400).send('Email is required');
@@ -80,7 +73,7 @@ exports.loginUser = async (req, res) => {
       */
 
       // Query the Users table to find a user by the provided email
-      const response = await userService.PostNewUser(email, netid, age, gender, ethnicity, credits, stem_interests, institution, code, fullname);
+      const response = await userService.PostNewUser(email, netid, age, gender, ethnicity, credits, stem_interests, institution, code, fullname, password);
 
 
       // Check if the user was created successfully
