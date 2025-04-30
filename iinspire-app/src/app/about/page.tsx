@@ -7,7 +7,7 @@ import AboutPageSection from "@/components/util/about-section";
 const AboutPage = () => {
 
     return (
-        <Box>
+        <Box suppressHydrationWarning>
             <Navbar />
             <AboutPageSection />
             <Footer />
