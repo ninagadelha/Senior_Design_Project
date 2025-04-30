@@ -145,12 +145,12 @@ const TheSurvey = () => {
         const userID = user?.id;
         const formattedAnswers = formatAnswersByGroupKey();
         const payload = { userID, programID, ...formattedAnswers };
-        if (Object.keys(answers).length < questions.length) {
+        if (Object.keys(answers).length + 1< questions.length) {
             alert('Please answer all questions.');
             console.log("answer length" + Object.keys(answers).length)
             console.log("question length" + questions.length)
         }
-        if (Object.keys(answers).length == questions.length) {
+        if (Object.keys(answers).length + 1 == questions.length) {
             console.log("User ID:", userID);
             console.log("Program ID:", programID);
             console.log('Submitting:', answers);
