@@ -470,7 +470,7 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                                     marginRight={"10vh"}
                                     variant={'subtle'}
                                 >
-                                    <HStack width="100%" justify="space-between" align="start">
+                                    <HStack  justify="center" gap={100} justifyContent={"space-evenly"}>
                                         {question.options?.map((option) => {
                                             const label = option === "Y" ? "Yes" : option === "N" ? "No" : " ";
                                             return (
@@ -506,7 +506,7 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                                 px={4}
                             >
                                 <Box width="40%" maxWidth="400px" marginLeft={"10vh"}>
-                                    <Text>{question.question_text}</Text>
+                                    <Text>{question.question_text}, don't need to respond if you answered no to the previous question </Text>
                                 </Box>
                                 <Field.Root>
                                     <Field.Label>
