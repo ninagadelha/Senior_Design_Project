@@ -1,7 +1,7 @@
 
 import Navbar from "@/components/util/navbar";
 import Footer from "@/components/util/footer";
-import { Box, Button, Flex, Heading } from '@chakra-ui/react';
+import { Box, Button, Flex, Heading, Text } from '@chakra-ui/react';
 import SurveyItem from '../components/util/SurveyItem';
 import SurveyQuestionInterface from '../app/student-survey/SurveyQuestionInterface';
 import { useEffect, useRef, useState } from 'react';
@@ -16,6 +16,7 @@ interface SurveyAnswer {
 const TheSurvey = () => {
     const [answers, setAnswers] = useState<SurveyAnswer>({});
     const [questions, setQuestions] = useState<SurveyQuestionInterface[]>([]);
+    const [phase, setPhase] = useState<'confirm' | 'survey'>('confirm');
     const { user } = useAuth();
     const router = useRouter();
 
@@ -94,6 +95,24 @@ const TheSurvey = () => {
     // Current group being displayed
     const currentGroup = groupNames[currentGroupIndex];
     const currentQuestions = groupedQuestions[currentGroup] || [];
+
+    const ConfirmationScreen = () => (
+        <Flex direction="column" align="center" justify="center" h="70vh" p={6} textAlign="center">
+            <Heading mb={4}>Are you ready to begin the survey?</Heading>
+
+            <Text maxW="600px" mb={6}>
+                There are many items in this survey [several questions].
+                Some items may seem redundant or tedious but they are important
+                for providing insights about your experience. We apologize
+                for any frustration and hope this gives you an opportunity to think and reflect.
+            </Text>
+
+            <Button colorScheme="blue" size="lg" onClick={() => setPhase('survey')}>
+                Start Survey
+            </Button>
+        </Flex>
+    );
+
 
     // Navigation handlers
     const handleNext = () => {
@@ -198,59 +217,63 @@ const TheSurvey = () => {
 
     return (
         <Box bg="white" color="black">
-            <Box maxW="100vw" mx="auto" mt={8} padding={'1vw'} bg="white" color="black" suppressHydrationWarning>
-                <ProgressBar current={currentGroupIndex + 1} total={groupNames.length} />
-                <Heading bg="white" color="black" size="3xl">Survey: {user?.programid}</Heading>
+            {phase === 'confirm' ? (
+                <ConfirmationScreen />
+            ) : (
+                <Box maxW="100vw" mx="auto" mt={8} padding={'1vw'} bg="white" color="black" suppressHydrationWarning>
+                    <ProgressBar current={currentGroupIndex + 1} total={groupNames.length} />
+                    <Heading bg="white" color="black" size="3xl">Survey: {user?.programid}</Heading>
 
-                {/* Display only the current group */}
-                <Box mt={4} bg="white" color="black" suppressHydrationWarning>
-                    <Heading bg="white" color="black" size="lg" mb={4}>
-                        {GROUP_MESSAGES[currentGroup]}
-                    </Heading>
-                    {currentQuestions.map((question) => (
-                        <SurveyItem
-                            key={question.question_id}
-                            question={question}
-                            onAnswerChange={handleAnswerChange}
-                            value={answers[question.question_id]}
-                        />
-                    ))}
+                    {/* Display only the current group */}
+                    <Box mt={4} bg="white" color="black" suppressHydrationWarning>
+                        <Heading bg="white" color="black" size="lg" mb={4}>
+                            {GROUP_MESSAGES[currentGroup]}
+                        </Heading>
+                        {currentQuestions.map((question) => (
+                            <SurveyItem
+                                key={question.question_id}
+                                question={question}
+                                onAnswerChange={handleAnswerChange}
+                                value={answers[question.question_id]}
+                            />
+                        ))}
+                    </Box>
+
+                    {/* Navigation buttons */}
+                    <Flex justify="space-between" mt={6} mb={8} suppressHydrationWarning>
+                        <Button
+                            onClick={handlePrevious}
+                            disabled={currentGroupIndex === 0}
+                            colorScheme="gray"
+                            variant="outline"
+                        >
+                            Previous
+                        </Button>
+
+                        {currentGroupIndex === groupNames.length - 1 ? (
+                            <Button
+                                onClick={handleConfirmSubmission}
+                                colorScheme="blue"
+                                variant="solid"
+                                size="lg"
+                                className="next-button"
+                            >
+                                Submit
+                            </Button>
+                        ) : (
+                            <Button
+                                onClick={handleNext}
+                                colorScheme="blue"
+                                variant="solid"
+                                size="lg"
+                                className="next-button"
+                            >
+                                Next
+                            </Button>
+                        )}
+                    </Flex>
                 </Box>
-
-                {/* Navigation buttons */}
-                <Flex justify="space-between" mt={6} mb={8} suppressHydrationWarning>
-                    <Button
-                        onClick={handlePrevious}
-                        disabled={currentGroupIndex === 0}
-                        colorScheme="gray"
-                        variant="outline"
-                    >
-                        Previous
-                    </Button>
-
-                    {currentGroupIndex === groupNames.length - 1 ? (
-                        <Button
-                            onClick={handleConfirmSubmission}
-                            colorScheme="blue"
-                            variant="solid"
-                            size="lg"
-                            className="next-button"
-                        >
-                            Submit
-                        </Button>
-                    ) : (
-                        <Button
-                            onClick={handleNext}
-                            colorScheme="blue"
-                            variant="solid"
-                            size="lg"
-                            className="next-button"
-                        >
-                            Next
-                        </Button>
-                    )}
-                </Flex>
-            </Box>
+            )}
         </Box>
     );
 };

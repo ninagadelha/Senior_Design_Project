@@ -2,15 +2,17 @@
 import Navbar from "@/components/util/navbar";
 import Footer from "@/components/util/footer";
 import TheSurvey from "@/components/TheSurvey";
-import { Box } from "@chakra-ui/react";
+import { Box, Flex } from "@chakra-ui/react";
 
 const StudentSurvey = () => {
     return (
-        <Box bg="white" color="black">
+        <Flex direction="column" minH="100vh" bg="white" color="black">
             <Navbar />
-            <TheSurvey />
+            <Box flex="1">
+                <TheSurvey />
+            </Box>
             <Footer />
-        </Box >
+        </Flex>
     );
 };
 
