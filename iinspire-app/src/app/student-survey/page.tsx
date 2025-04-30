@@ -6,7 +6,7 @@ import { Box, Flex } from "@chakra-ui/react";
 
 const StudentSurvey = () => {
     return (
-        <Flex direction="column" minH="100vh" bg="white" color="black">
+        <Flex direction="column" minH="100vh" bg="white" color="black" suppressHydrationWarning>
             <Navbar />
             <Box flex="1">
                 <TheSurvey />
