@@ -7,7 +7,7 @@ import fonts from '../../../public/fonts';
 import { useAuth } from "@/context/auth-context";
 
 function Navbar() {
-    const { logout, getHomePath, isAuthenticated } = useAuth();
+    const { logout, getHomePath, isAuthenticated, user } = useAuth();
 
     // Base items that are always visible on Navbar
     const BASE_ITEMS: Array<NavItem> = [
@@ -15,15 +15,23 @@ function Navbar() {
     ];
 
     // Items only shown when authenticated
-    const AUTH_ITEMS: Array<NavItem> = [
-        { label: 'Home', href: getHomePath() },
-        { label: 'Survey', href: '/student-survey' }
-    ];
+    const getAuthItems = () => {
+        const items: Array<NavItem> = [
+            { label: 'Home', href: getHomePath() }
+        ];
+        
+        // Only add Survey if user is a student (case-insensitive check)
+        if (user?.role.toLowerCase() === 'student') {
+            items.push({ label: 'Survey', href: '/student-survey' });
+        }
+        
+        return items;
+    };
 
     // Combine items based on auth status
     const NAV_ITEMS = [
         ...BASE_ITEMS,
-        ...(isAuthenticated ? AUTH_ITEMS : [])
+        ...(isAuthenticated ? getAuthItems() : [])
     ];
 
     return (
