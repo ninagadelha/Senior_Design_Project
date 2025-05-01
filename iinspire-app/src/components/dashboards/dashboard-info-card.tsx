@@ -15,7 +15,8 @@ interface ResourceCardProps {
   };
   linkid: number;
   icon?: React.ComponentType;
-  onDeleteSuccess?: () => void; // Add callback for successful deletion
+  onDeleteSuccess?: () => void;
+  showDelete?: boolean; // New prop to control delete button visibility
 }
 
 const DashboardInfoCard: React.FC<ResourceCardProps> = ({
@@ -24,7 +25,8 @@ const DashboardInfoCard: React.FC<ResourceCardProps> = ({
   URL,
   linkid,
   icon: IconComponent = FaBook,
-  onDeleteSuccess
+  onDeleteSuccess,
+  showDelete = true // Default to true for backward compatibility
 }) => {
 
   const handleDelete = async () => {
@@ -37,7 +39,7 @@ const DashboardInfoCard: React.FC<ResourceCardProps> = ({
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ linkid }) // Use the actual linkid from props
+        body: JSON.stringify({ linkid })
       });
 
       if (!response.ok) {
@@ -103,7 +105,7 @@ const DashboardInfoCard: React.FC<ResourceCardProps> = ({
           alignItems="flex-start" 
           gap={1} 
           flex="1"
-          minWidth={0} // Prevent overflow
+          minWidth={0}
         >
           <CardHeader p={0}>
             <Heading 
@@ -153,24 +155,25 @@ const DashboardInfoCard: React.FC<ResourceCardProps> = ({
             </Button>
           </Link>
 
-          {/* Delete Button */}
-          <Button
-            variant="ghost"
-            colorScheme="red"
-            _hover={{ 
-              bg: "red.300",
-              transform: "scale(1.02)"
-            }}
-            size="sm"
-            p={2}
-            minW="auto"
-            onClick={handleDelete}
-            aria-label="Delete resource"
-          >
-            <Icon as={FaTrash} boxSize={4} />
-          </Button>
+          {/* Conditionally render Delete Button */}
+          {showDelete && (
+            <Button
+              variant="ghost"
+              colorScheme="red"
+              _hover={{ 
+                bg: "red.300",
+                transform: "scale(1.02)"
+              }}
+              size="sm"
+              p={2}
+              minW="auto"
+              onClick={handleDelete}
+              aria-label="Delete resource"
+            >
+              <Icon as={FaTrash} boxSize={4} />
+            </Button>
+          )}
         </HStack>
-        
       </HStack>
     </CardRoot>
   );

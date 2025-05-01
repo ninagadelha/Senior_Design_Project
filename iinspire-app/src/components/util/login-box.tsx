@@ -72,7 +72,7 @@ const LoginBox = () => {
             console.error("Error during login:", error);
             toaster.create({
                 title: "Error",
-                description: "Incorrect Email/Username or Password",
+                description: "Error during login",
                 type: "error",
                 duration: 3000,
             });

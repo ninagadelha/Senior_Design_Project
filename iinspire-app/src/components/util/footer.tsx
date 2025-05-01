@@ -9,7 +9,7 @@ function Footer(){
     return(
         <Box className='navbar' background={colors.secondary_blue_dark} mt="auto">
             <Image className='logo' 
-            src="/images/custom/IINSPIRE_logo_transparent_light.png"
+            src="/images/custom/tree_sprout_clear.png" 
             alt='logo'
             h='7vh'
             fit="contain"></Image>
