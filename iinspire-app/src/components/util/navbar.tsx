@@ -30,7 +30,7 @@ function Navbar() {
         <Flex as="nav" align="center" p={2} boxShadow="md" bg={colors.secondary_blue_dark}>
             {/* Logo */}
             <Image 
-                src="/images/custom/IINSPIRE_logo_transparent_light.png" 
+                src="/images/custom/tree_sprout_clear.png" 
                 alt="logo" 
                 h="7vh" 
                 objectFit="contain"
