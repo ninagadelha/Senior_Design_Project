@@ -34,7 +34,7 @@ function StudentDashboardNew() {
                         color={colors.black}
                         lineHeight="1.2"
                     >
-                        Welcome to your IINSPIRE Student Dashboard!
+                        Welcome to your MySTEMGrowth Student Dashboard!
                     </Heading>
                     <Text
                         fontSize={{ base: fonts.default_font_size, md: fonts.default_font_size }}

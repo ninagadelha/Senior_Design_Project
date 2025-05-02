@@ -101,8 +101,8 @@ const TheSurvey = () => {
             <Heading mb={4}>Are you ready to begin the survey?</Heading>
 
             <Text maxW="600px" mb={6}>
-                There are many items in this survey [several questions].
-                Some items may seem redundant or tedious but they are important
+                There are many items in this survey.
+                Some items may seem redundant or tedious, but they are important
                 for providing insights about your experience. We apologize
                 for any frustration and hope this gives you an opportunity to think and reflect.
             </Text>

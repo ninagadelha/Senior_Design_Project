@@ -6,27 +6,21 @@ import colors from "../../../public/colors";
 const AboutPageSection = () => {
     return (
         <Box py={10} bg={colors.white} minH="calc(100vh - 128px)" suppressHydrationWarning>
-            <Container maxW="container.md" centerContent>
-                <VStack gap={8} align="center" textAlign="center">
-                    {/* Heading */}
-                    <Heading as="h1" size="2xl" color={colors.primary_blue}>
-                        About MyStemGrowth
+            <Container maxW="container.xl">
+                <VStack gap={8} align="start" w="100%">
+                    {/* Centered Heading */}
+                    <Heading
+                        as="h1"
+                        size="2xl"
+                        color={colors.primary_blue}
+                        textAlign="center"
+                        w="100%"
+                    >
+                        About MySTEMGrowth
                     </Heading>
 
-                    {/* Image */}
-                    {/* <Box width="100%" maxW="600px">
-                        <Image
-                            src="/images/custom/group_collaboration_stock_photo.jpg"
-                            alt="LSAMP students collaborating"
-                            borderRadius="lg"
-                            boxShadow="lg"
-                            objectFit="cover"
-                            width="100%"
-                        />
-                    </Box> */}
-
-                    {/* Text Content */}
-                    <VStack gap={4} align="center" px={{ base: 4, md: 0 }} maxW="60%">
+                    {/* Text Content (Left-Aligned, Full Width) */}
+                    <VStack gap={4} align="start" w="100%" px={{ base: 4, md: 0 }}>
                         <Text fontSize="lg" lineHeight="tall" color={colors.black}>
                             The MySTEMGrowth Profile project is led by Dr. Saba Ali and her research
                             group at the University of Iowa. The purpose of the project is to provide
@@ -37,7 +31,7 @@ const AboutPageSection = () => {
                             administrators to inform programming decisions.
                         </Text>
                         <Text fontSize="lg" lineHeight="tall" color={colors.black}>
-                            The MySTEMGrowth web-based tool has been developed by senior design teams at Iowa State University.
+                            The MySTEMGrowth web-based tool has been developed by senior design teams at Iowa State University:
                         </Text>
                         <List.Root>
                             <List.Item>
@@ -60,17 +54,19 @@ const AboutPageSection = () => {
                     </VStack>
 
                     {/* Learn More Button */}
-                    <Button
-                        colorScheme="blue"
-                        variant="solid"
-                        size="lg"
-                        bg={colors.primary_blue}
-                        color="white"
-                        _hover={{ bg: colors.secondary_blue_light }}
-                        asChild
-                    >
-                        <a href="/iinspirePdf.pdf">Learn More</a>
-                    </Button>
+                    <Box w="100%" display="flex" justifyContent="center">
+                        <Button
+                            colorScheme="blue"
+                            variant="solid"
+                            size="lg"
+                            bg={colors.primary_blue}
+                            color="white"
+                            _hover={{ bg: colors.secondary_blue_light }}
+                            asChild
+                        >
+                            <a href="/iinspirePdf.pdf">Learn More</a>
+                        </Button>
+                    </Box>
                 </VStack>
             </Container>
         </Box>
