@@ -271,11 +271,11 @@ const AdminHome = () => {
                     MySTEMGrowth Admin Dashboard
                 </Heading>
                 <Box maxW="lg" p={6} borderWidth={1} borderRadius="xl" mb={10}>
-                    <Text fontSize="2xl" mb={4} fontWeight="bold">
+                    <Text color="black" fontSize="2xl" mb={4} fontWeight="bold">
                         Generate Access Code
                     </Text>
 
-                    <Text mb={2}>Select Role:</Text>
+                    <Text mb={2} color="black">Select Role:</Text>
                     <select
                         className={styles.select}
                         value={role}
