@@ -177,7 +177,7 @@ const PCViewStudents = () => {
                 {/* Students Table */}
                 {!selectedProgram?.id ? (
                     <Box textAlign="center" py={10}>
-                        <Text fontSize="lg">No program selected. Please select a program first.</Text>
+                        <Text color="black" fontSize="lg">No program selected. Please select a program first.</Text>
                         <Button 
                             mt={4}
                             colorScheme="blue"

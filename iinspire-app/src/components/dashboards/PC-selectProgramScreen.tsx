@@ -239,7 +239,7 @@ const PCSelectProgramBox = () => {
             </Select.Root>
           </>
         ) : (
-          <Text fontSize="lg" textAlign="center">
+          <Text color= "black" fontSize="lg" textAlign="center">
             {user?.programid 
               ? "You have not created any programs yet." 
               : "No program coordinator account found."}

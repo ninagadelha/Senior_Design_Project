@@ -328,7 +328,7 @@ const PCProgramsHome = () => {
                         </Table.Root>
                     ) : (
                         <Box textAlign="center" py={10}>
-                            <Text fontSize="lg">No programs found. Create your first program!</Text>
+                            <Text color="black" fontSize="lg">No programs found. Create your first program!</Text>
                         </Box>
                     )}
                 </Box>
