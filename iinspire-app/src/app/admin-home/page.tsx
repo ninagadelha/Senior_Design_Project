@@ -299,7 +299,7 @@ const AdminHome = () => {
                             borderRadius="md"
                             mb={2}
                         >
-                            <Text fontFamily="mono">{code}</Text>
+                            <Text color = "black" fontFamily="mono">{code}</Text>
                         </Flex>
                     )}
                 </Box>
@@ -345,7 +345,7 @@ const AdminHome = () => {
                                     <Table.Cell color={colors.dark_grey} py={3}>
                                         {program.owner_fullname}
                                     </Table.Cell>
-                                    <Table.Cell textAlign="center" py={3}>
+                                    <Table.Cell textAlign="center" py={3} color={colors.black}>
                                         {program.submission_count ?? 0}
                                     </Table.Cell>
                                     <Table.Cell textAlign="center" py={3}>

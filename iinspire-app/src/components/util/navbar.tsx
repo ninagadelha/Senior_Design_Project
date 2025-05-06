@@ -38,7 +38,7 @@ function Navbar() {
         <Flex as="nav" align="center" p={2} boxShadow="md" bg={colors.secondary_blue_dark}>
             {/* Logo */}
             <Image 
-                src="/images/custom/tree_sprout_clear.png" 
+                src="/images/custom/tree_sprout_new.png"
                 alt="logo" 
                 h="7vh" 
                 objectFit="contain"
