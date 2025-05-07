@@ -42,7 +42,7 @@ function StudentDashboardNew() {
                         color={colors.dark_grey}
                         px={{ base: 4, md: 8 }}
                     >
-                        Within this dashboard, you can access surveys, view results, and find resources to support your STEM journey at Iowa State.
+                        Within this dashboard, you can access surveys, view results, and find resources to support your STEM journey.
                     </Text>
                 </VStack>
             </Box>
@@ -51,7 +51,7 @@ function StudentDashboardNew() {
             <VStack width="100%" gap={0}>
                 <HeroCard
                     title="Take Survey"
-                    description="Share your experiences and help improve STEM education at Iowa State University."
+                    description="Share your experiences and help improve STEM education."
                     buttonText="Take Survey"
                     buttonLink="/student-survey"
                     imageSrc="/images/custom/tree_sprout.png"
@@ -62,7 +62,7 @@ function StudentDashboardNew() {
                     description="See how your responses compare to others in your program and track your progress over time."
                     buttonText="View Results"
                     buttonLink="/view-results"
-                    imageSrc="/images/custom/tree_sprout.png"
+                    imageSrc="/images/custom/tree_sprout_medium.png"
                     imageAlt="View Results Hero Image"
                     reverseLayout={true}
                 />
@@ -71,7 +71,7 @@ function StudentDashboardNew() {
                     description="Explore external resources like tutoring, mental health counseling, and other services"
                     buttonText="View Resources"
                     buttonLink="/student-resources"
-                    imageSrc="/images/custom/tree_sprout.png"
+                    imageSrc="/images/custom/tree_sprout_large.png"
                     imageAlt="View Resources Hero Image"
                 />
             </VStack>

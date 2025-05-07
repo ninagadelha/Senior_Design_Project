@@ -448,7 +448,7 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                             <HStack
                                 width="100%"
                                 align="center"
-                                justify="space-between"
+                                justify="start"
                                 marginTop="2vh"
                                 px={4}
                             >
@@ -469,8 +469,10 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                                     width="50%"
                                     marginRight={"10vh"}
                                     variant={'subtle'}
+                                    justifyItems={"start"}
+                                    ml={"1vw"}
                                 >
-                                    <HStack  justify="center" gap={100} justifyContent={"space-evenly"}>
+                                    <HStack justify="center" gap={100} justifyContent={"space-evenly"}>
                                         {question.options?.map((option) => {
                                             const label = option === "Y" ? "Yes" : option === "N" ? "No" : " ";
                                             return (
@@ -495,25 +497,30 @@ const SurveyQuestionItem: React.FC<QuestionProps> = ({ question, onAnswerChange,
                     </ >
                 )
             case "Short Answer":
+                const text = "When and where did you take this survey previously?";
+                const text2 = "(If you answered 'yes' to the previous question)";
                 return (
                     <>
                         <Box display={'flex'} alignItems={'start'} width="100%" maxWidth="100vw" suppressHydrationWarning>
                             <HStack
                                 width="100%"
                                 align="center"
-                                justify="space-between"
+                                justify="start"
                                 marginTop="2vh"
                                 px={4}
                             >
                                 <Box width="40%" maxWidth="400px" marginLeft={"10vh"}>
-                                    <Text>{question.question_text}, don't need to respond if you answered no to the previous question </Text>
+                                    <Text>{text}</Text>
+                                    <Text>{text2}</Text>
                                 </Box>
-                                <Field.Root>
-                                    <Field.Label>
-                                    </Field.Label>
-                                    <Textarea placeholder="Start typing..." variant="subtle" />
-                                    <Field.HelperText>Max 500 characters.</Field.HelperText>
-                                </Field.Root>
+                                <Box width={"25%"}>
+                                    <Field.Root>
+                                        <Field.Label>
+                                        </Field.Label>
+                                        <Textarea placeholder="Start typing..." variant="subtle" />
+                                        <Field.HelperText>Max 500 characters.</Field.HelperText>
+                                    </Field.Root>
+                                </Box>
                             </HStack>
                         </Box>
                     </>

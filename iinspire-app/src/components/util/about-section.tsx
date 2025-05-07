@@ -5,8 +5,8 @@ import colors from "../../../public/colors";
 
 const AboutPageSection = () => {
     return (
-        <Box py={10} bg={colors.white} minH="calc(100vh - 128px)" suppressHydrationWarning>
-            <Container maxW="container.xl">
+        <Box py={10} bg={colors.white} minH="calc(100vh - 128px)" display={"flex"} suppressHydrationWarning>
+            <Container maxW="container.xl" justifyItems={"start"}>
                 <VStack gap={8} align="start" w="100%">
                     {/* Centered Heading */}
                     <Heading
@@ -52,21 +52,6 @@ const AboutPageSection = () => {
                             do not necessarily reflect the views of the National Science Foundation.
                         </Text>
                     </VStack>
-
-                    {/* Learn More Button */}
-                    <Box w="100%" display="flex" justifyContent="center">
-                        <Button
-                            colorScheme="blue"
-                            variant="solid"
-                            size="lg"
-                            bg={colors.primary_blue}
-                            color="white"
-                            _hover={{ bg: colors.secondary_blue_light }}
-                            asChild
-                        >
-                            <a href="/iinspirePdf.pdf">Learn More</a>
-                        </Button>
-                    </Box>
                 </VStack>
             </Container>
         </Box>
