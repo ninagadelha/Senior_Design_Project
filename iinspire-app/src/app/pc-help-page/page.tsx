@@ -1,14 +1,16 @@
 'use client';
 import Footer from "@/components/util/footer";
 import Navbar from "@/components/util/navbar";
-import { Box, Text, Accordion, Stack, Span, Flex, Heading } from "@chakra-ui/react";
+import { Box, Text, Accordion, Stack, Span, Flex, Heading, Button } from "@chakra-ui/react";
 import { useState } from "react";
+import colors from "../../../public/colors";
 
 const items = [
-    { value: "Create a New Program", title: "Create a New Program", text: "After you login, you can create a new program by clicking the 'Create a New Program' button and entering the new programs information." },
-    { value: "View Students", title: "How to view students in a program", text: "After logging in and selecting a program to view, you can view the students in that program by clicking the 'View Students' button on the dashboard." },
+    { value: "Create a new program", title: "Create a New Program", text: "After you login, you can create a new program by clicking the 'Create a New Program' button and entering the new programs information." },
+    { value: "View students", title: "How to view students in a program", text: "After logging in and selecting a program to view, you can view the students in that program by clicking the 'View Students' button on the dashboard." },
     { value: "Modify resources", title: "How to modify Program resources", text: "After logging in and selecting a program to view, you can edit that program's resources by clicking the 'Resources' button on the dashboard." },
     { value: "Remove student", title: "How to remove a student from a program", text: "After logging in and selecting a program to view, you can view the students in that program by clicking the 'View Students' button on the dashboard.\nAfter viewing the students, you can remove them from the program by clicking the 'Remove' button next to the student's name." },
+    { value: "Learn more", title: "Learn more", text: "For more information about the MySTEMGrowth program click here." }
 ]
 
 const PCHelp = () => {
@@ -37,6 +39,21 @@ const PCHelp = () => {
                                 <Accordion.ItemContent>
                                     <Accordion.ItemBody>
                                         <Text m={2} fontWeight={"medium"} textStyle={"md"}>{item.text}</Text>
+                                        {item.value === "Learn more" && (
+                                            <Box w="100%" display="flex" justifyContent="start" m={4}>
+                                                <Button
+                                                    colorScheme="blue"
+                                                    variant="solid"
+                                                    size="lg"
+                                                    bg={colors.primary_blue}
+                                                    color="white"
+                                                    _hover={{ bg: colors.secondary_blue_light }}
+                                                    asChild
+                                                >
+                                                    <a href="/iinspirePdf.pdf">Learn More</a>
+                                                </Button>
+                                            </Box>
+                                        )}
                                     </Accordion.ItemBody>
                                 </Accordion.ItemContent>
                             </Accordion.Item>
