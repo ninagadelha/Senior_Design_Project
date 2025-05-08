@@ -47,7 +47,12 @@ exports.loginUser = async (req, res) => {
   }
 
   const user = users[0];
+  console.log("Entered:", password);
+  console.log("Stored:", user.password);
 
+  if (password !== user.password) {
+    return res.status(400).json({ success: false, message: "Invalid email or password." });
+  }
 
 // If password matches:
   res.status(200).json({success: true, message: "Login successful!", user});
