@@ -72,20 +72,6 @@ const PCDashboard = () => {
 const bottomRowCards = [
   {
     icon: IoBarChartSharp,
-    value: "Coming Soon",
-    description: "Additional features coming soon",
-    button: { text: "Go to Settings", link: "/pc-home" },
-    borderColor: colors.black
-  },
-  {
-    icon: IoBarChartSharp,
-    value: "Coming Soon",
-    description: "Additional features coming soon",
-    button: { text: "Go to Settings", link: "/pc-home" },
-    borderColor: colors.black
-  },
-  {
-    icon: IoBarChartSharp,
     value: "Help",
     description: "Learn more about using your Program Home Page to its fullest potential!",
     button: { text: "Learn More", link: "/pc-help-page" },

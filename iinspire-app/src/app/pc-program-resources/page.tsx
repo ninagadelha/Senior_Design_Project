@@ -12,7 +12,7 @@ import colors from "../../../public/colors";
 import { useAuth } from "@/context/auth-context";
 import { API_ENDPOINTS } from "@/constants/config";
 import DashboardInfoCard from "@/components/dashboards/dashboard-info-card";
-import { FaChevronRight } from "react-icons/fa";
+import { FaRegStar} from "react-icons/fa";
 import { toaster } from "@/components/ui/toaster";
 import { FaBook, FaFileAlt, FaLink, FaGraduationCap, FaVideo, FaChartBar } from 'react-icons/fa';
 
@@ -71,6 +71,17 @@ const PCProgramResources = () => {
       fetchResources();
     }
   }, [selectedProgram]);
+
+  useEffect(() => {
+    if (!loading && resources.length === 0) {
+      toaster.create({
+        title: "No Resources Found",
+        description: "There are currently no resources available",
+        type: "info",
+        duration: 3000,
+      });
+    }
+  }, [loading, resources]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -297,12 +308,7 @@ const PCProgramResources = () => {
                 <Spinner size="xl" color="blue.500" />
               </Box>
             ) : resources.length === 0 ? (
-              toaster.create({
-                title: "No Resources Found",
-                description: "There are currently no resources available",
-                type: "info",
-                duration: 3000,
-              })
+                <Text color="gray.600" fontSize="lg">No resources available.</Text>
             ) : (
               <SimpleGrid columns={1} gap={6}>
                 {resources.map((resource) => {
@@ -359,7 +365,7 @@ const PCProgramResources = () => {
                 <VStack align="start" gap={3}>
                   {exampleResources.map((example, index) => (
                     <HStack key={index} gap={3}>
-                      <Icon as={FaChevronRight} color={colors.secondary_blue_dark} boxSize={4} />
+                      <Icon as={FaRegStar} color={colors.secondary_blue_dark} boxSize={4} />
                       <Text color="gray.700" fontSize="sm">
                         {example}
                       </Text>

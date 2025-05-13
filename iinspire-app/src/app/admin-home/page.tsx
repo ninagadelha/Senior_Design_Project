@@ -54,11 +54,9 @@ const AdminHome = () => {
                                 const rows = csvText.trim().split("\n");
                                 const emailSet = new Set<string>();
 
-                                for (const row of rows) {
+                                for (const row of rows.slice(1)) {
                                     const email = row.split(",")[0].replace(/"/g, "");
-                                    if (email.includes("@")) {
-                                        emailSet.add(email);
-                                    }
+                                    emailSet.add(email);
                                 }
 
                                 submissionCount = emailSet.size;

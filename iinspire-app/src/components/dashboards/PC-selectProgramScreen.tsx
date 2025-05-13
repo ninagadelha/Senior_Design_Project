@@ -278,14 +278,7 @@ const PCSelectProgramBox = () => {
         >
           Create New Program
         </Button>
-        
-        <Box mt={8}>
-          <Image 
-            src="/images/program-selection.svg"
-            alt="Program illustration"
-            maxH="300px"
-          />
-        </Box>
+
       </VStack>
     </Box>
   );
