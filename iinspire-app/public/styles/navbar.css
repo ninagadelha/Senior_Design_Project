@@ -1,0 +1,28 @@
+/* body,
+html {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.navbar {
+    padding-top: 0;
+    width: 100vw;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    color: #FFFFFF;
+    background-color: #101932;
+    padding-bottom: 1vh;
+}
+
+.links{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 2vw;
+}
+
+.logo{
+    padding-left: 1vw;
+} */
