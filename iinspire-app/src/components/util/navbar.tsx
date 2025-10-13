@@ -65,6 +65,22 @@ function Navbar() {
             <Spacer />
 
             {isAuthenticated && (
+                <Link href="/student-manage-acc" passHref>
+                <Button 
+                    //colorScheme="red" 
+                    variant="outline"
+                    bg={colors.off_white}
+                    color={colors.black}
+                    fontSize={fonts.default_font_size} 
+                    fontWeight={fonts.default_weight}
+                    mr={2}
+                >
+                    Manage Account
+                </Button>
+                </Link>
+            )}
+
+            {isAuthenticated && (
                 <Button 
                     colorScheme="red" 
                     variant="outline"

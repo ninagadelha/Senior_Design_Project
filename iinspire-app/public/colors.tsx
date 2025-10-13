@@ -1,8 +1,8 @@
 const colors = {
 
     off_white: "#D9D9D9", 
-    primary_blue: "#1D2B53",                    
-    secondary_blue_dark: "#101932",             
+    primary_blue: "#1D2B53",                       
+    secondary_blue_dark: "#101932",                          //nav bar once logged in   
     purple_circle: "#8E44AD",
     green_circle: "#007B0C", 
     grey_circle: "#B0A8B9",

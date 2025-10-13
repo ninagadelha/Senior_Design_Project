@@ -132,4 +132,39 @@ exports.deleteStudent = async (id) => {
     return { success: false, message: error.message };
   }
 };
+
+exports.UpdateStudentFieldsByEmail = async (email, updates) => {
+  if(!email) throw new Error("Current email is required");
+
+  const fields = [];
+  const values = [];
+
+  if(updates.name){
+    fields.push("fullname = ?");
+    values.push(updates.name);
+  }
+  if(updates.email){
+    fields.push("email = ?");
+    values.push(updates.email);
+  }
+  if(updates.password){
+    fields.push("password = ?");
+    values.push(updates.password);
+  }
+
+  if(fields.length === 0){
+    throw new Error("No fields provided for update");
+  }
+
+  values.push(email);
+
+  const sql = `UPDATE Users SET ${fields.join(", ")} WHERE email = ?`;
+  const result = await queryDatabase(sql, values);
+
+  const updatedUser = await queryDatabase(
+    "SELECT * FROM Users WHERE email = ?",
+    [updates.email || email]
+  );
+  return updatedUser[0];
+}
   

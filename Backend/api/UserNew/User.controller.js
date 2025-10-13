@@ -36,6 +36,7 @@ exports.getUsers = async (req,res) => {
   }
 };
 
+const bcrypt = require('bcrypt');
 
 exports.loginUser = async (req, res) => {
   const {email, password} = req.body; // make sure to grab password too
@@ -50,11 +51,11 @@ exports.loginUser = async (req, res) => {
   console.log("Entered:", password);
   console.log("Stored:", user.password);
 
-  if (password !== user.password) {
+  const isMatch = await bcrypt.compare(password, user.password);
+  if(!isMatch){
     return res.status(400).json({ success: false, message: "Invalid email or password." });
   }
 
-// If password matches:
   res.status(200).json({success: true, message: "Login successful!", user});
 }
 
@@ -160,6 +161,37 @@ exports.loginUser = async (req, res) => {
       res.status(500).send('Error Creating New User');
     }
   }
+
+  //new endpoint for changing account info (new manage acc button in navbar)
+  exports.UpdateStudentAccount = async (req, res) => {
+    const { name, email, newEmail, password } = req.body;
+    
+    if (!email) {
+      return res.status(400).send('Current email is required');
+    }
+
+    try{
+      const updates = {};
+      if(name) updates.name = name;
+      if(newEmail) updates.email = newEmail;
+      if(password){
+        const bcrypt = require('bcrypt');
+        const salt = await bcrypt.genSalt(10);
+        updates.password = await bcrypt.hash(password, salt);
+      }
+
+      const updatedUser = await userService.UpdateStudentFieldsByEmail(email, updates);
+
+      res.json({
+        message: 'Student account updated successfully',
+        user: updatedUser
+      });
+    }
+    catch (err){
+      console.error('Error updating student account:', err);
+      res.status(500).send('Error updating student account');
+    }
+  };
 
 
   exports.getExistingUser = async (req, res) => {

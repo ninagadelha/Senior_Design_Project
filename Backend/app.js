@@ -44,7 +44,8 @@ const linkRouter = require('./api/links/links.router');
 const codeRouter = require('./api/codes/codes.router');
 
 app.use('/api', questionsRouter);
-app.use('/api', userRouter);
+//app.use('/api', userRouter);
+app.use('/api/users', userRouter);
 app.use('/api', programRouter);
 app.use('/api', surveyResultsRouter);
 app.use('/api', linkRouter);
