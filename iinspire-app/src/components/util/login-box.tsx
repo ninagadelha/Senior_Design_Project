@@ -18,6 +18,7 @@ const LoginBox = () => {
     const isFormValid = username.trim() !== "" && password.trim() !== "";
 
     const handleLogin = async () => {
+        localStorage.removeItem("token");
         try {
             const response = await fetch(API_ENDPOINTS.login, {
                 method: "POST",
@@ -34,6 +35,7 @@ const LoginBox = () => {
             const data = await response.json();
 
             if (response.ok) {
+                localStorage.setItem("token", data.token);
                 login(data.user);
                 const normalizedRole = data.user.role.toLowerCase();
 
