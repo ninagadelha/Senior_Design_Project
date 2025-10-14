@@ -164,6 +164,7 @@ exports.loginUser = async (req, res) => {
 
   //new endpoint for changing account info (new manage acc button in navbar)
   exports.UpdateStudentAccount = async (req, res) => {
+
     const { name, email, newEmail, password } = req.body;
     
     if (!email) {

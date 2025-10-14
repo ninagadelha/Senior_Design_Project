@@ -10,7 +10,7 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
 export default function StudentManageAcc(){
 
     //change it so email isn't username?????
-    const [currentEmail] = useState("ngadelha@iastate.edu");                //for testing only
+    const [currentEmail] = useState("new@example.com");                //for testing only
     const [email, setEmail] = useState('');
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');

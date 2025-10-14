@@ -9,6 +9,7 @@ import { useAuth } from "@/context/auth-context";
 import { API_ENDPOINTS } from "@/constants/config";
 
 const LoginBox = () => {
+
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
